@@ -37,7 +37,7 @@ export function Navbar() {
     >
       <div className="max-w-7xl mx-auto px-5 md:px-8 h-16 md:h-20 flex items-center justify-between">
         <Logo
-          className={scrolled ? "[&>span:first-child]:text-white" : ""}
+          className="[&>span:first-child]:text-white"
           size="text-xl md:text-2xl"
         />
 

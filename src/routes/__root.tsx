@@ -9,13 +9,14 @@ import {
   Scripts,
 } from "@tanstack/react-router";
 import { AnimatePresence } from "framer-motion";
-import { useEffect, type ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { Navbar } from "../components/Navbar";
 import { Footer } from "../components/Footer";
 import { PageTransition } from "../components/PageTransition";
+import { AppLoadingScreen } from "../components/AppLoadingScreen";
 
 const NO_CHROME_PREFIXES = ["/room", "/reception", "/admin", "/kitchen"];
 
@@ -92,6 +93,11 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     ],
     links: [
       { rel: "stylesheet", href: appCss },
+      {
+        rel: "stylesheet",
+        href: "https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&family=Cormorant+Garamond:ital,wght@1,400;1,500;1,600&display=swap",
+        crossOrigin: "anonymous",
+      },
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
     ],
@@ -120,9 +126,29 @@ function RootComponent() {
   const { queryClient } = Route.useRouteContext();
   const { location } = useRouterState();
   const standalone = isStandalone(location.pathname);
+  const [showLoader, setShowLoader] = useState(true);
+
+  useEffect(() => {
+    let timer: number | null = null;
+    const hideLoader = () => {
+      timer = window.setTimeout(() => setShowLoader(false), 900);
+    };
+
+    if (document.readyState === "complete") {
+      hideLoader();
+    } else {
+      window.addEventListener("load", hideLoader, { once: true });
+    }
+
+    return () => {
+      if (timer !== null) window.clearTimeout(timer);
+      window.removeEventListener("load", hideLoader);
+    };
+  }, []);
 
   return (
     <QueryClientProvider client={queryClient}>
+      {showLoader && <AppLoadingScreen />}
       {!standalone && <Navbar />}
       <main className={standalone ? "" : "min-h-screen"}>
         <AnimatePresence mode="wait">

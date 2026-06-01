@@ -217,13 +217,19 @@ function Rooms() {
 function QRSection() {
   const { rooms } = useRooms();
   const { settings } = useSettings();
-  const [tab, setTab] = useState<"rooms" | "menu">("rooms");
+  const [tab, setTab] = useState<"rooms" | "tables" | "menu">("rooms");
+  const [tableCount, setTableCount] = useState(12);
+  const tableIds = useMemo(
+    () => Array.from({ length: Math.max(1, Math.min(60, tableCount)) }, (_, i) => `T${String(i + 1).padStart(2, "0")}`),
+    [tableCount],
+  );
 
   return (
     <div>
       <h1 className="font-display text-3xl text-ocean mb-6">QR Codes</h1>
       <div className="flex gap-2 mb-6">
         <button onClick={() => setTab("rooms")} className={`px-4 py-2 rounded-full text-sm ${tab === "rooms" ? "bg-ocean text-white" : "bg-white border border-turquoise/30"}`}>Chambres</button>
+        <button onClick={() => setTab("tables")} className={`px-4 py-2 rounded-full text-sm ${tab === "tables" ? "bg-ocean text-white" : "bg-white border border-turquoise/30"}`}>Tables</button>
         <button onClick={() => setTab("menu")} className={`px-4 py-2 rounded-full text-sm ${tab === "menu" ? "bg-ocean text-white" : "bg-white border border-turquoise/30"}`}>Menu</button>
       </div>
 
@@ -249,6 +255,33 @@ function QRSection() {
             filename="QR-Menu-TOGOLIVING.png"
             size={400}
           />
+        </div>
+      )}
+
+      {tab === "tables" && (
+        <div>
+          <div className="glass p-4 mb-5 max-w-md">
+            <label className="block text-sm text-ocean mb-1">Nombre de tables (1-60)</label>
+            <input
+              type="number"
+              min={1}
+              max={60}
+              value={tableCount}
+              onChange={(e) => setTableCount(Number(e.target.value))}
+              className="w-full bg-white px-3 py-2 rounded border border-turquoise/30"
+            />
+          </div>
+          <div className="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+            {tableIds.map((tableId) => (
+              <QRCodeCard
+                key={tableId}
+                value={`${settings.domain}/room/${tableId}`}
+                label={`Table ${tableId.replace(/^T0*/, "")}`}
+                sublabel="Scannez pour commander depuis votre table"
+                filename={`QR-Table-${tableId}-TOGOLIVING.png`}
+              />
+            ))}
+          </div>
         </div>
       )}
     </div>

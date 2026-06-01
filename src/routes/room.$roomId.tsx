@@ -14,6 +14,10 @@ export const Route = createFileRoute("/room/$roomId")({
 
 function RoomPage() {
   const { roomId } = Route.useParams();
+  const isTable = /^T\d+$/i.test(roomId) || /^table[-_ ]?\d+$/i.test(roomId);
+  const placeNumber = roomId.replace(/^T0*/i, "").replace(/^table[-_ ]?/i, "");
+  const placeLabel = isTable ? `Table ${placeNumber}` : `Chambre ${roomId}`;
+  const placeContext = isTable ? "depuis votre table" : "depuis votre chambre";
   const { items } = useMenu();
   const [tab, setTab] = useState<MenuCategory>("Petit-Dejeuner");
   const [cart, setCart] = useState<Record<string, OrderItem>>({});
@@ -57,7 +61,7 @@ function RoomPage() {
           <Check size={42} />
         </motion.div>
         <h1 className="font-display text-3xl text-gold text-center">Commande envoyee !</h1>
-        <p className="mt-2 text-white/70 text-center max-w-md">Notre equipe a recu votre commande pour la chambre {roomId}. Elle arrive bientot.</p>
+        <p className="mt-2 text-white/70 text-center max-w-md">Notre equipe a recu votre commande pour {placeLabel.toLowerCase()}. Elle arrive bientot.</p>
         <div className="glass-dark p-5 mt-6 w-full max-w-md">
           {confirmed.items.map((i) => (
             <div key={i.id} className="flex justify-between text-sm py-1.5 border-b border-white/10 last:border-0">
@@ -82,8 +86,8 @@ function RoomPage() {
         <div className="font-display text-2xl font-bold">
           <span className="text-white">TOGO</span><span className="text-turquoise">LIVING</span>
         </div>
-        <h1 className="font-display text-4xl md:text-5xl text-gold mt-4">Chambre {roomId}</h1>
-        <p className="font-accent text-turquoise mt-1 text-lg">Commandez depuis votre chambre</p>
+        <h1 className="font-display text-4xl md:text-5xl text-gold mt-4">{placeLabel}</h1>
+        <p className="font-accent text-turquoise mt-1 text-lg">Commandez {placeContext}</p>
         <div className="absolute -bottom-1 inset-x-0 opacity-50"><WaveDivider color="#0c1f36" /></div>
       </div>
 
