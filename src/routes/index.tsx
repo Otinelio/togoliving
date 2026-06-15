@@ -7,6 +7,9 @@ import {
 import { useEffect, useRef, useState } from "react";
 import { WaveDivider } from "@/components/WaveDivider";
 import { whatsappUrl } from "@/lib/whatsapp";
+import heroImg from "@/Assets/images/accueil_img.jpg";
+import poolImg from "@/Assets/images/accueil2_img.jpg";
+import restoImg from "@/Assets/images/piscine/piscine1.jpg";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -21,11 +24,6 @@ export const Route = createFileRoute("/")({
   }),
   component: HomePage,
 });
-
-const heroImg = "https://images.unsplash.com/photo-1571896349842-33c89424de2d?auto=format&fit=crop&w=2400&q=80";
-const poolImg = "https://images.unsplash.com/photo-1540541338287-41700207dee6?auto=format&fit=crop&w=1600&q=80";
-const restoImg = "https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&w=2000&q=80";
-
 const rooms = [
   {
     id: "studio",
@@ -288,12 +286,17 @@ function HomePage() {
           <h2 className="font-display text-4xl md:text-5xl">Saveurs du Monde</h2>
           <p className="text-white/80 max-w-2xl mx-auto mt-4">Cuisine africaine, francaise et americaine — vue sur l'ocean.</p>
 
-          <div className="grid md:grid-cols-3 gap-5 mt-10">
-            {["Cuisine Africaine", "Cuisine Francaise", "Cuisine Americaine"].map((c, i) => (
-              <motion.div key={c} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.1 }}
-                className="glass-dark p-8 hover:border-gold transition">
-                <UtensilsCrossed className="mx-auto text-turquoise mb-3" size={28} />
-                <div className="font-display text-xl">{c}</div>
+          <div className="grid md:grid-cols-4 gap-5 mt-10">
+            {[
+              { label: "Plats & Grillades" },
+              { label: "Fast Food & Pizzas" },
+              { label: "Cocktails & Vins" },
+              { label: "Petit-Déjeuner" },
+            ].map((c, i) => (
+              <motion.div key={c.label} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.1 }}
+                className="glass-dark p-8 hover:border-gold transition text-center">
+                <UtensilsCrossed className="mx-auto text-turquoise mb-3" size={22} />
+                <div className="font-display text-lg">{c.label}</div>
               </motion.div>
             ))}
           </div>
@@ -307,23 +310,87 @@ function HomePage() {
       {/* REVIEWS */}
       <section className="bg-sand py-20">
         <div className="max-w-7xl mx-auto px-6">
-          <div className="text-center mb-12">
-            <p className="font-accent text-turquoise text-xl">Ils nous ont visites</p>
+          <div className="text-center mb-4">
+            <p className="font-accent text-turquoise text-xl">Ils nous ont visités</p>
             <h2 className="font-display text-4xl text-ocean">Avis Voyageurs</h2>
           </div>
+
+          {/* Platform ratings summary */}
+          <div className="flex flex-wrap justify-center gap-6 mb-12">
+            <div className="glass px-6 py-3 flex items-center gap-3">
+              <div className="text-[#003580] font-bold text-lg">booking</div>
+              <div className="text-ocean font-display text-2xl font-bold">7,2<span className="text-sm font-body text-muted-foreground">/10</span></div>
+              <div className="text-xs text-muted-foreground">14 avis</div>
+            </div>
+            <div className="glass px-6 py-3 flex items-center gap-3">
+              <div className="font-bold text-lg">
+                <span className="text-[#4285F4]">G</span><span className="text-[#EA4335]">o</span><span className="text-[#FBBC05]">o</span><span className="text-[#4285F4]">g</span><span className="text-[#34A853]">l</span><span className="text-[#EA4335]">e</span>
+              </div>
+              <div className="flex gap-0.5">{[0,1,2,3,4].map(s => <Star key={s} size={13} className={s < 4 ? "text-gold fill-current" : "text-gold/40"} />)}</div>
+              <div className="text-ocean font-display text-2xl font-bold">4,3<span className="text-sm font-body text-muted-foreground">/5</span></div>
+            </div>
+          </div>
+
           <div className="grid md:grid-cols-3 gap-6">
             {[
-              { q: "J'ai passe un week-end avec la famille ! L'accueil est chaleureux !", a: "Client Booking.com" },
-              { q: "L'endroit est agreable ! Acces direct a la plage, tres bien situe.", a: "Client Booking.com" },
-              { q: "Un endroit ideal pour vos vacances a Lome !", a: "Client TripAdvisor" },
+              {
+                stars: 5,
+                q: "Endroit vraiment agréable, la piscine avec vue sur la mer est magnifique. Personnel souriant et très serviable. Je recommande vivement pour un week-end en famille !",
+                a: "Rodrigue K.",
+                src: "booking",
+                label: "Booking.com",
+              },
+              {
+                stars: 5,
+                q: "Super emplacement ! À 100 mètres de la plage naturelle, les appartements sont modernes et bien équipés. L'accueil est chaleureux, on s'est sentis comme à la maison.",
+                a: "Afi D.",
+                src: "google",
+                label: "Google",
+              },
+              {
+                stars: 4,
+                q: "Un cadre idéal pour se ressourcer à Lomé. La vue sur l'océan depuis la terrasse est exceptionnelle. L'équipe est très à l'écoute et disponible. Je reviendrai !",
+                a: "Marc-André V.",
+                src: "booking",
+                label: "Booking.com",
+              },
+              {
+                stars: 5,
+                q: "Séjour parfait ! Les appartements sont spacieux et propres. La piscine panoramique est un vrai bonheur au coucher du soleil. Très bonne adresse à Lomé.",
+                a: "Naomi A.",
+                src: "google",
+                label: "Google",
+              },
+              {
+                stars: 4,
+                q: "Très bien situé sur la route nationale, proche de la mer. Personnel agréable et attentionné. Le restaurant propose de bons plats. Un endroit parfait pour se détendre.",
+                a: "Kofi M.",
+                src: "google",
+                label: "Google",
+              },
+              {
+                stars: 5,
+                q: "Résidence moderne avec un accès direct à la plage. Chambre confortable, vue imprenable sur la mer. Je recommande à tous ceux qui visitent Lomé !",
+                a: "Estelle B.",
+                src: "booking",
+                label: "Booking.com",
+              },
             ].map((r, i) => (
               <motion.div key={i} initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.1 }}
-                className="glass p-6 hover-lift">
-                <div className="flex gap-1 mb-3">
-                  {[0,1,2,3,4].map(s => <Star key={s} size={16} className="text-gold fill-current" />)}
+                className="glass p-6 hover-lift flex flex-col">
+                {/* Platform badge */}
+                <div className="flex items-center justify-between mb-3">
+                  <div className="flex gap-1">
+                    {[0,1,2,3,4].map(s => (
+                      <Star key={s} size={14} className={s < r.stars ? "text-gold fill-current" : "text-gold/30"} />
+                    ))}
+                  </div>
+                  <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${r.src === "booking" ? "bg-[#003580]/10 text-[#003580]" : "bg-[#4285F4]/10 text-[#4285F4]"}`}>
+                    {r.label}
+                  </span>
                 </div>
-                <p className="font-accent text-lg text-ocean leading-relaxed">"{r.q}"</p>
-                <p className="text-sm text-muted-foreground mt-3">— {r.a}</p>
+                <p className="font-accent text-base text-ocean leading-relaxed flex-1">"{r.q}"</p>
+                <p className="text-sm text-muted-foreground mt-4 font-medium">— {r.a}</p>
               </motion.div>
             ))}
           </div>

@@ -120,7 +120,7 @@ function Overview() {
 
 function Menu() {
   const { items, addItem, updateItem, removeItem, toggleSoldOut } = useMenu();
-  const [tab, setTab] = useState<MenuCategory>("Petit-Dejeuner");
+  const [tab, setTab] = useState<MenuCategory>("Petit-Déjeuner");
   const [form, setForm] = useState({ name: "", price: "", description: "" });
 
   const add = (e: React.FormEvent) => {

@@ -1,4 +1,5 @@
 import { motion } from "framer-motion";
+import logoImg from "@/Assets/images/Residence_Togoliving_logo.png";
 
 export function AppLoadingScreen() {
   return (
@@ -10,10 +11,11 @@ export function AppLoadingScreen() {
       className="fixed inset-0 z-[100] flex items-center justify-center bg-ocean"
     >
       <div className="text-center">
-        <div className="font-display text-3xl md:text-4xl font-bold tracking-wide">
-          <span className="text-white">TOGO</span>
-          <span className="text-turquoise">LIVING</span>
-        </div>
+        <img
+          src={logoImg}
+          alt="TOGOLIVING Loading"
+          className="h-40 w-auto mx-auto"
+        />
         <div className="mx-auto mt-6 h-1.5 w-44 overflow-hidden rounded-full bg-white/20">
           <motion.div
             className="h-full w-1/2 rounded-full bg-turquoise"

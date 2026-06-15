@@ -44,7 +44,7 @@ export function PinScreen({ title, expectedPin, onUnlock }: Props) {
       >
         <div className="flex justify-center mb-8">
           <div className="bg-white px-6 py-3 rounded-xl shadow-lg">
-            <Logo size="text-2xl" />
+            <Logo size="h-12" />
           </div>
         </div>
 

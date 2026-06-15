@@ -6,6 +6,10 @@ import {
 } from "lucide-react";
 import { WaveDivider } from "@/components/WaveDivider";
 import { whatsappUrl } from "@/lib/whatsapp";
+import vidStudio from "@/Assets/images/appartements/IMG_0077.mp4";
+import vidStandard from "@/Assets/images/appartements/IMG_0085.MP4";
+import vidSuperieur from "@/Assets/images/appartements/IMG_0285.MP4";
+import hebergementsHero from "@/Assets/images/piscine/piscine.jpg";
 
 export const Route = createFileRoute("/hebergements")({
   head: () => ({
@@ -24,6 +28,7 @@ const rooms = [
   {
     title: "Studio",
     img: "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=1400&q=80",
+    video: vidStudio,
     desc: "Espace confortable, ventile et climatise, ideal pour un sejour solo ou en couple. Vue ville ou mer selon disponibilite.",
     features: [
       { icon: Wifi, label: "WiFi Gratuit" },
@@ -37,6 +42,7 @@ const rooms = [
     title: "Chambre Salon Standard",
     badge: "40 m²",
     img: "https://images.unsplash.com/photo-1631049307264-da0ec9d70304?auto=format&fit=crop&w=1400&q=80",
+    video: vidStandard,
     desc: "Grand salon avec table a manger et canapes. Espace de vie ideal pour familles ou sejours prolonges en confort.",
     features: [
       { icon: Wifi, label: "WiFi Gratuit" }, { icon: Wind, label: "Climatisation" }, { icon: Tv, label: "TV Satellite" },
@@ -48,6 +54,7 @@ const rooms = [
     badge: "SUPERIEUR · 50 m²",
     premium: true,
     img: "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=1400&q=80",
+    video: vidSuperieur,
     desc: "Espace premium avec terrasse vue mer, literie haut de gamme. Parfait pour longs sejours et familles exigeantes.",
     features: [
       { icon: Wifi, label: "WiFi Gratuit" }, { icon: Wind, label: "Climatisation" }, { icon: Tv, label: "TV Satellite" },
@@ -73,7 +80,7 @@ function Page() {
   return (
     <>
       <section className="relative pt-32 pb-20 bg-ocean text-white overflow-hidden">
-        <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=2000&q=80')] bg-cover bg-center opacity-40" />
+        <div className="absolute inset-0 bg-cover bg-center opacity-40" style={{ backgroundImage: `url(${hebergementsHero})` }} />
         <div className="absolute inset-0 bg-gradient-to-b from-ocean/80 to-ocean" />
         <div className="relative max-w-6xl mx-auto px-6 text-center">
           <p className="font-accent text-turquoise text-xl">Nos Espaces</p>
@@ -92,7 +99,11 @@ function Page() {
               className={`grid md:grid-cols-2 gap-10 items-center ${i % 2 ? "md:[&>div:first-child]:order-2" : ""}`}
             >
               <div className="relative">
-                <img src={r.img} alt={r.title} loading="lazy" className="w-full h-[420px] object-cover rounded-2xl shadow-xl shadow-ocean/20" />
+                {r.video ? (
+                  <video src={r.video} autoPlay muted loop playsInline className="w-full h-[420px] object-cover rounded-2xl shadow-xl shadow-ocean/20" />
+                ) : (
+                  <img src={r.img} alt={r.title} loading="lazy" className="w-full h-[420px] object-cover rounded-2xl shadow-xl shadow-ocean/20" />
+                )}
                 {r.badge && (
                   <span className={`absolute top-4 left-4 px-4 py-1.5 rounded-full text-xs font-semibold tracking-wider ${r.premium ? "bg-gold text-ocean" : "bg-turquoise text-ocean"}`}>
                     {r.badge}

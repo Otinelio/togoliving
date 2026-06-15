@@ -3,6 +3,8 @@ import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import { ZoomIn, X, ChevronLeft, ChevronRight, Image as ImageIcon } from "lucide-react";
 import { WaveDivider } from "@/components/WaveDivider";
+import plageImg1 from "@/Assets/images/plage/IMG_4188.jpg";
+import galleryHero from "@/Assets/images/piscine/piscine1.jpg";
 
 export const Route = createFileRoute("/galerie")({
   head: () => ({
@@ -21,6 +23,7 @@ type Cat = "Tout" | "Piscine" | "Plage" | "Appartements" | "Restaurant" | "Bar" 
 const photos: { cat: Exclude<Cat, "Tout">; src: string; alt: string }[] = [
   { cat: "Piscine",      src: "https://images.unsplash.com/photo-1540541338287-41700207dee6?auto=format&fit=crop&w=1200&q=80", alt: "Piscine vue ocean" },
   { cat: "Piscine",      src: "https://images.unsplash.com/photo-1582610116397-edb318620f90?auto=format&fit=crop&w=1200&q=80", alt: "Piscine infinity" },
+  { cat: "Plage",        src: plageImg1, alt: "Plage naturelle devant l'hôtel" },
   { cat: "Plage",        src: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1200&q=80", alt: "Plage naturelle" },
   { cat: "Plage",        src: "https://images.unsplash.com/photo-1519046904884-53103b34b206?auto=format&fit=crop&w=1200&q=80", alt: "Plage ocean" },
   { cat: "Appartements", src: "https://images.unsplash.com/photo-1631049307264-da0ec9d70304?auto=format&fit=crop&w=1200&q=80", alt: "Salon meuble" },
@@ -54,7 +57,7 @@ function Page() {
   return (
     <>
       <section className="relative pt-32 pb-20 bg-ocean text-white overflow-hidden">
-        <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1540541338287-41700207dee6?auto=format&fit=crop&w=2000&q=80')] bg-cover bg-center opacity-35" />
+        <div className="absolute inset-0 bg-cover bg-center opacity-35" style={{ backgroundImage: `url(${galleryHero})` }} />
         <div className="absolute inset-0 bg-gradient-to-b from-ocean/80 to-ocean" />
         <div className="relative max-w-5xl mx-auto px-6 text-center">
           <p className="font-accent text-turquoise text-xl">Notre Cadre</p>
