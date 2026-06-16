@@ -6,10 +6,12 @@ import {
 } from "lucide-react";
 import { WaveDivider } from "@/components/WaveDivider";
 import { whatsappUrl } from "@/lib/whatsapp";
-import vidStudio from "@/Assets/images/appartements/IMG_0077.mp4";
-import vidStandard from "@/Assets/images/appartements/IMG_0085.MP4";
-import vidSuperieur from "@/Assets/images/appartements/IMG_0285.MP4";
 import hebergementsHero from "@/Assets/images/piscine/piscine.jpg";
+
+// Videos are served from public/ to avoid bundling large files
+const vidStudio = "/videos/IMG_0077.mp4";
+const vidStandard = "/videos/IMG_0085.MP4";
+const vidSuperieur = "/videos/IMG_0285.MP4";
 
 export const Route = createFileRoute("/hebergements")({
   head: () => ({
