@@ -91,7 +91,7 @@ function QuickBooking() {
         <label className="block">
           <span className="text-xs text-ocean/70 font-medium flex items-center gap-1"><Users size={12} /> Personnes</span>
           <select value={personnes} onChange={(e) => setPersonnes(e.target.value)} className="mt-1 w-full bg-white/80 rounded-lg px-3 py-2.5 text-sm text-ocean border border-turquoise/30 focus:outline-none focus:border-turquoise">
-            {[1,2,3,4,5,6].map(n => <option key={n}>{n}</option>)}
+            {[1, 2, 3, 4, 5, 6].map(n => <option key={n}>{n}</option>)}
           </select>
         </label>
         <label className="block">
@@ -177,10 +177,10 @@ function HomePage() {
       <section className="bg-sand py-20">
         <div className="max-w-7xl mx-auto px-6 grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
           {[
-            { icon: Waves,           title: "Acces Plage Direct",   sub: "100m de la plage naturelle",  count: 100, suf: "m" },
-            { icon: BedDouble,       title: "Appartements Meubles", sub: "3 types d'hebergement",       count: 3,   suf: " types" },
-            { icon: Droplets,        title: "Piscine Vue Mer",      sub: "Vue panoramique sur l'ocean", count: 1,   suf: " piscine" },
-            { icon: UtensilsCrossed, title: "Restaurant & Bar",     sub: "Saveurs africaines & monde",  count: 6,   suf: " cuisines" },
+            { icon: Waves, title: "Acces Plage Direct", sub: "100m de la plage naturelle", count: 100, suf: "m" },
+            { icon: BedDouble, title: "Appartements Meubles", sub: "3 types d'hebergement", count: 3, suf: " types" },
+            { icon: Droplets, title: "Piscine Vue Mer", sub: "Vue panoramique sur l'ocean", count: 1, suf: " piscine" },
+            { icon: UtensilsCrossed, title: "Restaurant & Bar", sub: "Saveurs africaines & monde", count: 6, suf: " cuisines" },
           ].map((h, i) => (
             <motion.div
               key={h.title}
@@ -260,7 +260,7 @@ function HomePage() {
 
             {[
               { icon: Droplets, title: "Piscine Panoramique", desc: "Vue directe sur l'ocean, detente garantie au coucher du soleil." },
-              { icon: Waves,    title: "Plage Naturelle",     desc: "100 metres de la villa, plage quasi naturelle preservee." },
+              { icon: Waves, title: "Plage Naturelle", desc: "100 metres de la villa, plage quasi naturelle preservee." },
               { icon: UtensilsCrossed, title: "Cocktail Bar", desc: "Bientot disponible, ambiance tropicale en bord de mer." },
             ].map((f) => (
               <div key={f.title} className="flex gap-4 mb-5">
@@ -326,7 +326,7 @@ function HomePage() {
               <div className="font-bold text-lg">
                 <span className="text-[#4285F4]">G</span><span className="text-[#EA4335]">o</span><span className="text-[#FBBC05]">o</span><span className="text-[#4285F4]">g</span><span className="text-[#34A853]">l</span><span className="text-[#EA4335]">e</span>
               </div>
-              <div className="flex gap-0.5">{[0,1,2,3,4].map(s => <Star key={s} size={13} className={s < 4 ? "text-gold fill-current" : "text-gold/40"} />)}</div>
+              <div className="flex gap-0.5">{[0, 1, 2, 3, 4].map(s => <Star key={s} size={13} className={s < 4 ? "text-gold fill-current" : "text-gold/40"} />)}</div>
               <div className="text-ocean font-display text-2xl font-bold">4,3<span className="text-sm font-body text-muted-foreground">/5</span></div>
             </div>
           </div>
@@ -381,7 +381,7 @@ function HomePage() {
                 {/* Platform badge */}
                 <div className="flex items-center justify-between mb-3">
                   <div className="flex gap-1">
-                    {[0,1,2,3,4].map(s => (
+                    {[0, 1, 2, 3, 4].map(s => (
                       <Star key={s} size={14} className={s < r.stars ? "text-gold fill-current" : "text-gold/30"} />
                     ))}
                   </div>
