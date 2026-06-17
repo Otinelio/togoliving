@@ -22,7 +22,7 @@ const steps = ["Hebergement", "Personnes", "Coordonnees", "Recapitulatif"];
 function Page() {
   const [step, setStep] = useState(0);
   const [d, setD] = useState({
-    type: "Studio", arrivee: "", depart: "",
+    type: "Studios", arrivee: "", depart: "",
     adultes: 2, enfants: 0, demandes: "",
     nom: "", tel: "", email: "", heure: "",
   });
@@ -70,7 +70,7 @@ function Page() {
                 <label className="block">
                   <span className="text-sm text-ocean">Type d'hebergement</span>
                   <select value={d.type} onChange={(e) => setD({ ...d, type: e.target.value })} className="mt-1 w-full bg-white rounded-lg px-3 py-2.5 border border-turquoise/30">
-                    <option>Studio</option><option>Chambre Salon Standard 40m2</option><option>Chambre Salon Superieur 50m2</option>
+                    <option>Studios</option><option>Chambre Salon</option><option>2 Chambres Salon</option><option>3 Chambres Salon</option>
                   </select>
                 </label>
                 <div className="grid grid-cols-2 gap-3">

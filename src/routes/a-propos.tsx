@@ -58,7 +58,7 @@ function Page() {
           {[
             { n: 20, s: " min", l: "du centre-ville" },
             { n: 100, s: " m", l: "de la plage" },
-            { n: 3,  s: "",     l: "types d'hebergement" },
+            { n: 4,  s: "",     l: "types d'hebergement" },
             { n: 25, s: " min", l: "de l'aeroport" },
           ].map((s) => (
             <motion.div key={s.l} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}

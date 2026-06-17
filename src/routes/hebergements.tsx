@@ -1,17 +1,20 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { motion } from "framer-motion";
+import { useState } from "react";
 import {
   Wifi, Wind, Tv, Coffee, Car, Plane, Waves, Droplets, GlassWater,
-  UtensilsCrossed, BedDouble, MessageCircle,
+  UtensilsCrossed, BedDouble, MessageCircle, X,
 } from "lucide-react";
 import { WaveDivider } from "@/components/WaveDivider";
 import { whatsappUrl } from "@/lib/whatsapp";
 import hebergementsHero from "@/Assets/images/piscine/piscine.jpg";
+import img3ChambresSalon from "@/Assets/images/appartements/IMG_4247.jpg";
 
 // Videos are served from public/ to avoid bundling large files
 const vidStudio = "/videos/IMG_0077.mp4";
 const vidStandard = "/videos/IMG_0085.MP4";
 const vidSuperieur = "/videos/IMG_0285.MP4";
+const vidSupreme = "/videos/IMG_1684.MP4";
 
 export const Route = createFileRoute("/hebergements")({
   head: () => ({
@@ -28,10 +31,15 @@ export const Route = createFileRoute("/hebergements")({
 
 const rooms = [
   {
-    title: "Studio",
+    title: "Studios",
+    badge: "1 Pièce",
     img: "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=1400&q=80",
     video: vidStudio,
-    desc: "Espace confortable, ventile et climatise, ideal pour un sejour solo ou en couple. Vue ville ou mer selon disponibilite.",
+    desc: "Espace confortable, ventile et climatise, ideal pour un sejour solo ou en couple.",
+    prices: [
+      { num: "N° 4, 5, 6, 7", day: "30 000 FCFA", month: "300 000 FCFA" },
+      { num: "N° 34", day: "35 000 FCFA", month: "350 000 FCFA" }
+    ],
     features: [
       { icon: Wifi, label: "WiFi Gratuit" },
       { icon: Wind, label: "Climatisation" },
@@ -41,28 +49,52 @@ const rooms = [
     ],
   },
   {
-    title: "Chambre Salon Standard",
-    badge: "40 m²",
+    title: "Chambre Salon",
+    badge: "2 Pièces",
     img: "https://images.unsplash.com/photo-1631049307264-da0ec9d70304?auto=format&fit=crop&w=1400&q=80",
     video: vidStandard,
-    desc: "Grand salon avec table a manger et canapes. Espace de vie ideal pour familles ou sejours prolonges en confort.",
+    desc: "Grand salon avec espace de vie ideal pour sejours prolonges en confort.",
+    prices: [
+      { num: "N° 8, 9, 20", day: "40 000 FCFA", month: "420 000 FCFA" },
+      { num: "N° 1, 56", day: "50 000 FCFA", month: "500 000 FCFA" }
+    ],
     features: [
       { icon: Wifi, label: "WiFi Gratuit" }, { icon: Wind, label: "Climatisation" }, { icon: Tv, label: "TV Satellite" },
       { icon: UtensilsCrossed, label: "Table a manger" }, { icon: BedDouble, label: "Canapes" }, { icon: Waves, label: "Patio" },
     ],
   },
   {
-    title: "Chambre Salon Superieur",
-    badge: "SUPERIEUR · 50 m²",
+    title: "2 Chambres Salon",
+    badge: "3 Pièces",
     premium: true,
     img: "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=1400&q=80",
     video: vidSuperieur,
-    desc: "Espace premium avec terrasse vue mer, literie haut de gamme. Parfait pour longs sejours et familles exigeantes.",
+    desc: "Appartement spacieux avec deux chambres separees et terrasse vue mer. Parfait pour familles.",
+    prices: [
+      { num: "N° 2, 3", day: "80 000 FCFA", month: "600 000 FCFA" },
+      { num: "N° 78", day: "100 000 FCFA", month: "700 000 FCFA" }
+    ],
     features: [
       { icon: Wifi, label: "WiFi Gratuit" }, { icon: Wind, label: "Climatisation" }, { icon: Tv, label: "TV Satellite" },
       { icon: Waves, label: "Terrasse vue mer" }, { icon: BedDouble, label: "Literie premium" }, { icon: UtensilsCrossed, label: "Table a manger" },
     ],
   },
+  {
+    title: "3 Chambres Salon",
+    badge: "VIP · 4 Pièces",
+    premium: true,
+    img: img3ChambresSalon,
+    video: vidSupreme,
+    desc: "Immense espace de vie avec trois chambres pour les grands groupes ou les familles nombreuses, offrant un maximum de confort.",
+    prices: [
+      { num: "N° 30", day: "100 000 FCFA", month: "700 000 FCFA" },
+      { num: "N° 10", day: "100 000 FCFA", month: "750 000 FCFA" }
+    ],
+    features: [
+      { icon: Wifi, label: "WiFi Gratuit" }, { icon: Wind, label: "Climatisation" }, { icon: Tv, label: "TV Satellite" },
+      { icon: Waves, label: "Grande Terrasse" }, { icon: BedDouble, label: "Lits King Size" }, { icon: UtensilsCrossed, label: "Salle a manger" },
+    ],
+  }
 ];
 
 const amenities = [
@@ -78,7 +110,55 @@ const amenities = [
   { icon: UtensilsCrossed, label: "Restaurant sur place" },
 ];
 
+function BookingModal({ isOpen, onClose, room, priceInfo }: { isOpen: boolean, onClose: () => void, room: any, priceInfo: any }) {
+  const [d, setD] = useState({ nom: "", arrivee: "", depart: "", demandes: "" });
+
+  if (!isOpen || !room || !priceInfo) return null;
+
+  const send = () => {
+    const msg = `Bonjour TOGOLIVING,\nJe souhaite reserver: ${room.title} (${priceInfo.num}) au tarif de ${priceInfo.month}/mois.\nNom: ${d.nom}\nArrivee: ${d.arrivee || "A definir"}\nDepart: ${d.depart || "A definir"}\nDemandes: ${d.demandes || "Aucune"}`;
+    window.open(whatsappUrl(msg), "_blank");
+    onClose();
+  };
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-ocean/80 backdrop-blur-sm">
+      <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="bg-sand rounded-2xl max-w-md w-full p-6 shadow-2xl relative">
+        <div className="flex justify-between items-center mb-5">
+          <h3 className="font-display text-2xl text-ocean">Reserver {priceInfo.num}</h3>
+          <button onClick={onClose} className="p-2 rounded-full hover:bg-ocean/10 text-ocean transition"><X size={20} /></button>
+        </div>
+        <div className="space-y-4">
+          <label className="block">
+            <span className="text-sm font-medium text-ocean">Nom complet</span>
+            <input value={d.nom} onChange={(e) => setD({ ...d, nom: e.target.value })} className="mt-1 w-full rounded-lg border border-ocean/20 px-3 py-2.5 bg-white focus:outline-none focus:border-turquoise" placeholder="Votre nom" />
+          </label>
+          <div className="grid grid-cols-2 gap-3">
+            <label className="block">
+              <span className="text-sm font-medium text-ocean">Arrivee</span>
+              <input type="date" value={d.arrivee} onChange={(e) => setD({ ...d, arrivee: e.target.value })} className="mt-1 w-full rounded-lg border border-ocean/20 px-3 py-2.5 bg-white focus:outline-none focus:border-turquoise" />
+            </label>
+            <label className="block">
+              <span className="text-sm font-medium text-ocean">Depart</span>
+              <input type="date" value={d.depart} onChange={(e) => setD({ ...d, depart: e.target.value })} className="mt-1 w-full rounded-lg border border-ocean/20 px-3 py-2.5 bg-white focus:outline-none focus:border-turquoise" />
+            </label>
+          </div>
+          <label className="block">
+            <span className="text-sm font-medium text-ocean">Description / Demandes</span>
+            <textarea rows={3} value={d.demandes} onChange={(e) => setD({ ...d, demandes: e.target.value })} className="mt-1 w-full rounded-lg border border-ocean/20 px-3 py-2 bg-white focus:outline-none focus:border-turquoise" placeholder="Vos attentes ou questions..." />
+          </label>
+          <button onClick={send} className="w-full mt-2 flex items-center justify-center gap-2 px-5 py-3 rounded-lg bg-turquoise text-ocean font-medium hover:bg-gold transition shimmer-gold">
+            <MessageCircle size={18} /> Envoyer sur WhatsApp
+          </button>
+        </div>
+      </motion.div>
+    </div>
+  );
+}
+
 function Page() {
+  const [selectedBooking, setSelectedBooking] = useState<{ room: any, price: any } | null>(null);
+
   return (
     <>
       <section className="relative pt-32 pb-20 bg-ocean text-white overflow-hidden">
@@ -87,7 +167,7 @@ function Page() {
         <div className="relative max-w-6xl mx-auto px-6 text-center">
           <p className="font-accent text-turquoise text-xl">Nos Espaces</p>
           <h1 className="font-display text-5xl md:text-6xl">Nos Hebergements</h1>
-          <p className="mt-4 text-white/80 max-w-2xl mx-auto">3 types d'appartements meubles, climatises, avec WiFi gratuit et acces direct a la plage.</p>
+          <p className="mt-4 text-white/80 max-w-2xl mx-auto">4 types d'appartements meubles, climatises, avec WiFi gratuit et acces direct a la plage.</p>
         </div>
         <div className="absolute -bottom-1 inset-x-0"><WaveDivider color="#F8F5F0" /></div>
       </section>
@@ -114,7 +194,7 @@ function Page() {
               </div>
               <div>
                 <h2 className="font-display text-3xl md:text-4xl text-ocean">{r.title}</h2>
-                <p className="font-accent text-turquoise text-lg mt-1">Vue mer · {r.badge ?? "Studio"}</p>
+                <p className="font-accent text-turquoise text-lg mt-1">{r.badge}</p>
                 <p className="text-muted-foreground mt-4">{r.desc}</p>
                 <div className="grid grid-cols-2 gap-3 mt-6">
                   {r.features.map((f) => (
@@ -123,14 +203,28 @@ function Page() {
                     </div>
                   ))}
                 </div>
-                <div className="mt-6 flex flex-wrap items-center gap-3">
-                  <span className="text-sm text-muted-foreground">A partir de</span>
-                  <span className="font-display text-2xl text-gold">Contactez-nous</span>
-                </div>
-                <a href={whatsappUrl(`Bonjour TOGOLIVING, je souhaite reserver: ${r.title}`)} target="_blank" rel="noreferrer"
-                   className="mt-5 inline-flex items-center gap-2 px-6 py-3 rounded-full bg-ocean text-white font-medium hover:bg-gold hover:text-ocean transition shimmer-gold">
-                  <MessageCircle size={18} /> Reserver via WhatsApp
-                </a>
+                {r.prices && (
+                  <div className="mt-6 flex flex-col gap-3">
+                    <span className="text-sm font-semibold text-ocean">Tarifs & Reservation directe :</span>
+                    <div className="grid gap-3">
+                      {r.prices.map((p, idx) => (
+                        <div key={idx} className="flex flex-col sm:flex-row sm:items-center justify-between p-3.5 rounded-xl bg-white/50 border border-ocean/10 hover:border-turquoise/40 transition">
+                          <div>
+                            <span className="font-medium text-ocean font-display text-lg">{p.num}</span>
+                            <div className="text-sm text-muted-foreground mt-1 flex gap-3">
+                              <span><strong className="text-ocean">{p.day}</strong> / jour</span>
+                              <span><strong className="text-ocean">{p.month}</strong> / mois</span>
+                            </div>
+                          </div>
+                          <button onClick={() => setSelectedBooking({ room: r, price: p })}
+                             className="mt-3 sm:mt-0 inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-lg bg-ocean text-white text-sm font-medium hover:bg-gold hover:text-ocean transition shimmer-gold whitespace-nowrap">
+                            <MessageCircle size={16} /> Reserver
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
             </motion.div>
           ))}
@@ -156,6 +250,8 @@ function Page() {
           </div>
         </div>
       </section>
+
+      <BookingModal isOpen={!!selectedBooking} onClose={() => setSelectedBooking(null)} room={selectedBooking?.room} priceInfo={selectedBooking?.price} />
     </>
   );
 }

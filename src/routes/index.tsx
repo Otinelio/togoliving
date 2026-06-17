@@ -10,6 +10,10 @@ import { whatsappUrl } from "@/lib/whatsapp";
 import heroImg from "@/Assets/images/accueil_img.jpg";
 import poolImg from "@/Assets/images/accueil2_img.jpg";
 import restoImg from "@/Assets/images/piscine/piscine1.jpg";
+import studioImg from "@/Assets/images/appartements/IMG_4201.jpg";
+import standardImg from "@/Assets/images/appartements/IMG_4211.jpg";
+import superieurImg from "@/Assets/images/appartements/IMG_4212.jpg";
+import vipImg from "@/Assets/images/appartements/IMG_4247.jpg";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -27,27 +31,37 @@ export const Route = createFileRoute("/")({
 const rooms = [
   {
     id: "studio",
-    title: "Studio",
-    img: "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=900&q=80",
+    title: "Studios",
+    badge: "1 Pièce",
+    img: studioImg,
     features: ["WiFi", "AC", "TV Satellite", "Refrigerateur", "Patio"],
     desc: "Espace confortable, ideal pour un sejour solo ou en couple.",
   },
   {
-    id: "standard",
-    title: "Chambre Salon Standard",
-    badge: "40 m²",
-    img: "https://images.unsplash.com/photo-1631049307264-da0ec9d70304?auto=format&fit=crop&w=900&q=80",
+    id: "chambre-salon",
+    title: "Chambre Salon",
+    badge: "2 Pièces",
+    img: standardImg,
     features: ["WiFi", "AC", "TV Satellite", "Table a manger", "Canapes", "Patio"],
-    desc: "Grand salon avec table a manger, ideal pour familles.",
+    desc: "Grand salon avec espace de vie ideal pour sejours prolonges.",
   },
   {
-    id: "superieur",
-    title: "Chambre Salon Superieur",
-    badge: "PREMIUM 50 m²",
+    id: "2-chambres",
+    title: "2 Chambres Salon",
+    badge: "3 Pièces",
     premium: true,
-    img: "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=900&q=80",
+    img: superieurImg,
     features: ["Vue mer", "Terrasse", "Literie premium", "WiFi", "AC", "TV Satellite"],
-    desc: "Espace premium avec terrasse vue mer pour longs sejours.",
+    desc: "Appartement spacieux avec deux chambres separees. Parfait pour familles.",
+  },
+  {
+    id: "3-chambres",
+    title: "3 Chambres Salon",
+    badge: "VIP · 4 Pièces",
+    premium: true,
+    img: vipImg,
+    features: ["Grande Terrasse", "Lits King Size", "WiFi", "AC", "TV Satellite"],
+    desc: "Immense espace de vie avec trois chambres pour un maximum de confort.",
   },
 ];
 
@@ -97,9 +111,10 @@ function QuickBooking() {
         <label className="block">
           <span className="text-xs text-ocean/70 font-medium flex items-center gap-1"><BedDouble size={12} /> Type</span>
           <select value={type} onChange={(e) => setType(e.target.value)} className="mt-1 w-full bg-white/80 rounded-lg px-3 py-2.5 text-sm text-ocean border border-turquoise/30 focus:outline-none focus:border-turquoise">
-            <option>Studio</option>
-            <option>Standard 40m2</option>
-            <option>Superieur 50m2</option>
+            <option>Studios</option>
+            <option>Chambre Salon</option>
+            <option>2 Chambres Salon</option>
+            <option>3 Chambres Salon</option>
           </select>
         </label>
         <button onClick={send} className="mt-5 md:mt-5 inline-flex items-center justify-center px-4 py-2.5 rounded-lg bg-ocean text-white font-medium text-sm hover:bg-gold hover:text-ocean transition shimmer-gold">
@@ -178,7 +193,7 @@ function HomePage() {
         <div className="max-w-7xl mx-auto px-6 grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
           {[
             { icon: Waves, title: "Acces Plage Direct", sub: "100m de la plage naturelle", count: 100, suf: "m" },
-            { icon: BedDouble, title: "Appartements Meubles", sub: "3 types d'hebergement", count: 3, suf: " types" },
+            { icon: BedDouble, title: "Appartements Meubles", sub: "4 types d'hebergement", count: 4, suf: " types" },
             { icon: Droplets, title: "Piscine Vue Mer", sub: "Vue panoramique sur l'ocean", count: 1, suf: " piscine" },
             { icon: UtensilsCrossed, title: "Restaurant & Bar", sub: "Saveurs africaines & monde", count: 6, suf: " cuisines" },
           ].map((h, i) => (
@@ -210,7 +225,7 @@ function HomePage() {
             <h2 className="font-display text-4xl md:text-5xl">Hebergements d'Exception</h2>
           </motion.div>
 
-          <div className="grid md:grid-cols-3 gap-6">
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {rooms.map((r, i) => (
               <motion.div
                 key={r.id}

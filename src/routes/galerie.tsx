@@ -3,8 +3,37 @@ import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import { ZoomIn, X, ChevronLeft, ChevronRight, Image as ImageIcon } from "lucide-react";
 import { WaveDivider } from "@/components/WaveDivider";
-import plageImg1 from "@/Assets/images/plage/IMG_4188.jpg";
 import galleryHero from "@/Assets/images/piscine/piscine1.jpg";
+
+import piscine1 from "@/Assets/images/piscine/IMG_4283.jpg";
+import piscine2 from "@/Assets/images/piscine/accueil1_img.jpg";
+import piscine3 from "@/Assets/images/piscine/accueil_img.jpg";
+import piscine4 from "@/Assets/images/piscine/piscine.jpg";
+import piscine5 from "@/Assets/images/piscine/piscine1.jpg";
+
+import plage1 from "@/Assets/images/plage/IMG_4188.jpg";
+
+import app1 from "@/Assets/images/appartements/19DA4565-B3A8-44DD-80DC-6A34D4CCABEB.jpg";
+import app2 from "@/Assets/images/appartements/DFC0BEA9-C7FE-4500-91CF-48D6F9F02EB1.jpg";
+import app3 from "@/Assets/images/appartements/IMG_4201.jpg";
+import app4 from "@/Assets/images/appartements/IMG_4211.jpg";
+import app5 from "@/Assets/images/appartements/IMG_4212.jpg";
+import app6 from "@/Assets/images/appartements/IMG_4234.jpg";
+import app7 from "@/Assets/images/appartements/IMG_4240.jpg";
+import app8 from "@/Assets/images/appartements/IMG_4247.jpg";
+
+import int1 from "@/Assets/images/interieur/3B98AFD0-A1A8-4B2D-9525-A39069FB7103.jpg";
+import int2 from "@/Assets/images/interieur/BCC6E7A7-A8B1-40AD-9DD0-A73A219B7FC0.jpg";
+import int3 from "@/Assets/images/interieur/BE2C3740-7127-4D44-8CED-854D6F7BA84F.JPG.jpg";
+import int4 from "@/Assets/images/interieur/IMG_4230.jpg";
+import int5 from "@/Assets/images/interieur/IMG_4683.jpg";
+
+import bar1 from "@/Assets/images/bar/60DBC121-7976-41CA-870B-EEAA1AD17DC4.jpg";
+import bar2 from "@/Assets/images/bar/69A51B0D-E2CC-40B9-8BC3-5F2CF11CAA54.JPG.jpg";
+import bar3 from "@/Assets/images/bar/C21DF370-673F-4DC8-8681-D83FE80DDC88.jpg";
+import bar4 from "@/Assets/images/bar/IMG_2449.jpg";
+import bar5 from "@/Assets/images/bar/IMG_4009.jpg";
+import bar6 from "@/Assets/images/bar/IMG_4606.jpg";
 
 export const Route = createFileRoute("/galerie")({
   head: () => ({
@@ -18,25 +47,41 @@ export const Route = createFileRoute("/galerie")({
   component: Page,
 });
 
-type Cat = "Tout" | "Piscine" | "Plage" | "Appartements" | "Restaurant" | "Bar" | "Exterieurs";
+type Cat = "Tout" | "Piscine" | "Plage" | "Appartements" | "Intérieur" | "Bar";
 
 const photos: { cat: Exclude<Cat, "Tout">; src: string; alt: string }[] = [
-  { cat: "Piscine",      src: "https://images.unsplash.com/photo-1540541338287-41700207dee6?auto=format&fit=crop&w=1200&q=80", alt: "Piscine vue ocean" },
-  { cat: "Piscine",      src: "https://images.unsplash.com/photo-1582610116397-edb318620f90?auto=format&fit=crop&w=1200&q=80", alt: "Piscine infinity" },
-  { cat: "Plage",        src: plageImg1, alt: "Plage naturelle devant l'hôtel" },
-  { cat: "Plage",        src: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1200&q=80", alt: "Plage naturelle" },
-  { cat: "Plage",        src: "https://images.unsplash.com/photo-1519046904884-53103b34b206?auto=format&fit=crop&w=1200&q=80", alt: "Plage ocean" },
-  { cat: "Appartements", src: "https://images.unsplash.com/photo-1631049307264-da0ec9d70304?auto=format&fit=crop&w=1200&q=80", alt: "Salon meuble" },
-  { cat: "Appartements", src: "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=1200&q=80", alt: "Chambre superieur" },
-  { cat: "Appartements", src: "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=1200&q=80", alt: "Studio" },
-  { cat: "Restaurant",   src: "https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&w=1200&q=80", alt: "Terrasse restaurant" },
-  { cat: "Restaurant",   src: "https://images.unsplash.com/photo-1559339352-11d035aa65de?auto=format&fit=crop&w=1200&q=80", alt: "Cuisine raffinee" },
-  { cat: "Bar",          src: "https://images.unsplash.com/photo-1551024709-8f23befc6f87?auto=format&fit=crop&w=1200&q=80", alt: "Cocktail tropical" },
-  { cat: "Bar",          src: "https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?auto=format&fit=crop&w=1200&q=80", alt: "Bar coucher de soleil" },
-  { cat: "Exterieurs",   src: "https://images.unsplash.com/photo-1571896349842-33c89424de2d?auto=format&fit=crop&w=1200&q=80", alt: "Villa exterieur" },
+  { cat: "Piscine", src: piscine1, alt: "Piscine" },
+  { cat: "Piscine", src: piscine2, alt: "Piscine" },
+  { cat: "Piscine", src: piscine3, alt: "Piscine" },
+  { cat: "Piscine", src: piscine4, alt: "Piscine" },
+  { cat: "Piscine", src: piscine5, alt: "Piscine" },
+  
+  { cat: "Plage", src: plage1, alt: "Plage" },
+
+  { cat: "Appartements", src: app1, alt: "Appartement meublé" },
+  { cat: "Appartements", src: app2, alt: "Appartement vue mer" },
+  { cat: "Appartements", src: app3, alt: "Studio" },
+  { cat: "Appartements", src: app4, alt: "Chambre standard" },
+  { cat: "Appartements", src: app5, alt: "Chambre supérieur" },
+  { cat: "Appartements", src: app6, alt: "Chambre" },
+  { cat: "Appartements", src: app7, alt: "Détail chambre" },
+  { cat: "Appartements", src: app8, alt: "Salle de bain" },
+
+  { cat: "Intérieur", src: int1, alt: "Intérieur design" },
+  { cat: "Intérieur", src: int2, alt: "Décoration" },
+  { cat: "Intérieur", src: int3, alt: "Salon" },
+  { cat: "Intérieur", src: int4, alt: "Meubles" },
+  { cat: "Intérieur", src: int5, alt: "Ambiance intérieure" },
+
+  { cat: "Bar", src: bar1, alt: "Bar terrasse" },
+  { cat: "Bar", src: bar2, alt: "Cocktails" },
+  { cat: "Bar", src: bar3, alt: "Espace détente" },
+  { cat: "Bar", src: bar4, alt: "Boissons" },
+  { cat: "Bar", src: bar5, alt: "Soirée bar" },
+  { cat: "Bar", src: bar6, alt: "Ambiance bar" },
 ];
 
-const CATS: Cat[] = ["Tout", "Piscine", "Plage", "Appartements", "Restaurant", "Bar", "Exterieurs"];
+const CATS: Cat[] = ["Tout", "Piscine", "Plage", "Appartements", "Intérieur", "Bar"];
 
 function Page() {
   const [cat, setCat] = useState<Cat>("Tout");
