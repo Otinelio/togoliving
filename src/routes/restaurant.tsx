@@ -35,6 +35,7 @@ export const Route = createFileRoute("/restaurant")({
 });
 
 const ICONS: Record<MenuCategory, typeof Coffee> = {
+  "Tout":              UtensilsCrossed,
   "Petit-Déjeuner":    Coffee,
   "Entrées":           Sunrise,
   "Plats":             ChefHat,
@@ -55,12 +56,12 @@ function PriceTag({ price, priceMax }: { price: number; priceMax?: number }) {
 
 function Page() {
   const { items } = useMenu();
-  const [tab, setTab] = useState<MenuCategory>("Petit-Déjeuner");
+  const [tab, setTab] = useState<MenuCategory>("Tout");
   const [cart, setCart] = useState<Record<string, CartItem>>({});
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [fulfillment, setFulfillment] = useState<FulfillmentMethod>("Retrait au restaurant");
   const [deliveryAddress, setDeliveryAddress] = useState("");
-  const filtered = items.filter((i) => i.category === tab);
+  const filtered = tab === "Tout" ? items : items.filter((i) => i.category === tab);
 
   const totals = useMemo(() => {
     const arr = Object.values(cart);

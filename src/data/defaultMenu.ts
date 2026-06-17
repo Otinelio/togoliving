@@ -1,4 +1,5 @@
 export type MenuCategory =
+  | "Tout"
   | "Petit-Déjeuner"
   | "Entrées"
   | "Plats"
@@ -9,6 +10,7 @@ export type MenuCategory =
   | "Boissons";
 
 export const MENU_CATEGORIES: MenuCategory[] = [
+  "Tout",
   "Petit-Déjeuner",
   "Entrées",
   "Plats",
