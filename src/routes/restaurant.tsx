@@ -131,11 +131,11 @@ function Page() {
       </section>
 
       {/* MENU */}
-      <section className="bg-sand py-16">
-        <div className="max-w-6xl mx-auto px-6">
+      <section className="bg-sand py-10 sm:py-16 pb-36">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6">
 
-          {/* Category tabs */}
-          <div className="flex flex-wrap justify-center gap-2 mb-10">
+          {/* Category tabs - Scrollable on mobile */}
+          <div className="flex overflow-x-auto [&::-webkit-scrollbar]:hidden gap-2 mb-8 pb-3 px-1 snap-x">
             {MENU_CATEGORIES.map((c) => {
               const Icon = ICONS[c];
               const active = tab === c;
@@ -143,7 +143,7 @@ function Page() {
                 <button
                   key={c}
                   onClick={() => setTab(c)}
-                  className={`inline-flex items-center gap-2 px-4 py-2.5 rounded-full text-sm font-medium transition ${
+                  className={`snap-start shrink-0 inline-flex items-center gap-2 px-4 py-2.5 rounded-full text-sm font-medium transition ${
                     active
                       ? "bg-ocean text-white shadow-lg scale-105"
                       : "bg-white text-ocean border border-turquoise/30 hover:border-turquoise hover:shadow"
@@ -165,12 +165,12 @@ function Page() {
                   <div key={sub} className="mb-10">
                     <div className="flex items-center gap-3 mb-5">
                       <div className="h-px flex-1 bg-turquoise/20" />
-                      <h2 className="font-display text-xl text-ocean px-3 py-1 rounded-full border border-turquoise/40 bg-white">
+                      <h2 className="font-display text-lg sm:text-xl text-ocean px-4 py-1.5 rounded-full border border-turquoise/40 bg-white text-center shadow-sm">
                         {sub}
                       </h2>
                       <div className="h-px flex-1 bg-turquoise/20" />
                     </div>
-                    <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
                       {subItems.map((it) => (
                             <MenuCard key={it.id} it={it} onAdd={() => add(it.id, it.name, it.price, it.description)} />
                       ))}
@@ -184,7 +184,7 @@ function Page() {
               key={tab}
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              className="grid md:grid-cols-2 lg:grid-cols-3 gap-5"
+              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-5"
             >
               {filtered.map((it) => (
                 <MenuCard key={it.id} it={it} onAdd={() => add(it.id, it.name, it.price, it.description)} />
@@ -329,13 +329,13 @@ function Page() {
 function MenuCard({ it, onAdd }: { it: ReturnType<typeof useMenu>["items"][0]; onAdd: () => void }) {
   return (
     <div
-          className={`glass p-5 hover-lift border-2 transition-colors ${
+          className={`glass p-4 sm:p-5 hover-lift border-2 transition-colors ${
         it.soldOut ? "opacity-50" : "border-transparent hover:border-gold/60"
       }`}
     >
-      <div className="flex items-start justify-between gap-3">
-        <div className="flex-1 min-w-0">
-          <h3 className="font-display text-lg text-ocean leading-snug">{it.name}</h3>
+      <div className="flex items-start justify-between gap-2 sm:gap-3">
+        <div className="flex-1 min-w-0 pr-2">
+          <h3 className="font-display text-base sm:text-lg text-ocean leading-snug">{it.name}</h3>
           {it.description && (
             <p className="text-sm text-muted-foreground mt-1 leading-relaxed">{it.description}</p>
           )}
