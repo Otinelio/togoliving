@@ -250,8 +250,8 @@ function HomePage() {
                     ))}
                   </div>
                   <div className="flex gap-2 mt-5">
-                    <Link to="/hebergements" className="flex-1 text-center px-3 py-2 rounded-lg bg-turquoise text-ocean text-sm font-medium hover:bg-gold transition">Details</Link>
-                    <a href={whatsappUrl(`Bonjour TOGOLIVING, je souhaite reserver: ${r.title}`)} target="_blank" rel="noreferrer" className="flex-1 text-center px-3 py-2 rounded-lg border border-turquoise text-turquoise text-sm font-medium hover:bg-turquoise hover:text-ocean transition">Reserver</a>
+                    <Link to="/hebergements" className="flex-1 text-center px-3 py-2 rounded-lg bg-turquoise text-ocean text-sm font-medium hover:bg-gold transition">Détails</Link>
+                    <Link to="/reserver" className="flex-1 text-center px-3 py-2 rounded-lg border border-turquoise text-turquoise text-sm font-medium hover:bg-turquoise hover:text-ocean transition">Réserver</Link>
                   </div>
                 </div>
               </motion.div>
