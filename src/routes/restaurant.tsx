@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { useMemo, useState } from "react";
 import {
   Coffee, UtensilsCrossed, ChefHat, Pizza, IceCream,
@@ -61,6 +61,8 @@ function Page() {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [fulfillment, setFulfillment] = useState<FulfillmentMethod>("Retrait au restaurant");
   const [deliveryAddress, setDeliveryAddress] = useState("");
+  const [selectedItem, setSelectedItem] = useState<ReturnType<typeof useMenu>["items"][0] | null>(null);
+  const [popupQty, setPopupQty] = useState(1);
   const filtered = tab === "Tout" ? items : items.filter((i) => i.category === tab);
 
   const totals = useMemo(() => {
@@ -112,9 +114,7 @@ function Page() {
     window.open(whatsappUrl(message), "_blank", "noreferrer");
   };
 
-  // Group by subcategory when present
-  const subcategories = [...new Set(filtered.map((i) => i.subcategory).filter(Boolean))] as string[];
-  const hasSubcategories = subcategories.length > 0;
+
 
   return (
     <>
@@ -156,46 +156,18 @@ function Page() {
             })}
           </div>
 
-          {/* Items */}
-          {hasSubcategories ? (
-            <motion.div key={tab} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
-              {subcategories.map((sub) => {
-                const subItems = filtered.filter((i) => i.subcategory === sub);
-                return (
-                  <div key={sub} className="mb-10">
-                    <div className="flex items-center gap-3 mb-5">
-                      <div className="h-px flex-1 bg-turquoise/20" />
-                      <h2 className="font-display text-lg sm:text-xl text-ocean px-4 py-1.5 rounded-full border border-turquoise/40 bg-white text-center shadow-sm">
-                        {sub}
-                      </h2>
-                      <div className="h-px flex-1 bg-turquoise/20" />
-                    </div>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
-                      {subItems.map((it) => (
-                            <MenuCard key={it.id} it={it} onAdd={() => add(it.id, it.name, it.price, it.description)} />
-                      ))}
-                    </div>
-                  </div>
-                );
-              })}
-            </motion.div>
-          ) : (
-            <motion.div
-              key={tab}
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-5"
-            >
-              {filtered.map((it) => (
-                <MenuCard key={it.id} it={it} onAdd={() => add(it.id, it.name, it.price, it.description)} />
-              ))}
-              {filtered.length === 0 && (
-                <p className="col-span-full text-center text-muted-foreground py-10">
-                  Aucun article dans cette catégorie.
-                </p>
-              )}
-            </motion.div>
-          )}
+          {/* Items Grid (Flat, No grouping) */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-5 animate-fade-in">
+            {filtered.map((it) => (
+              <MenuCard key={it.id} it={it} onAdd={() => add(it.id, it.name, it.price, it.description)} onOpenPopup={() => setSelectedItem(it)} />
+            ))}
+            
+            {filtered.length === 0 && (
+              <p className="col-span-full text-center text-muted-foreground py-10">
+                Aucun article dans cette catégorie.
+              </p>
+            )}
+          </div>
         </div>
       </section>
 
@@ -322,39 +294,131 @@ function Page() {
           </div>
         </div>
       )}
+
+      {/* Item Details Popup */}
+      <AnimatePresence>
+        {selectedItem && (
+          <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 sm:p-6 bg-ocean/80 backdrop-blur-sm" onClick={() => { setSelectedItem(null); setPopupQty(1); }}>
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              onClick={(e) => e.stopPropagation()}
+              className="bg-sand w-full max-w-lg rounded-3xl shadow-2xl relative border border-white/40 overflow-hidden"
+            >
+              <button
+                onClick={() => { setSelectedItem(null); setPopupQty(1); }}
+                className="absolute top-4 right-4 p-2.5 rounded-full bg-ocean/5 hover:bg-ocean/10 text-ocean transition-colors z-10"
+              >
+                <X size={20} />
+              </button>
+
+              {/* Header */}
+              <div className="p-6 pb-4">
+                <div className="text-xs uppercase tracking-widest font-bold text-turquoise mb-2">{selectedItem.category}</div>
+                <h2 className="font-display text-2xl sm:text-3xl text-ocean leading-tight pr-10">{selectedItem.name}</h2>
+              </div>
+
+              {/* Description */}
+              {selectedItem.description && (
+                <div className="px-6 pb-4">
+                  <p className="text-ocean/70 leading-relaxed text-sm sm:text-base">{selectedItem.description}</p>
+                </div>
+              )}
+
+              {/* Price + Qty selector */}
+              <div className="px-6 pb-6 pt-2">
+                <div className="flex items-center justify-between gap-4 rounded-2xl bg-white border border-turquoise/20 px-4 py-3 mb-5">
+                  <div>
+                    <div className="text-xs text-ocean/50 uppercase tracking-wider mb-0.5">Prix unitaire</div>
+                    <div className="font-bold text-xl text-ocean">{formatFCFA(selectedItem.price)}</div>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <button
+                      onClick={() => setPopupQty((q) => Math.max(1, q - 1))}
+                      className="w-9 h-9 rounded-full bg-ocean/10 text-ocean inline-flex items-center justify-center hover:bg-ocean/20 transition-colors"
+                    >
+                      <Minus size={16} />
+                    </button>
+                    <span className="font-display text-2xl text-ocean w-8 text-center">{popupQty}</span>
+                    <button
+                      onClick={() => setPopupQty((q) => q + 1)}
+                      className="w-9 h-9 rounded-full bg-ocean text-white inline-flex items-center justify-center hover:bg-gold hover:text-ocean transition-colors shadow"
+                    >
+                      <Plus size={16} />
+                    </button>
+                  </div>
+                </div>
+
+                {/* Total + Add to cart */}
+                <button
+                  onClick={() => {
+                    for (let i = 0; i < popupQty; i++) {
+                      add(selectedItem.id, selectedItem.name, selectedItem.price, selectedItem.description);
+                    }
+                    setSelectedItem(null);
+                    setPopupQty(1);
+                  }}
+                  disabled={selectedItem.soldOut}
+                  className="w-full flex items-center justify-between gap-3 py-4 px-5 rounded-2xl bg-ocean text-white font-medium hover:bg-gold hover:text-ocean transition-colors shadow-lg shadow-ocean/20 disabled:opacity-50"
+                >
+                  <span className="flex items-center gap-2">
+                    <ShoppingBag size={20} />
+                    {selectedItem.soldOut ? "Indisponible actuellement" : "Ajouter au panier"}
+                  </span>
+                  {!selectedItem.soldOut && (
+                    <span className="font-display text-lg">{formatFCFA(selectedItem.price * popupQty)}</span>
+                  )}
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </>
   );
 }
 
-function MenuCard({ it, onAdd }: { it: ReturnType<typeof useMenu>["items"][0]; onAdd: () => void }) {
+function MenuCard({ it, onAdd, onOpenPopup }: { it: ReturnType<typeof useMenu>["items"][0]; onAdd: () => void; onOpenPopup: () => void }) {
   return (
     <div
-          className={`glass p-4 sm:p-5 hover-lift border-2 transition-colors ${
-        it.soldOut ? "opacity-50" : "border-transparent hover:border-gold/60"
+      onClick={(e) => {
+        if (!(e.target as HTMLElement).closest('.add-btn')) {
+          onOpenPopup();
+        }
+      }}
+      className={`glass p-4 sm:p-5 hover-lift border-2 transition-colors flex flex-col h-[135px] sm:h-[150px] ${
+        it.soldOut ? "opacity-50" : "border-transparent hover:border-gold/60 cursor-pointer"
       }`}
     >
-      <div className="flex items-start justify-between gap-2 sm:gap-3">
-        <div className="flex-1 min-w-0 pr-2">
-          <h3 className="font-display text-base sm:text-lg text-ocean leading-snug">{it.name}</h3>
+      <div className="flex items-start justify-between gap-2 sm:gap-3 flex-1 min-h-0">
+        <div className="flex-1 min-w-0 pr-2 flex flex-col h-full">
+          <h3 className="font-display text-base sm:text-lg text-ocean leading-snug line-clamp-1">{it.name}</h3>
           {it.description && (
-            <p className="text-sm text-muted-foreground mt-1 leading-relaxed">{it.description}</p>
+            <p className="text-sm text-muted-foreground mt-1 leading-relaxed line-clamp-2">{it.description}</p>
           )}
-          {it.soldOut && (
-            <span className="inline-block mt-2 text-xs px-2 py-0.5 rounded bg-muted text-muted-foreground">
-              Indisponible
-            </span>
-          )}
+          <div className="mt-auto pt-1">
+            {it.soldOut ? (
+              <span className="inline-block text-xs px-2 py-0.5 rounded bg-muted text-muted-foreground w-max">
+                Indisponible
+              </span>
+            ) : (
+              <span className="text-xs text-turquoise font-medium inline-block underline decoration-turquoise/40 underline-offset-2">
+                Voir plus
+              </span>
+            )}
+          </div>
         </div>
-        <div className="flex flex-col items-end gap-2 shrink-0">
+        <div className="flex flex-col items-end justify-between h-full shrink-0">
           <PriceTag price={it.price} priceMax={(it as { priceMax?: number }).priceMax} />
           {!it.soldOut && (
             <motion.button
               whileTap={{ scale: 0.85 }}
-              onClick={onAdd}
-              className="group inline-flex h-11 w-11 items-center justify-center rounded-2xl border border-white/15 bg-[linear-gradient(180deg,rgba(255,255,255,0.95)_0%,rgba(248,245,240,0.9)_100%)] text-ocean shadow-[0_14px_30px_rgba(30,58,95,0.14)] backdrop-blur-sm transition-all hover:-translate-y-0.5 hover:border-gold/50 hover:shadow-[0_18px_36px_rgba(30,58,95,0.22)]"
+              onClick={(e) => { e.stopPropagation(); onAdd(); }}
+              className="add-btn group inline-flex h-10 w-10 sm:h-11 sm:w-11 items-center justify-center rounded-2xl border border-white/15 bg-[linear-gradient(180deg,rgba(255,255,255,0.95)_0%,rgba(248,245,240,0.9)_100%)] text-ocean shadow-[0_14px_30px_rgba(30,58,95,0.14)] backdrop-blur-sm transition-all hover:-translate-y-0.5 hover:border-gold/50 hover:shadow-[0_18px_36px_rgba(30,58,95,0.22)]"
               aria-label={`Ajouter ${it.name} au panier`}
             >
-              <span className="flex h-7 w-7 items-center justify-center rounded-full bg-[linear-gradient(135deg,#1E3A5F_0%,#2d5682_100%)] text-white shadow-md shadow-ocean/20 transition-transform group-hover:scale-105 group-hover:bg-[linear-gradient(135deg,#D4AF37_0%,#f1d57c_100%)] group-hover:text-ocean">
+              <span className="flex h-6 w-6 sm:h-7 sm:w-7 items-center justify-center rounded-full bg-[linear-gradient(135deg,#1E3A5F_0%,#2d5682_100%)] text-white shadow-md shadow-ocean/20 transition-transform group-hover:scale-105 group-hover:bg-[linear-gradient(135deg,#D4AF37_0%,#f1d57c_100%)] group-hover:text-ocean">
                 <Plus size={16} strokeWidth={3} />
               </span>
             </motion.button>
