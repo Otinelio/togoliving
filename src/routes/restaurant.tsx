@@ -1,9 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { motion, AnimatePresence } from "framer-motion";
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import {
   Coffee, UtensilsCrossed, ChefHat, Pizza, IceCream,
   GlassWater, Wine, Droplets, Sunrise, Plus, Minus, ShoppingBag, Trash2, ArrowRight, X,
+  ChevronLeft, ChevronRight, Search,
 } from "lucide-react";
 import { useMenu } from "@/hooks/useMenu";
 import { MENU_CATEGORIES, type MenuCategory } from "@/data/defaultMenu";
@@ -63,7 +64,23 @@ function Page() {
   const [deliveryAddress, setDeliveryAddress] = useState("");
   const [selectedItem, setSelectedItem] = useState<ReturnType<typeof useMenu>["items"][0] | null>(null);
   const [popupQty, setPopupQty] = useState(1);
-  const filtered = tab === "Tout" ? items : items.filter((i) => i.category === tab);
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const tabsRef = useRef<HTMLDivElement>(null);
+
+  const scrollTabs = (dir: "left" | "right") => {
+    if (tabsRef.current) {
+      tabsRef.current.scrollBy({ left: dir === "right" ? 180 : -180, behavior: "smooth" });
+    }
+  };
+
+  const baseFiltered = tab === "Tout" ? items : items.filter((i) => i.category === tab);
+  const filtered = searchQuery.trim()
+    ? baseFiltered.filter((i) =>
+        i.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        i.description?.toLowerCase().includes(searchQuery.toLowerCase())
+      )
+    : baseFiltered;
 
   const totals = useMemo(() => {
     const arr = Object.values(cart);
@@ -134,26 +151,91 @@ function Page() {
       <section className="bg-sand py-10 sm:py-16 pb-36">
         <div className="max-w-6xl mx-auto px-4 sm:px-6">
 
-          {/* Category tabs - Scrollable on mobile */}
-          <div className="flex overflow-x-auto [&::-webkit-scrollbar]:hidden gap-2 mb-8 pb-3 px-1 snap-x">
-            {MENU_CATEGORIES.map((c) => {
-              const Icon = ICONS[c];
-              const active = tab === c;
-              return (
-                <button
-                  key={c}
-                  onClick={() => setTab(c)}
-                  className={`snap-start shrink-0 inline-flex items-center gap-2 px-4 py-2.5 rounded-full text-sm font-medium transition ${
-                    active
-                      ? "bg-ocean text-white shadow-lg scale-105"
-                      : "bg-white text-ocean border border-turquoise/30 hover:border-turquoise hover:shadow"
-                  }`}
-                >
-                  <Icon size={15} />
-                  {c}
-                </button>
-              );
-            })}
+          {/* Search bar (expandable) */}
+          <AnimatePresence>
+            {searchOpen && (
+              <motion.div
+                initial={{ opacity: 0, y: -8 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -8 }}
+                className="mb-4"
+              >
+                <div className="relative">
+                  <Search size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-ocean/50" />
+                  <input
+                    autoFocus
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    placeholder="Rechercher un plat, boisson..."
+                    className="w-full pl-10 pr-10 py-3 rounded-2xl bg-white border border-turquoise/30 text-ocean placeholder:text-ocean/40 focus:outline-none focus:border-turquoise shadow-sm text-sm"
+                  />
+                  {searchQuery && (
+                    <button onClick={() => setSearchQuery("")} className="absolute right-4 top-1/2 -translate-y-1/2 text-ocean/50 hover:text-ocean">
+                      <X size={15} />
+                    </button>
+                  )}
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          {/* Category tabs with scroll arrows + search icon */}
+          <div className="flex items-center gap-2 mb-8">
+            {/* Left arrow (hidden on mobile) */}
+            <button
+              onClick={() => scrollTabs("left")}
+              className="hidden sm:flex shrink-0 h-9 w-9 items-center justify-center rounded-full bg-white border border-turquoise/30 text-ocean hover:border-turquoise hover:shadow transition"
+              aria-label="Défiler vers la gauche"
+            >
+              <ChevronLeft size={18} />
+            </button>
+
+            {/* Scrollable tabs */}
+            <div
+              ref={tabsRef}
+              className="flex overflow-x-auto [&::-webkit-scrollbar]:hidden gap-2 pb-1 snap-x flex-1"
+            >
+              {MENU_CATEGORIES.map((c) => {
+                const Icon = ICONS[c];
+                const active = tab === c;
+                return (
+                  <button
+                    key={c}
+                    onClick={() => { setTab(c); setSearchQuery(""); }}
+                    className={`snap-start shrink-0 inline-flex items-center gap-2 px-4 py-2.5 rounded-full text-sm font-medium transition ${
+                      active
+                        ? "bg-ocean text-white shadow-lg scale-105"
+                        : "bg-white text-ocean border border-turquoise/30 hover:border-turquoise hover:shadow"
+                    }`}
+                  >
+                    <Icon size={15} />
+                    {c}
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* Right arrow (hidden on mobile) */}
+            <button
+              onClick={() => scrollTabs("right")}
+              className="hidden sm:flex shrink-0 h-9 w-9 items-center justify-center rounded-full bg-white border border-turquoise/30 text-ocean hover:border-turquoise hover:shadow transition"
+              aria-label="Défiler vers la droite"
+            >
+              <ChevronRight size={18} />
+            </button>
+
+            {/* Search toggle */}
+            <button
+              onClick={() => { setSearchOpen((v) => !v); if (searchOpen) setSearchQuery(""); }}
+              className={`shrink-0 h-9 w-9 inline-flex items-center justify-center rounded-full border transition ${
+                searchOpen
+                  ? "bg-ocean text-white border-ocean shadow-md"
+                  : "bg-white text-ocean border-turquoise/30 hover:border-turquoise hover:shadow"
+              }`}
+              aria-label="Recherche"
+            >
+              <Search size={16} />
+            </button>
           </div>
 
           {/* Items — Grouped by category in "Tout" mode, flat otherwise */}

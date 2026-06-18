@@ -3,18 +3,62 @@ import { motion } from "framer-motion";
 import { useState } from "react";
 import {
   Wifi, Wind, Tv, Coffee, Car, Plane, Waves, Droplets, GlassWater,
-  UtensilsCrossed, BedDouble, MessageCircle, X,
+  UtensilsCrossed, BedDouble, MessageCircle, X, Play,
 } from "lucide-react";
 import { WaveDivider } from "@/components/WaveDivider";
 import { whatsappUrl } from "@/lib/whatsapp";
 import hebergementsHero from "@/Assets/images/piscine/piscine.jpg";
 import img3ChambresSalon from "@/Assets/images/appartements/IMG_4247.jpg";
+import imgStudio from "@/Assets/images/appartements/IMG_4201.jpg";
+import imgChambreSalon from "@/Assets/images/appartements/IMG_4211.jpg";
+import img2Chambres from "@/Assets/images/appartements/IMG_4212.jpg";
 
 // Videos are served from public/ to avoid bundling large files
 const vidStudio = "/videos/IMG_0077.mp4";
 const vidStandard = "/videos/IMG_0085.MP4";
 const vidSuperieur = "/videos/IMG_0285.MP4";
 const vidSupreme = "/videos/IMG_1684.MP4";
+
+// VideoWithPoster: affiche une image pendant le chargement, puis la vidéo
+function VideoWithPoster({ src, poster, className }: { src: string; poster: string; className?: string }) {
+  const [loaded, setLoaded] = useState(false);
+  const [playing, setPlaying] = useState(false);
+
+  return (
+    <div className={`relative overflow-hidden ${className ?? ""}`}>
+      {/* Poster image — visible tant que la vidéo n'est pas prête */}
+      <img
+        src={poster}
+        alt="Aperçu"
+        className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-700 ${
+          loaded ? "opacity-0 pointer-events-none" : "opacity-100"
+        }`}
+      />
+      {/* Indicateur de chargement */}
+      {!loaded && (
+        <div className="absolute inset-0 flex items-center justify-center">
+          <div className="flex flex-col items-center gap-2">
+            <div className="h-12 w-12 rounded-full bg-white/20 backdrop-blur flex items-center justify-center">
+              <Play size={20} className="text-white ml-0.5" />
+            </div>
+            <span className="text-xs text-white/80 font-medium bg-black/30 backdrop-blur px-2 py-0.5 rounded-full">Chargement...</span>
+          </div>
+        </div>
+      )}
+      {/* Vidéo */}
+      <video
+        src={src}
+        autoPlay
+        muted
+        loop
+        playsInline
+        preload="metadata"
+        onCanPlay={() => { setLoaded(true); setPlaying(true); }}
+        className={`w-full h-full object-cover transition-opacity duration-700 ${loaded ? "opacity-100" : "opacity-0"}`}
+      />
+    </div>
+  );
+}
 
 export const Route = createFileRoute("/hebergements")({
   head: () => ({
@@ -33,13 +77,14 @@ const rooms = [
   {
     title: "Studios",
     badge: "1 Pièce",
-    img: "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=1400&q=80",
+    img: imgStudio,
     video: vidStudio,
     desc: "Espace confortable, ventile et climatise, ideal pour un sejour solo ou en couple.",
     prices: [
       { num: "N° 4, 5, 6, 7", day: "30 000 FCFA", month: "300 000 FCFA" },
       { num: "N° 34", day: "35 000 FCFA", month: "350 000 FCFA" }
     ],
+    poster: imgStudio,
     features: [
       { icon: Wifi, label: "WiFi Gratuit" },
       { icon: Wind, label: "Climatisation" },
@@ -51,8 +96,9 @@ const rooms = [
   {
     title: "Chambre Salon",
     badge: "2 Pièces",
-    img: "https://images.unsplash.com/photo-1631049307264-da0ec9d70304?auto=format&fit=crop&w=1400&q=80",
+    img: imgChambreSalon,
     video: vidStandard,
+    poster: imgChambreSalon,
     desc: "Grand salon avec espace de vie ideal pour sejours prolonges en confort.",
     prices: [
       { num: "N° 8, 9, 20", day: "40 000 FCFA", month: "420 000 FCFA" },
@@ -67,8 +113,9 @@ const rooms = [
     title: "2 Chambres Salon",
     badge: "3 Pièces",
     premium: true,
-    img: "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=1400&q=80",
+    img: img2Chambres,
     video: vidSuperieur,
+    poster: img2Chambres,
     desc: "Appartement spacieux avec deux chambres separees et terrasse vue mer. Parfait pour familles.",
     prices: [
       { num: "N° 2, 3", day: "80 000 FCFA", month: "600 000 FCFA" },
@@ -85,6 +132,7 @@ const rooms = [
     premium: true,
     img: img3ChambresSalon,
     video: vidSupreme,
+    poster: img3ChambresSalon,
     desc: "Immense espace de vie avec trois chambres pour les grands groupes ou les familles nombreuses, offrant un maximum de confort.",
     prices: [
       { num: "N° 30", day: "100 000 FCFA", month: "700 000 FCFA" },
@@ -182,7 +230,11 @@ function Page() {
             >
               <div className="relative">
                 {r.video ? (
-                  <video src={r.video} autoPlay muted loop playsInline className="w-full h-[420px] object-cover rounded-2xl shadow-xl shadow-ocean/20" />
+                  <VideoWithPoster
+                    src={r.video}
+                    poster={(r as any).poster ?? r.img}
+                    className="w-full h-[420px] rounded-2xl shadow-xl shadow-ocean/20"
+                  />
                 ) : (
                   <img src={r.img} alt={r.title} loading="lazy" className="w-full h-[420px] object-cover rounded-2xl shadow-xl shadow-ocean/20" />
                 )}
