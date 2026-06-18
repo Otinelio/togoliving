@@ -6,14 +6,9 @@ import {
 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { WaveDivider } from "@/components/WaveDivider";
+import { useAccommodations } from "@/hooks/useAccommodations";
 import { whatsappUrl } from "@/lib/whatsapp";
-import heroImg from "@/Assets/images/accueil_img.jpg";
-import poolImg from "@/Assets/images/accueil2_img.jpg";
-import restoImg from "@/Assets/images/piscine/piscine1.jpg";
-import studioImg from "@/Assets/images/appartements/IMG_4201.jpg";
-import standardImg from "@/Assets/images/appartements/IMG_4211.jpg";
-import superieurImg from "@/Assets/images/appartements/IMG_4212.jpg";
-import vipImg from "@/Assets/images/appartements/IMG_4247.jpg";
+import { ASSETS } from "@/lib/assets";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -33,7 +28,7 @@ const rooms = [
     id: "studio",
     title: "Studios",
     badge: "1 Pièce",
-    img: studioImg,
+    img: ASSETS.studioIMG4201,
     features: ["WiFi", "AC", "TV Satellite", "Refrigerateur", "Patio"],
     desc: "Espace confortable, ideal pour un sejour solo ou en couple.",
   },
@@ -41,7 +36,7 @@ const rooms = [
     id: "chambre-salon",
     title: "Chambre Salon",
     badge: "2 Pièces",
-    img: standardImg,
+    img: ASSETS.chambreSalonIMG4211,
     features: ["WiFi", "AC", "TV Satellite", "Table a manger", "Canapes", "Patio"],
     desc: "Grand salon avec espace de vie ideal pour sejours prolonges.",
   },
@@ -50,7 +45,7 @@ const rooms = [
     title: "2 Chambres Salon",
     badge: "3 Pièces",
     premium: true,
-    img: superieurImg,
+    img: ASSETS.deuxChambresIMG4212,
     features: ["Vue mer", "Terrasse", "Literie premium", "WiFi", "AC", "TV Satellite"],
     desc: "Appartement spacieux avec deux chambres separees. Parfait pour familles.",
   },
@@ -59,7 +54,7 @@ const rooms = [
     title: "3 Chambres Salon",
     badge: "VIP · 4 Pièces",
     premium: true,
-    img: vipImg,
+    img: ASSETS.troisChambresSalonIMG4247,
     features: ["Grande Terrasse", "Lits King Size", "WiFi", "AC", "TV Satellite"],
     desc: "Immense espace de vie avec trois chambres pour un maximum de confort.",
   },
@@ -126,6 +121,9 @@ function QuickBooking() {
 }
 
 function HomePage() {
+  const { items: dbRooms } = useAccommodations();
+  const displayedRooms = dbRooms.length > 0 ? dbRooms : rooms;
+
   return (
     <>
       {/* HERO */}
@@ -135,7 +133,7 @@ function HomePage() {
           animate={{ scale: 1 }}
           transition={{ duration: 8, ease: "easeOut" }}
           className="absolute inset-0 bg-cover bg-center"
-          style={{ backgroundImage: `url(${heroImg})` }}
+          style={{ backgroundImage: `url(${ASSETS.heroImg})` }}
         />
         <div className="absolute inset-0 bg-gradient-to-b from-ocean/70 via-ocean/40 to-ocean/80" />
 
@@ -226,36 +224,47 @@ function HomePage() {
           </motion.div>
 
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {rooms.map((r, i) => (
-              <motion.div
-                key={r.id}
-                initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.1 }}
-                className="glass-dark overflow-hidden hover-lift group border-turquoise/20 hover:border-gold"
-              >
-                <div className="relative h-56 overflow-hidden">
-                  <img src={r.img} alt={r.title} loading="lazy" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
-                  <div className="absolute inset-0 bg-gradient-to-t from-ocean/80 to-transparent" />
-                  {r.badge && (
-                    <span className={`absolute top-3 right-3 px-3 py-1 rounded-full text-xs font-semibold ${r.premium ? "bg-gold text-ocean" : "bg-turquoise text-ocean"}`}>
-                      {r.badge}
-                    </span>
-                  )}
-                </div>
-                <div className="p-6">
-                  <h3 className="font-display text-2xl">{r.title}</h3>
-                  <p className="text-white/70 text-sm mt-2">{r.desc}</p>
-                  <div className="flex flex-wrap gap-2 mt-4">
-                    {r.features.map((f) => (
-                      <span key={f} className="text-xs px-2.5 py-1 rounded-full bg-turquoise/15 text-turquoise border border-turquoise/30">{f}</span>
-                    ))}
+            {displayedRooms.map((r, i) => {
+              // Convert DB accommodation schema to legacy schema for UI if needed
+              const img = 'imageUrl' in r ? r.imageUrl : ('img' in r ? (r as any).img : '');
+              const badge = r.badge;
+              const premium = 'isPremium' in r ? r.isPremium : ('premium' in r ? (r as any).premium : false);
+              const desc = 'description' in r ? r.description : ('desc' in r ? (r as any).desc : '');
+              const title = r.title;
+              const rawFeatures = 'features' in r ? r.features : [];
+              const features = (rawFeatures ?? []).slice(0, 5).map((f: any) => typeof f === 'string' ? f : f.label);
+
+              return (
+                <motion.div
+                  key={r.id || title}
+                  initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.1 }}
+                  className="glass-dark overflow-hidden hover-lift group border-turquoise/20 hover:border-gold"
+                >
+                  <div className="relative h-56 overflow-hidden">
+                    <img src={img} alt={title} loading="lazy" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-ocean/80 to-transparent" />
+                    {badge && (
+                      <span className={`absolute top-3 right-3 px-3 py-1 rounded-full text-xs font-semibold ${premium ? "bg-gold text-ocean" : "bg-turquoise text-ocean"}`}>
+                        {badge}
+                      </span>
+                    )}
                   </div>
-                  <div className="flex gap-2 mt-5">
-                    <Link to="/hebergements" className="flex-1 text-center px-3 py-2 rounded-lg bg-turquoise text-ocean text-sm font-medium hover:bg-gold transition">Détails</Link>
-                    <Link to="/reserver" className="flex-1 text-center px-3 py-2 rounded-lg border border-turquoise text-turquoise text-sm font-medium hover:bg-turquoise hover:text-ocean transition">Réserver</Link>
+                  <div className="p-6">
+                    <h3 className="font-display text-2xl">{title}</h3>
+                    <p className="text-white/70 text-sm mt-2 line-clamp-2">{desc}</p>
+                    <div className="flex flex-wrap gap-2 mt-4">
+                      {features.map((f: string) => (
+                        <span key={f} className="text-xs px-2.5 py-1 rounded-full bg-turquoise/15 text-turquoise border border-turquoise/30">{f}</span>
+                      ))}
+                    </div>
+                    <div className="flex gap-2 mt-5">
+                      <Link to="/hebergements" className="flex-1 text-center px-3 py-2 rounded-lg bg-turquoise text-ocean text-sm font-medium hover:bg-gold transition">Détails</Link>
+                      <Link to="/reserver" className="flex-1 text-center px-3 py-2 rounded-lg border border-turquoise text-turquoise text-sm font-medium hover:bg-turquoise hover:text-ocean transition">Réserver</Link>
+                    </div>
                   </div>
-                </div>
-              </motion.div>
-            ))}
+                </motion.div>
+              );
+            })}
           </div>
         </div>
       </section>
@@ -266,7 +275,7 @@ function HomePage() {
       <section className="bg-sand py-20">
         <div className="max-w-7xl mx-auto px-6 grid md:grid-cols-2 gap-10 items-center">
           <motion.div initial={{ opacity: 0, x: -30 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} className="relative">
-            <img src={poolImg} alt="Piscine vue mer" className="rounded-2xl shadow-2xl shadow-ocean/30 w-full h-[420px] object-cover" loading="lazy" />
+            <img src={ASSETS.poolImg} alt="Piscine vue mer" className="rounded-2xl shadow-2xl shadow-ocean/30 w-full h-[420px] object-cover" loading="lazy" />
             <div className="absolute -bottom-6 -right-6 hidden md:block w-24 h-24 rounded-full bg-turquoise/30 pool-ripple" />
           </motion.div>
           <motion.div initial={{ opacity: 0, x: 30 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }}>
@@ -294,7 +303,7 @@ function HomePage() {
 
       {/* RESTAURANT PREVIEW */}
       <section className="relative py-24 text-white">
-        <div className="absolute inset-0 bg-cover bg-center" style={{ backgroundImage: `url(${restoImg})` }} />
+        <div className="absolute inset-0 bg-cover bg-center" style={{ backgroundImage: `url(${ASSETS.piscine1})` }} />
         <div className="absolute inset-0 bg-ocean/80" />
         <div className="relative max-w-6xl mx-auto px-6 text-center">
           <p className="font-accent text-turquoise text-xl">Au Restaurant</p>

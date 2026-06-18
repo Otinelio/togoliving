@@ -8,6 +8,7 @@ import {
 } from "lucide-react";
 import { WaveDivider } from "@/components/WaveDivider";
 import { whatsappUrl } from "@/lib/whatsapp";
+import { useRooms } from "@/hooks/useRooms";
 
 export const Route = createFileRoute("/reserver")({
   head: () => ({
@@ -112,6 +113,14 @@ function Page() {
   const initVar = Math.min(parseInt(params.get("var") ?? "0") || 0, ROOM_DATA[initCat].variants.length - 1);
   const initRoom = params.get("room") ?? "";
   const hasPreset = params.has("cat");
+
+  const { rooms: dbRooms } = useRooms();
+  const availableRoomIds = new Set(dbRooms.filter(r => r.status === "Disponible").map(r => r.id));
+  const isFallback = dbRooms.length === 0;
+
+  const getAvailableRooms = (rooms: string[]) => {
+    return isFallback ? rooms : rooms.filter(id => availableRoomIds.has(id));
+  };
 
   const [step, setStep] = useState(hasPreset ? 1 : 0);
   const [d, setD] = useState({
@@ -233,11 +242,16 @@ function Page() {
                 <div>
                   <span className="text-sm font-semibold text-ocean mb-2 block">Catégorie de chambre</span>
                   <div className="space-y-2">
-                    {cat.variants.map((v, i) => (
+                    {cat.variants.map((v, i) => {
+                      const available = getAvailableRooms(v.rooms);
+                      const isFull = available.length === 0 && !isFallback;
+                      return (
                       <button
                         key={v.name}
-                        onClick={() => setD({ ...d, variantIdx: i, roomNum: "" })}
+                        onClick={() => { if (!isFull) setD({ ...d, variantIdx: i, roomNum: "" }) }}
+                        disabled={isFull}
                         className={`w-full text-left p-4 rounded-xl border-2 transition-all flex items-center justify-between ${
+                          isFull ? "opacity-50 cursor-not-allowed bg-sand/50 border-turquoise/10" :
                           d.variantIdx === i
                             ? "border-ocean bg-ocean/5"
                             : "border-turquoise/20 bg-white hover:border-turquoise/50"
@@ -245,14 +259,20 @@ function Page() {
                       >
                         <div>
                           <div className={`font-medium text-sm ${d.variantIdx === i ? "text-ocean" : "text-ocean/80"}`}>{v.name}</div>
-                          <div className="text-xs text-muted-foreground mt-0.5">Chambres disponibles : N° {v.rooms.join(", ")}</div>
+                          <div className="text-xs mt-0.5 font-medium">
+                            {isFull ? (
+                              <span className="text-red-500">Complet</span>
+                            ) : (
+                              <span className="text-muted-foreground">Disponibles : N° {available.join(", ")}</span>
+                            )}
+                          </div>
                         </div>
                         <div className="text-right shrink-0 ml-3">
-                          <div className="font-bold text-ocean text-sm">{formatF(v.day)}<span className="text-xs font-normal text-muted-foreground">/nuit</span></div>
-                          <div className="text-xs text-muted-foreground">{formatF(v.month)}/mois</div>
+                          <div className={`font-bold text-sm ${isFull ? 'text-ocean/50' : 'text-ocean'}`}>{formatF(v.day)}<span className="text-xs font-normal opacity-70">/nuit</span></div>
+                          <div className={`text-xs ${isFull ? 'text-muted-foreground/50' : 'text-muted-foreground'}`}>{formatF(v.month)}/mois</div>
                         </div>
                       </button>
-                    ))}
+                    )})}
                   </div>
                 </div>
 
@@ -264,7 +284,7 @@ function Page() {
                     className="w-full bg-white rounded-xl px-3 py-2.5 border-2 border-turquoise/20 text-ocean focus:outline-none focus:border-turquoise text-sm"
                   >
                     <option value="">Pas de préférence</option>
-                    {variant.rooms.map((r) => (
+                    {getAvailableRooms(variant.rooms).map((r) => (
                       <option key={r} value={r}>Chambre N° {r}</option>
                     ))}
                   </select>

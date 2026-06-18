@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import logoImg from "@/Assets/images/Residence_Togoliving_logo.png";
+import { ASSETS } from "@/lib/assets";
 
 export function Logo({ className = "", size = "h-12" }: { className?: string; size?: string }) {
   return (
@@ -8,7 +8,7 @@ export function Logo({ className = "", size = "h-12" }: { className?: string; si
       className={`inline-flex items-center ${className}`}
     >
       <img
-        src={logoImg}
+        src={ASSETS.logo}
         alt="TOGOLIVING Logo"
         className={`${size} w-auto`}
       />

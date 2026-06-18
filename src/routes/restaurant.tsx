@@ -10,7 +10,7 @@ import { useMenu } from "@/hooks/useMenu";
 import { MENU_CATEGORIES, type MenuCategory } from "@/data/defaultMenu";
 import { WaveDivider } from "@/components/WaveDivider";
 import { formatFCFA, whatsappUrl } from "@/lib/whatsapp";
-import restaurantHero from "@/Assets/images/piscine/piscine.jpg";
+import { ASSETS } from "@/lib/assets";
 
 type CartItem = {
   id: string;
@@ -137,7 +137,7 @@ function Page() {
     <>
       {/* HERO */}
       <section className="relative pt-32 pb-20 bg-ocean text-white overflow-hidden">
-        <div className="absolute inset-0 bg-cover bg-center opacity-35" style={{ backgroundImage: `url(${restaurantHero})` }} />
+        <div className="absolute inset-0 bg-cover bg-center opacity-35" style={{ backgroundImage: `url(${ASSETS.piscine})` }} />
         <div className="absolute inset-0 bg-gradient-to-b from-ocean/85 to-ocean" />
         <div className="relative max-w-5xl mx-auto px-6 text-center">
           <p className="font-accent text-turquoise text-xl">Au Restaurant</p>
@@ -423,10 +423,17 @@ function Page() {
             >
               <button
                 onClick={() => { setSelectedItem(null); setPopupQty(1); }}
-                className="absolute top-4 right-4 p-2.5 rounded-full bg-ocean/5 hover:bg-ocean/10 text-ocean transition-colors z-10"
+                className="absolute top-4 right-4 p-2.5 rounded-full bg-white/80 backdrop-blur-sm hover:bg-white text-ocean transition-colors z-10 shadow-sm"
               >
                 <X size={20} />
               </button>
+
+              {/* Image */}
+              {selectedItem.image && (
+                <div className="w-full h-52 sm:h-64 overflow-hidden">
+                  <img src={selectedItem.image} alt={selectedItem.name} className="w-full h-full object-cover" />
+                </div>
+              )}
 
               {/* Header */}
               <div className="p-6 pb-4">
@@ -495,6 +502,8 @@ function Page() {
 }
 
 function MenuCard({ it, onAdd, onOpenPopup }: { it: ReturnType<typeof useMenu>["items"][0]; onAdd: () => void; onOpenPopup: () => void }) {
+  const hasImage = !!it.image;
+
   return (
     <div
       onClick={(e) => {
@@ -502,35 +511,27 @@ function MenuCard({ it, onAdd, onOpenPopup }: { it: ReturnType<typeof useMenu>["
           onOpenPopup();
         }
       }}
-      className={`glass p-4 sm:p-5 hover-lift border-2 transition-colors flex flex-col h-[135px] sm:h-[150px] ${
+      className={`glass hover-lift border-2 transition-colors overflow-hidden ${
+        hasImage ? 'flex flex-col h-auto' : 'flex flex-col h-[135px] sm:h-[150px] p-4 sm:p-5'
+      } ${
         it.soldOut ? "opacity-50" : "border-transparent hover:border-gold/60 cursor-pointer"
       }`}
     >
-      <div className="flex items-start justify-between gap-2 sm:gap-3 flex-1 min-h-0">
-        <div className="flex-1 min-w-0 pr-2 flex flex-col h-full">
-          <h3 className="font-display text-base sm:text-lg text-ocean leading-snug line-clamp-1">{it.name}</h3>
-          {it.description && (
-            <p className="text-sm text-muted-foreground mt-1 leading-relaxed line-clamp-2">{it.description}</p>
-          )}
-          <div className="mt-auto pt-1">
-            {it.soldOut ? (
-              <span className="inline-block text-xs px-2 py-0.5 rounded bg-muted text-muted-foreground w-max">
-                Indisponible
-              </span>
-            ) : (
-              <span className="text-xs text-turquoise font-medium inline-block underline decoration-turquoise/40 underline-offset-2">
-                Voir plus
-              </span>
-            )}
+      {/* Image section (only if image exists) */}
+      {hasImage && (
+        <div className="relative h-36 sm:h-40 overflow-hidden">
+          <img src={it.image!} alt={it.name} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
+          <div className="absolute inset-0 bg-gradient-to-t from-ocean/40 via-transparent to-transparent" />
+          {/* Price badge on image */}
+          <div className="absolute top-3 right-3">
+            <PriceTag price={it.price} priceMax={(it as { priceMax?: number }).priceMax} />
           </div>
-        </div>
-        <div className="flex flex-col items-end justify-between h-full shrink-0">
-          <PriceTag price={it.price} priceMax={(it as { priceMax?: number }).priceMax} />
+          {/* Add button on image */}
           {!it.soldOut && (
             <motion.button
               whileTap={{ scale: 0.85 }}
               onClick={(e) => { e.stopPropagation(); onAdd(); }}
-              className="add-btn group inline-flex h-10 w-10 sm:h-11 sm:w-11 items-center justify-center rounded-2xl border border-white/15 bg-[linear-gradient(180deg,rgba(255,255,255,0.95)_0%,rgba(248,245,240,0.9)_100%)] text-ocean shadow-[0_14px_30px_rgba(30,58,95,0.14)] backdrop-blur-sm transition-all hover:-translate-y-0.5 hover:border-gold/50 hover:shadow-[0_18px_36px_rgba(30,58,95,0.22)]"
+              className="add-btn absolute bottom-3 right-3 group inline-flex h-10 w-10 sm:h-11 sm:w-11 items-center justify-center rounded-2xl border border-white/30 bg-white/90 backdrop-blur-sm text-ocean shadow-lg transition-all hover:-translate-y-0.5 hover:border-gold/50 hover:shadow-xl"
               aria-label={`Ajouter ${it.name} au panier`}
             >
               <span className="flex h-6 w-6 sm:h-7 sm:w-7 items-center justify-center rounded-full bg-[linear-gradient(135deg,#1E3A5F_0%,#2d5682_100%)] text-white shadow-md shadow-ocean/20 transition-transform group-hover:scale-105 group-hover:bg-[linear-gradient(135deg,#D4AF37_0%,#f1d57c_100%)] group-hover:text-ocean">
@@ -539,6 +540,58 @@ function MenuCard({ it, onAdd, onOpenPopup }: { it: ReturnType<typeof useMenu>["
             </motion.button>
           )}
         </div>
+      )}
+
+      {/* Text content */}
+      <div className={`flex-1 min-h-0 ${hasImage ? 'p-4 sm:p-5' : 'flex items-start justify-between gap-2 sm:gap-3'}`}>
+        {hasImage ? (
+          /* Layout for cards WITH image */
+          <div>
+            <h3 className="font-display text-base sm:text-lg text-ocean leading-snug line-clamp-1">{it.name}</h3>
+            {it.description && (
+              <p className="text-sm text-muted-foreground mt-1 leading-relaxed line-clamp-2">{it.description}</p>
+            )}
+            <div className="mt-2">
+              {it.soldOut ? (
+                <span className="inline-block text-xs px-2 py-0.5 rounded bg-muted text-muted-foreground w-max">Indisponible</span>
+              ) : (
+                <span className="text-xs text-turquoise font-medium inline-block underline decoration-turquoise/40 underline-offset-2">Voir plus</span>
+              )}
+            </div>
+          </div>
+        ) : (
+          /* Original layout for cards WITHOUT image */
+          <>
+            <div className="flex-1 min-w-0 pr-2 flex flex-col h-full">
+              <h3 className="font-display text-base sm:text-lg text-ocean leading-snug line-clamp-1">{it.name}</h3>
+              {it.description && (
+                <p className="text-sm text-muted-foreground mt-1 leading-relaxed line-clamp-2">{it.description}</p>
+              )}
+              <div className="mt-auto pt-1">
+                {it.soldOut ? (
+                  <span className="inline-block text-xs px-2 py-0.5 rounded bg-muted text-muted-foreground w-max">Indisponible</span>
+                ) : (
+                  <span className="text-xs text-turquoise font-medium inline-block underline decoration-turquoise/40 underline-offset-2">Voir plus</span>
+                )}
+              </div>
+            </div>
+            <div className="flex flex-col items-end justify-between h-full shrink-0">
+              <PriceTag price={it.price} priceMax={(it as { priceMax?: number }).priceMax} />
+              {!it.soldOut && (
+                <motion.button
+                  whileTap={{ scale: 0.85 }}
+                  onClick={(e) => { e.stopPropagation(); onAdd(); }}
+                  className="add-btn group inline-flex h-10 w-10 sm:h-11 sm:w-11 items-center justify-center rounded-2xl border border-white/15 bg-[linear-gradient(180deg,rgba(255,255,255,0.95)_0%,rgba(248,245,240,0.9)_100%)] text-ocean shadow-[0_14px_30px_rgba(30,58,95,0.14)] backdrop-blur-sm transition-all hover:-translate-y-0.5 hover:border-gold/50 hover:shadow-[0_18px_36px_rgba(30,58,95,0.22)]"
+                  aria-label={`Ajouter ${it.name} au panier`}
+                >
+                  <span className="flex h-6 w-6 sm:h-7 sm:w-7 items-center justify-center rounded-full bg-[linear-gradient(135deg,#1E3A5F_0%,#2d5682_100%)] text-white shadow-md shadow-ocean/20 transition-transform group-hover:scale-105 group-hover:bg-[linear-gradient(135deg,#D4AF37_0%,#f1d57c_100%)] group-hover:text-ocean">
+                    <Plus size={16} strokeWidth={3} />
+                  </span>
+                </motion.button>
+              )}
+            </div>
+          </>
+        )}
       </div>
     </div>
   );

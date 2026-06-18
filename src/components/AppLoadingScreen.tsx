@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import logoImg from "@/Assets/images/Residence_Togoliving_logo.png";
+import { ASSETS } from "@/lib/assets";
 
 export function AppLoadingScreen() {
   return (
@@ -12,7 +12,7 @@ export function AppLoadingScreen() {
     >
       <div className="text-center">
         <img
-          src={logoImg}
+          src={ASSETS.logo}
           alt="TOGOLIVING Loading"
           className="h-40 w-auto mx-auto"
         />

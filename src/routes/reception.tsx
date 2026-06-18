@@ -2,9 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { motion } from "framer-motion";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { LogOut, Bell } from "lucide-react";
-import { PinScreen } from "@/components/PinScreen";
 import { useOrders, setOrderStatus, type OrderStatus } from "@/hooks/useOrders";
-import { useSettings } from "@/hooks/useSettings";
 import { formatFCFA } from "@/lib/whatsapp";
 
 export const Route = createFileRoute("/reception")({
@@ -42,9 +40,6 @@ const STATUS_DOT: Record<OrderStatus, string> = {
 };
 
 function Page() {
-  const [unlocked, setUnlocked] = useState(false);
-  const { settings } = useSettings();
-  if (!unlocked) return <PinScreen title="Reception" expectedPin={settings.pinReception} onUnlock={() => setUnlocked(true)} />;
   return <Dashboard />;
 }
 

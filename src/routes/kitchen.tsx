@@ -2,9 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { motion } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
 import { LogOut, ChefHat } from "lucide-react";
-import { PinScreen } from "@/components/PinScreen";
 import { useOrders, setOrderStatus } from "@/hooks/useOrders";
-import { useSettings } from "@/hooks/useSettings";
 import { formatFCFA } from "@/lib/whatsapp";
 
 export const Route = createFileRoute("/kitchen")({
@@ -30,9 +28,6 @@ function rel(ts: number) {
 }
 
 function Page() {
-  const { settings } = useSettings();
-  const [u, setU] = useState(false);
-  if (!u) return <PinScreen title="Cuisine" expectedPin={settings.pinKitchen} onUnlock={() => setU(true)} />;
   return <Dash />;
 }
 

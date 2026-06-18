@@ -1,35 +1,56 @@
-import { DEFAULT_MENU, type MenuItem } from "@/data/defaultMenu";
-import { useLocalStorage } from "./useLocalStorage";
-import { useEffect } from "react";
-
-// Incrémenter cette version à chaque fois que le menu par défaut change
-// pour forcer la mise à jour sur tous les appareils (mobile inclus)
-const MENU_VERSION = "v3";
-const VERSION_KEY = "togoliving_menu_version";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { supabase } from "@/lib/supabase";
+import { type MenuItem } from "@/data/defaultMenu";
 
 export function useMenu() {
-  const [items, setItems] = useLocalStorage<MenuItem[]>("togoliving_menu_v3", DEFAULT_MENU);
+  const queryClient = useQueryClient();
 
-  // Si la version stockée est différente, on réinitialise le menu
-  useEffect(() => {
-    const storedVersion = localStorage.getItem(VERSION_KEY);
-    if (storedVersion !== MENU_VERSION) {
-      setItems(DEFAULT_MENU);
-      localStorage.setItem(VERSION_KEY, MENU_VERSION);
-    }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  const { data: items = [], isLoading } = useQuery({
+    queryKey: ["menuItems"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("menu_items")
+        .select("*")
+        .order("category")
+        .order("name");
+      if (error) throw error;
+      return data as MenuItem[];
+    },
+  });
 
-  const addItem = (item: Omit<MenuItem, "id">) =>
-    setItems([...items, { ...item, id: crypto.randomUUID() }]);
+  const addItemMutation = useMutation({
+    mutationFn: async (item: Omit<MenuItem, "id">) => {
+      const { data, error } = await supabase.from("menu_items").insert(item).select().single();
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["menuItems"] }),
+  });
 
-  const updateItem = (id: string, patch: Partial<MenuItem>) =>
-    setItems(items.map((i) => (i.id === id ? { ...i, ...patch } : i)));
+  const updateItemMutation = useMutation({
+    mutationFn: async ({ id, patch }: { id: string; patch: Partial<MenuItem> }) => {
+      const { data, error } = await supabase.from("menu_items").update(patch).eq("id", id).select().single();
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["menuItems"] }),
+  });
 
-  const removeItem = (id: string) => setItems(items.filter((i) => i.id !== id));
+  const removeItemMutation = useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase.from("menu_items").delete().eq("id", id);
+      if (error) throw error;
+    },
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["menuItems"] }),
+  });
 
-  const toggleSoldOut = (id: string) =>
-    setItems(items.map((i) => (i.id === id ? { ...i, soldOut: !i.soldOut } : i)));
+  const addItem = (item: Omit<MenuItem, "id">) => addItemMutation.mutate(item);
+  const updateItem = (id: string, patch: Partial<MenuItem>) => updateItemMutation.mutate({ id, patch });
+  const removeItem = (id: string) => removeItemMutation.mutate(id);
+  const toggleSoldOut = (id: string) => {
+    const item = items.find(i => i.id === id);
+    if (item) updateItem(id, { soldOut: !item.soldOut });
+  };
 
-  return { items, setItems, addItem, updateItem, removeItem, toggleSoldOut };
+  return { items, isLoading, addItem, updateItem, removeItem, toggleSoldOut };
 }

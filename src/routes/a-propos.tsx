@@ -3,7 +3,7 @@ import { motion, useInView, useMotionValue, animate } from "framer-motion";
 import { Heart, Star, Shield } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { WaveDivider } from "@/components/WaveDivider";
-import aboutHero from "@/Assets/images/accueil2_img.jpg";
+import { ASSETS } from "@/lib/assets";
 
 export const Route = createFileRoute("/a-propos")({
   head: () => ({
@@ -33,7 +33,7 @@ function Page() {
   return (
     <>
       <section className="relative pt-32 pb-20 bg-ocean text-white overflow-hidden">
-        <div className="absolute inset-0 bg-cover bg-center opacity-35" style={{ backgroundImage: `url(${aboutHero})` }} />
+        <div className="absolute inset-0 bg-cover bg-center opacity-35" style={{ backgroundImage: `url(${ASSETS.poolImg})` }} />
         <div className="absolute inset-0 bg-gradient-to-b from-ocean/85 to-ocean" />
         <div className="relative max-w-4xl mx-auto px-6 text-center">
           <p className="font-accent text-turquoise text-xl">A Propos</p>

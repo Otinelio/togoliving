@@ -1,4 +1,5 @@
-import { useEffect, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/lib/supabase";
 
 export type OrderStatus = "En attente" | "En preparation" | "Pret" | "Livre";
 
@@ -19,58 +20,58 @@ export type Order = {
   status: OrderStatus;
 };
 
-const KEY = "togoliving_orders";
-
-function read(): Order[] {
-  if (typeof window === "undefined") return [];
-  try {
-    const raw = window.localStorage.getItem(KEY);
-    return raw ? (JSON.parse(raw) as Order[]) : [];
-  } catch {
-    return [];
-  }
-}
-
-function write(orders: Order[]) {
-  window.localStorage.setItem(KEY, JSON.stringify(orders));
-  window.dispatchEvent(new StorageEvent("storage", { key: KEY }));
-}
-
-export function addOrder(order: Omit<Order, "id" | "timestamp" | "status">) {
-  const orders = read();
-  const newOrder: Order = {
-    ...order,
-    id: crypto.randomUUID(),
+export async function addOrder(order: Omit<Order, "id" | "timestamp" | "status">) {
+  const newOrder = {
+    roomId: order.roomId,
+    guestName: order.guestName,
+    items: order.items,
+    totalPrice: order.totalPrice,
     timestamp: Date.now(),
     status: "En attente",
   };
-  write([newOrder, ...orders]);
-  return newOrder;
+  
+  const { data, error } = await supabase.from("orders").insert(newOrder).select().single();
+  if (error) throw error;
+  return data;
 }
 
-export function setOrderStatus(id: string, status: OrderStatus) {
-  write(read().map((o) => (o.id === id ? { ...o, status } : o)));
+export async function setOrderStatus(id: string, status: OrderStatus) {
+  const { error } = await supabase.from("orders").update({ status }).eq("id", id);
+  if (error) throw error;
 }
 
-export function deleteOrder(id: string) {
-  write(read().filter((o) => o.id !== id));
+export async function deleteOrder(id: string) {
+  const { error } = await supabase.from("orders").delete().eq("id", id);
+  if (error) throw error;
 }
 
-/** Polls orders every `interval` ms. */
 export function useOrders(interval = 3000) {
-  const [orders, setOrders] = useState<Order[]>(() => read());
-
-  useEffect(() => {
-    const tick = () => setOrders(read());
-    tick();
-    const id = window.setInterval(tick, interval);
-    const onStorage = (e: StorageEvent) => { if (e.key === KEY) tick(); };
-    window.addEventListener("storage", onStorage);
-    return () => {
-      window.clearInterval(id);
-      window.removeEventListener("storage", onStorage);
-    };
-  }, [interval]);
+  const { data: orders = [] } = useQuery({
+    queryKey: ["orders"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("orders")
+        .select("*")
+        .order("timestamp", { ascending: false });
+      
+      if (error && error.code === '42P01') {
+        console.warn("Table 'orders' n'existe pas encore.");
+        return [];
+      }
+      if (error) throw error;
+      
+      return data.map((d: any) => ({
+        id: d.id,
+        roomId: d.roomId,
+        guestName: d.guestName,
+        items: d.items,
+        totalPrice: d.totalPrice,
+        timestamp: d.timestamp,
+        status: d.status
+      })) as Order[];
+    },
+    refetchInterval: interval,
+  });
 
   return orders;
 }
