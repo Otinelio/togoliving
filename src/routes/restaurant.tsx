@@ -156,18 +156,51 @@ function Page() {
             })}
           </div>
 
-          {/* Items Grid (Flat, No grouping) */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-5 animate-fade-in">
-            {filtered.map((it) => (
-              <MenuCard key={it.id} it={it} onAdd={() => add(it.id, it.name, it.price, it.description)} onOpenPopup={() => setSelectedItem(it)} />
-            ))}
-            
-            {filtered.length === 0 && (
-              <p className="col-span-full text-center text-muted-foreground py-10">
-                Aucun article dans cette catégorie.
-              </p>
-            )}
-          </div>
+          {/* Items — Grouped by category in "Tout" mode, flat otherwise */}
+          {tab === "Tout" ? (
+            <div className="space-y-12 animate-fade-in">
+              {MENU_CATEGORIES.filter((c) => c !== "Tout").map((category) => {
+                const catItems = items.filter((i) => i.category === category);
+                if (catItems.length === 0) return null;
+                const Icon = ICONS[category];
+                return (
+                  <div key={category}>
+                    {/* Category header */}
+                    <div className="flex items-center gap-3 mb-5">
+                      <div className="flex items-center gap-2 shrink-0">
+                        <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-ocean text-white shadow-md shadow-ocean/20">
+                          <Icon size={18} />
+                        </div>
+                        <h2 className="font-display text-xl sm:text-2xl text-ocean">{category}</h2>
+                      </div>
+                      <div className="h-px flex-1 bg-turquoise/25" />
+                      <span className="text-xs text-ocean/40 font-medium shrink-0">{catItems.length} article{catItems.length > 1 ? "s" : ""}</span>
+                    </div>
+                    {/* Grid */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-5">
+                      {catItems.map((it) => (
+                        <MenuCard key={it.id} it={it} onAdd={() => add(it.id, it.name, it.price, it.description)} onOpenPopup={() => setSelectedItem(it)} />
+                      ))}
+                    </div>
+                  </div>
+                );
+              })}
+              {items.length === 0 && (
+                <p className="text-center text-muted-foreground py-10">Le menu est actuellement vide.</p>
+              )}
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-5 animate-fade-in">
+              {filtered.map((it) => (
+                <MenuCard key={it.id} it={it} onAdd={() => add(it.id, it.name, it.price, it.description)} onOpenPopup={() => setSelectedItem(it)} />
+              ))}
+              {filtered.length === 0 && (
+                <p className="col-span-full text-center text-muted-foreground py-10">
+                  Aucun article dans cette catégorie.
+                </p>
+              )}
+            </div>
+          )}
         </div>
       </section>
 
