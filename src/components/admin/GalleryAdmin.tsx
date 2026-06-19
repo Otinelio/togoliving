@@ -70,10 +70,12 @@ export function GalleryAdmin() {
                 <div className="flex justify-between items-start">
                   <span className="bg-white/90 text-ocean px-2 py-1 rounded-lg text-xs font-bold">{item.category}</span>
                   <button onClick={async () => {
-                    removeItem(item.id);
-                    if (item.imageUrl && item.imageUrl.includes("supabase.co")) {
-                      const path = item.imageUrl.split("/media/")[1];
-                      if (path) await supabase.storage.from("media").remove([path]);
+                    if (window.confirm("Êtes-vous sûr de vouloir supprimer cette image ?")) {
+                      removeItem(item.id);
+                      if (item.imageUrl && item.imageUrl.includes("supabase.co")) {
+                        const path = item.imageUrl.split("/media/")[1];
+                        if (path) await supabase.storage.from("media").remove([path]);
+                      }
                     }
                   }} className="bg-red-500 hover:bg-red-600 text-white p-2 rounded-xl transition shadow">
                     <Trash2 size={16} />

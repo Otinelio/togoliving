@@ -1,4 +1,4 @@
-export type RoomType = "Studio" | "1 Chambre Salon" | "2 Chambres Salon" | "3 Chambres Salon";
+export type RoomType = "Studios" | "1 Chambre Salon" | "2 Chambres Salon" | "3 Chambres Salon";
 export type RoomStatus = "Disponible" | "Occupe" | "Maintenance";
 
 export type Room = {

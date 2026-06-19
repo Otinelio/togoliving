@@ -182,7 +182,7 @@ function ReviewsAdmin() {
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-5">
           {reviews.map(r => (
             <div key={r.id} className="glass p-6 rounded-2xl border border-turquoise/10 relative group hover:shadow-xl hover:-translate-y-1 transition-all">
-              <button onClick={() => deleteReview(r.id)} className="absolute top-4 right-4 text-red-400 hover:text-red-600 bg-red-50 hover:bg-red-100 p-2 rounded-xl transition-colors opacity-0 group-hover:opacity-100"><Trash2 size={16} /></button>
+              <button onClick={() => { if (window.confirm("Êtes-vous sûr de vouloir supprimer cet avis ?")) deleteReview(r.id); }} className="absolute top-4 right-4 text-red-400 hover:text-red-600 bg-red-50 hover:bg-red-100 p-2 rounded-xl transition-colors opacity-0 group-hover:opacity-100"><Trash2 size={16} /></button>
               
               <div className="flex justify-between items-start mb-4">
                 <div>
@@ -212,7 +212,7 @@ function ReviewsAdmin() {
 function Rooms() {
   const { rooms, addRoom, updateRoom, removeRoom } = useRooms();
   const [newId, setNewId] = useState("");
-  const [newType, setNewType] = useState<RoomType>("Studio");
+  const [newType, setNewType] = useState<RoomType>("Studios");
   const [filterType, setFilterType] = useState<RoomType | "Toutes">("Toutes");
   const [filterStatus, setFilterStatus] = useState<RoomStatus | "Tous">("Tous");
 
@@ -258,7 +258,7 @@ function Rooms() {
           <div className="flex flex-wrap sm:flex-nowrap gap-2">
             <input placeholder="N°" value={newId} onChange={(e) => setNewId(e.target.value)} className="w-16 bg-white px-3 py-2.5 rounded-xl border-2 border-turquoise/20 focus:border-turquoise text-sm focus:outline-none font-bold text-ocean text-center" />
             <select value={newType} onChange={(e) => setNewType(e.target.value as RoomType)} className="flex-1 bg-white px-3 py-2.5 rounded-xl border-2 border-turquoise/20 focus:border-turquoise text-sm focus:outline-none font-medium text-ocean min-w-[120px]">
-              <option>Studio</option><option>1 Chambre Salon</option><option>2 Chambres Salon</option><option>3 Chambres Salon</option>
+              <option>Studios</option><option>1 Chambre Salon</option><option>2 Chambres Salon</option><option>3 Chambres Salon</option>
             </select>
             <button onClick={() => { if (newId) { addRoom({ id: newId, type: newType, status: "Disponible", floor: +newId[0] || 1 }); setNewId(""); } }}
               className="w-full sm:w-auto bg-ocean text-white rounded-xl px-4 py-2.5 flex items-center justify-center hover:bg-gold hover:text-ocean transition-colors shadow-md"><Plus size={18} /></button>
@@ -270,7 +270,7 @@ function Rooms() {
           <div className="flex flex-col sm:flex-row gap-3">
             <select value={filterType} onChange={(e) => setFilterType(e.target.value as any)} className="w-full sm:w-auto bg-white px-4 py-2.5 rounded-xl border-2 border-turquoise/20 text-sm focus:outline-none font-medium text-ocean">
               <option value="Toutes">Tous les types</option>
-              <option>Studio</option><option>1 Chambre Salon</option><option>2 Chambres Salon</option><option>3 Chambres Salon</option>
+              <option>Studios</option><option>1 Chambre Salon</option><option>2 Chambres Salon</option><option>3 Chambres Salon</option>
             </select>
             <div className="flex gap-1 bg-white p-1 rounded-xl border-2 border-turquoise/20 overflow-x-auto flex-1 w-full sm:w-auto">
               <button onClick={() => setFilterStatus("Tous")} className={`flex-1 sm:flex-none px-3 sm:px-4 py-1.5 rounded-lg text-xs sm:text-sm font-semibold transition-all whitespace-nowrap ${filterStatus === "Tous" ? "bg-ocean text-white shadow" : "text-ocean/60 hover:bg-turquoise/10"}`}>Tous</button>
@@ -302,7 +302,7 @@ function Rooms() {
                     <div className="font-display text-3xl text-ocean tracking-tight">N° {r.id}</div>
                     <div className="text-[10px] font-bold text-turquoise uppercase tracking-widest mt-0.5 px-2 py-1 bg-turquoise/10 rounded-full inline-block">{r.type}</div>
                   </div>
-                  <button onClick={() => removeRoom(r.id)} className="text-red-400 hover:text-red-600 bg-red-50 hover:bg-red-100 p-2 rounded-xl transition-colors opacity-0 group-hover:opacity-100"><Trash2 size={16} /></button>
+                  <button onClick={() => { if (window.confirm("Êtes-vous sûr de vouloir supprimer cette chambre ?")) removeRoom(r.id); }} className="text-red-400 hover:text-red-600 bg-red-50 hover:bg-red-100 p-2 rounded-xl transition-colors opacity-0 group-hover:opacity-100"><Trash2 size={16} /></button>
                 </div>
                 
                 <div className="space-y-3 flex-1 flex flex-col justify-end mt-2">
