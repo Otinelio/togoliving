@@ -3,6 +3,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { Menu, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Logo } from "./Logo";
+import { LanguageSelector } from "./LanguageSelector";
 
 const links = [
   { to: "/", label: "Accueil" },
@@ -62,6 +63,7 @@ export function Navbar() {
         </nav>
 
         <div className="flex items-center gap-3">
+          <LanguageSelector scrolled={scrolled} />
           <Link
             to="/reserver"
             className="hidden md:inline-flex items-center px-5 py-2.5 rounded-full bg-turquoise text-ocean font-medium text-sm shimmer-gold hover:bg-gold transition-colors"

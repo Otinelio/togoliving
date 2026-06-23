@@ -1,8 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import {
-  LayoutDashboard, UtensilsCrossed, BedDouble, QrCode, ClipboardList, Settings,
-  LogOut, Plus, Trash2, Download, Wallet, Clock, Building, Globe, Phone, Lock, AlertTriangle, Image as ImageIcon, Home, FileText, User, Star
+  LayoutDashboard, UtensilsCrossed, BedDouble, QrCode, Settings,
+  LogOut, Plus, Trash2, Clock, Building, Globe, Phone, Lock, AlertTriangle, Image as ImageIcon, Home, FileText, User, Star
 } from "lucide-react";
 import { GalleryAdmin } from "@/components/admin/GalleryAdmin";
 import { AccommodationsAdmin } from "@/components/admin/AccommodationsAdmin";
@@ -20,7 +20,7 @@ import { formatFCFA } from "@/lib/whatsapp";
 
 export const Route = createFileRoute("/admin")({ component: Page });
 
-type Section = "overview" | "menu" | "gallery" | "accommodations" | "rooms" | "qr" | "history" | "reviews" | "settings";
+type Section = "overview" | "menu" | "gallery" | "accommodations" | "rooms" | "qr" | "reviews" | "settings";
 
 function Page() {
   const { settings } = useSettings();
@@ -39,7 +39,6 @@ function Dash() {
     { id: "rooms", icon: BedDouble, label: "Disponibilité" },
     { id: "reviews", icon: Star, label: "Avis" },
     { id: "qr", icon: QrCode, label: "QR Codes" },
-    { id: "history", icon: ClipboardList, label: "Historique" },
     { id: "settings", icon: Settings, label: "Parametres" },
   ];
 
@@ -81,7 +80,6 @@ function Dash() {
         {section === "accommodations" && <AccommodationsAdmin />}
         {section === "rooms" && <Rooms />}
         {section === "qr" && <QRSection />}
-        {section === "history" && <History />}
         {section === "reviews" && <ReviewsAdmin />}
         {section === "settings" && <SettingsSection />}
       </main>
@@ -102,7 +100,7 @@ function Overview({ onNavigate }: { onNavigate: (section: Section) => void }) {
       
       <div className="mb-10">
         <h2 className="text-sm font-bold uppercase tracking-wider text-ocean/60 mb-4">Accès Rapide</h2>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
           <button onClick={() => onNavigate("menu")} className="p-5 rounded-2xl bg-white border border-turquoise/10 hover:border-turquoise hover:shadow-lg hover:-translate-y-1 transition-all flex flex-col items-center text-center gap-3 group">
             <div className="w-12 h-12 rounded-full bg-ocean/5 text-ocean flex items-center justify-center group-hover:bg-turquoise group-hover:text-white transition-colors"><UtensilsCrossed size={20} /></div>
             <span className="font-bold text-sm text-ocean">Menu</span>
@@ -110,10 +108,6 @@ function Overview({ onNavigate }: { onNavigate: (section: Section) => void }) {
           <button onClick={() => onNavigate("rooms")} className="p-5 rounded-2xl bg-white border border-turquoise/10 hover:border-turquoise hover:shadow-lg hover:-translate-y-1 transition-all flex flex-col items-center text-center gap-3 group">
             <div className="w-12 h-12 rounded-full bg-ocean/5 text-ocean flex items-center justify-center group-hover:bg-turquoise group-hover:text-white transition-colors"><BedDouble size={20} /></div>
             <span className="font-bold text-sm text-ocean">Disponibilité</span>
-          </button>
-          <button onClick={() => onNavigate("history")} className="p-5 rounded-2xl bg-white border border-turquoise/10 hover:border-turquoise hover:shadow-lg hover:-translate-y-1 transition-all flex flex-col items-center text-center gap-3 group">
-            <div className="w-12 h-12 rounded-full bg-ocean/5 text-ocean flex items-center justify-center group-hover:bg-turquoise group-hover:text-white transition-colors"><ClipboardList size={20} /></div>
-            <span className="font-bold text-sm text-ocean">Historique</span>
           </button>
           <button onClick={() => onNavigate("qr")} className="p-5 rounded-2xl bg-white border border-turquoise/10 hover:border-turquoise hover:shadow-lg hover:-translate-y-1 transition-all flex flex-col items-center text-center gap-3 group">
             <div className="w-12 h-12 rounded-full bg-ocean/5 text-ocean flex items-center justify-center group-hover:bg-turquoise group-hover:text-white transition-colors"><QrCode size={20} /></div>
@@ -258,7 +252,7 @@ function Rooms() {
           <div className="flex flex-wrap sm:flex-nowrap gap-2">
             <input placeholder="N°" value={newId} onChange={(e) => setNewId(e.target.value)} className="w-16 bg-white px-3 py-2.5 rounded-xl border-2 border-turquoise/20 focus:border-turquoise text-sm focus:outline-none font-bold text-ocean text-center" />
             <select value={newType} onChange={(e) => setNewType(e.target.value as RoomType)} className="flex-1 bg-white px-3 py-2.5 rounded-xl border-2 border-turquoise/20 focus:border-turquoise text-sm focus:outline-none font-medium text-ocean min-w-[120px]">
-              <option>Studios</option><option>1 Chambre Salon</option><option>2 Chambres Salon</option><option>3 Chambres Salon</option>
+              <option>Studios</option><option>Chambre Salon</option><option>2 Chambres Salon</option><option>3 Chambres Salon</option>
             </select>
             <button onClick={() => { if (newId) { addRoom({ id: newId, type: newType, status: "Disponible", floor: +newId[0] || 1 }); setNewId(""); } }}
               className="w-full sm:w-auto bg-ocean text-white rounded-xl px-4 py-2.5 flex items-center justify-center hover:bg-gold hover:text-ocean transition-colors shadow-md"><Plus size={18} /></button>
@@ -270,7 +264,7 @@ function Rooms() {
           <div className="flex flex-col sm:flex-row gap-3">
             <select value={filterType} onChange={(e) => setFilterType(e.target.value as any)} className="w-full sm:w-auto bg-white px-4 py-2.5 rounded-xl border-2 border-turquoise/20 text-sm focus:outline-none font-medium text-ocean">
               <option value="Toutes">Tous les types</option>
-              <option>Studios</option><option>1 Chambre Salon</option><option>2 Chambres Salon</option><option>3 Chambres Salon</option>
+              <option>Studios</option><option>Chambre Salon</option><option>2 Chambres Salon</option><option>3 Chambres Salon</option>
             </select>
             <div className="flex gap-1 bg-white p-1 rounded-xl border-2 border-turquoise/20 overflow-x-auto flex-1 w-full sm:w-auto">
               <button onClick={() => setFilterStatus("Tous")} className={`flex-1 sm:flex-none px-3 sm:px-4 py-1.5 rounded-lg text-xs sm:text-sm font-semibold transition-all whitespace-nowrap ${filterStatus === "Tous" ? "bg-ocean text-white shadow" : "text-ocean/60 hover:bg-turquoise/10"}`}>Tous</button>
@@ -383,70 +377,7 @@ function QRSection() {
   );
 }
 
-function History() {
-  const orders = useOrders(5000);
-  const [room, setRoom] = useState(""); const [status, setStatus] = useState("");
-  const filtered = orders.filter((o) =>
-    (!room || o.roomId.includes(room)) && (!status || o.status === status)
-  );
 
-  const exportCsv = () => {
-    const rows = [["Date", "Chambre", "Client", "Articles", "Total", "Statut"]];
-    filtered.forEach((o) => rows.push([
-      new Date(o.timestamp).toLocaleString("fr-FR"), o.roomId, o.guestName ?? "",
-      o.items.map((i) => `${i.qty}x ${i.name}`).join(" | "),
-      String(o.totalPrice), o.status,
-    ]));
-    const csv = rows.map((r) => r.map((c) => `"${c.replace(/"/g, '""')}"`).join(",")).join("\n");
-    const blob = new Blob([csv], { type: "text/csv" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a"); a.href = url; a.download = `togoliving-orders-${Date.now()}.csv`; a.click();
-    URL.revokeObjectURL(url);
-  };
-
-  return (
-    <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
-      <h1 className="font-display text-4xl text-ocean mb-8">Historique Commandes</h1>
-      <div className="glass p-5 rounded-2xl mb-8 flex flex-wrap gap-4 items-center shadow-sm">
-        <input placeholder="🔍 Filtrer par chambre" value={room} onChange={(e) => setRoom(e.target.value)} className="bg-white px-4 py-3 rounded-xl border-2 border-turquoise/20 focus:border-turquoise text-sm focus:outline-none min-w-[200px] font-medium text-ocean" />
-        <select value={status} onChange={(e) => setStatus(e.target.value)} className="bg-white px-4 py-3 rounded-xl border-2 border-turquoise/20 focus:border-turquoise text-sm focus:outline-none font-medium text-ocean">
-          <option value="">Tous statuts</option><option>En attente</option><option>En preparation</option><option>Pret</option><option>Livre</option>
-        </select>
-        <button onClick={exportCsv} className="ml-auto inline-flex items-center gap-2 bg-ocean text-white rounded-xl px-5 py-3 text-sm font-bold hover:bg-gold hover:text-ocean transition-colors shadow-lg shadow-ocean/20"><Download size={16} /> Exporter CSV</button>
-      </div>
-
-      <div className="overflow-x-auto bg-white rounded-2xl border-2 border-turquoise/10 shadow-xl shadow-ocean/5">
-        <table className="w-full text-sm">
-          <thead className="bg-ocean/5 text-ocean text-left border-b-2 border-turquoise/10">
-            <tr>
-              <th className="p-5 font-bold uppercase tracking-wider text-xs">Date</th>
-              <th className="p-5 font-bold uppercase tracking-wider text-xs">Chambre</th>
-              <th className="p-5 font-bold uppercase tracking-wider text-xs">Client</th>
-              <th className="p-5 font-bold uppercase tracking-wider text-xs">Articles</th>
-              <th className="p-5 font-bold uppercase tracking-wider text-xs">Total</th>
-              <th className="p-5 font-bold uppercase tracking-wider text-xs">Statut</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-turquoise/10">
-            {filtered.map((o) => (
-              <tr key={o.id} className="hover:bg-sand/50 transition-colors group">
-                <td className="p-5 whitespace-nowrap text-muted-foreground font-medium">{new Date(o.timestamp).toLocaleString("fr-FR", { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' })}</td>
-                <td className="p-5"><span className="inline-flex items-center justify-center bg-ocean/10 text-ocean font-bold w-10 h-10 rounded-xl">{o.roomId}</span></td>
-                <td className="p-5 font-bold text-ocean">{o.guestName ?? "—"}</td>
-                <td className="p-5 text-muted-foreground max-w-[250px] truncate font-medium" title={o.items.map((i) => `${i.qty}× ${i.name}`).join(", ")}>{o.items.map((i) => `${i.qty}× ${i.name}`).join(", ")}</td>
-                <td className="p-5 text-gold font-bold text-base">{formatFCFA(o.totalPrice)}</td>
-                <td className="p-5">
-                  <span className={`px-4 py-1.5 rounded-full text-xs font-bold border-2 ${o.status === 'Livre' ? 'bg-green-50 text-green-600 border-green-200' : o.status === 'Pret' ? 'bg-blue-50 text-blue-600 border-blue-200' : 'bg-orange-50 text-orange-600 border-orange-200'}`}>{o.status}</span>
-                </td>
-              </tr>
-            ))}
-            {filtered.length === 0 && <tr><td colSpan={6} className="p-12 text-center text-muted-foreground bg-sand/30 font-medium">Aucune commande trouvée</td></tr>}
-          </tbody>
-        </table>
-      </div>
-    </div>
-  );
-}
 
 function SettingsSection() {
   const { settings, setSettings } = useSettings();

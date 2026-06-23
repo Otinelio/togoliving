@@ -24,7 +24,7 @@ const FALLBACK_ROOMS = [
     ],
   },
   {
-    title: "1 Chambre Salon",
+    title: "Chambre Salon",
     subtitle: "Appartement 2 pièces",
     badge: "2 Pièces",
     isPremium: false,

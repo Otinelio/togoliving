@@ -66,18 +66,17 @@ export function GalleryAdmin() {
           {filteredItems.map(item => (
             <div key={item.id} className="group relative rounded-2xl overflow-hidden aspect-[4/3] bg-white border-2 border-turquoise/20 shadow-sm hover:shadow-xl transition-all">
               <img src={item.imageUrl} alt={item.altText} className="w-full h-full object-cover" />
-              <div className="absolute inset-0 bg-ocean/60 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-between p-3">
+              <div className="absolute inset-0 bg-ocean/60 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity flex flex-col justify-between p-3">
                 <div className="flex justify-between items-start">
                   <span className="bg-white/90 text-ocean px-2 py-1 rounded-lg text-xs font-bold">{item.category}</span>
                   <button onClick={async () => {
-                    if (window.confirm("Êtes-vous sûr de vouloir supprimer cette image ?")) {
                       removeItem(item.id);
                       if (item.imageUrl && item.imageUrl.includes("supabase.co")) {
                         const path = item.imageUrl.split("/media/")[1];
                         if (path) await supabase.storage.from("media").remove([path]);
                       }
                     }
-                  }} className="bg-red-500 hover:bg-red-600 text-white p-2 rounded-xl transition shadow">
+                  } className="bg-red-500 hover:bg-red-600 text-white p-2 rounded-xl transition shadow">
                     <Trash2 size={16} />
                   </button>
                 </div>

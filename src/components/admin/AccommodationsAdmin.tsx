@@ -1,15 +1,14 @@
-import { useState, useRef } from "react";
-import { Plus, Trash2, Home, Loader2, Image as ImageIcon, Video, X, Pencil, Check, ChevronRight } from "lucide-react";
+import { useState } from "react";
+import { Plus, Trash2, Loader2, Image as ImageIcon, Video, X, Pencil, Check, ChevronRight } from "lucide-react";
 import { useAccommodations, type Accommodation } from "@/hooks/useAccommodations";
 import { supabase } from "@/lib/supabase";
 import { compressImage } from "@/lib/media";
 
 export function AccommodationsAdmin() {
   const { items, isLoading, addItem, updateItem, removeItem } = useAccommodations();
-  const [uploading, setUploading] = useState<string | null>(null);
-  
   const [modalItem, setModalItem] = useState<Partial<Accommodation> | null>(null);
   const [activeTab, setActiveTab] = useState<"info" | "media" | "features" | "prices">("info");
+  const [uploading, setUploading] = useState<"imageUrl" | "videoUrl" | "posterUrl" | null>(null);
 
   const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>, field: "imageUrl" | "videoUrl" | "posterUrl") => {
     const rawFile = e.target.files?.[0];
@@ -236,13 +235,12 @@ export function AccommodationsAdmin() {
                             <span className="text-sm font-bold">Ajouter une image</span>
                           </div>
                         )}
-                        <label className="absolute inset-0 bg-ocean/50 opacity-0 group-hover:opacity-100 flex items-center justify-center cursor-pointer transition text-white font-bold">
+                        <label className="absolute inset-0 bg-ocean/50 opacity-100 md:opacity-0 md:group-hover:opacity-100 flex items-center justify-center cursor-pointer transition text-white font-bold">
                           {uploading === "imageUrl" ? <Loader2 className="animate-spin" /> : "Parcourir..."}
                           <input type="file" accept="image/*" onChange={e => handleUpload(e, "imageUrl")} className="hidden" />
                         </label>
                       </div>
                     </div>
-
                     <div className="space-y-2">
                       <label className="text-[10px] uppercase tracking-widest font-bold text-ocean/60 block">Vidéo de Présentation (Optionnel)</label>
                       <div className="aspect-[16/9] bg-white border-2 border-dashed border-turquoise/30 rounded-2xl overflow-hidden relative group">
@@ -254,7 +252,7 @@ export function AccommodationsAdmin() {
                             <span className="text-sm font-bold">Ajouter une vidéo</span>
                           </div>
                         )}
-                        <label className="absolute inset-0 bg-ocean/50 opacity-0 group-hover:opacity-100 flex items-center justify-center cursor-pointer transition text-white font-bold">
+                        <label className="absolute inset-0 bg-ocean/50 opacity-100 md:opacity-0 md:group-hover:opacity-100 flex items-center justify-center cursor-pointer transition text-white font-bold">
                           {uploading === "videoUrl" ? <Loader2 className="animate-spin" /> : "Parcourir..."}
                           <input type="file" accept="video/*" onChange={e => handleUpload(e, "videoUrl")} className="hidden" />
                         </label>

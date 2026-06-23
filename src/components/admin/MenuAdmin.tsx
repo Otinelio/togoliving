@@ -10,6 +10,7 @@ import { MENU_CATEGORIES, type MenuCategory } from "@/data/defaultMenu";
 import { formatFCFA } from "@/lib/whatsapp";
 import { compressImage } from "@/lib/media";
 
+
 export function MenuAdmin() {
   const { items, addItem, updateItem, removeItem, toggleSoldOut } = useMenu();
   const [tab, setTab] = useState<MenuCategory>("Petit-Déjeuner");
@@ -181,7 +182,7 @@ export function MenuAdmin() {
                 {addImagePreview ? (
                   <>
                     <img src={addImagePreview} className="w-full h-full object-cover" alt="Preview" />
-                    <div className="absolute inset-0 bg-ocean/50 opacity-0 group-hover:opacity-100 transition flex items-center justify-center text-white text-sm font-bold">
+                    <div className="absolute inset-0 bg-ocean/50 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition flex items-center justify-center text-white text-sm font-bold">
                       Changer
                     </div>
                   </>
@@ -287,7 +288,7 @@ export function MenuAdmin() {
                   <h3 className="font-display text-lg text-ocean leading-tight line-clamp-1">{it.name}</h3>
                   <button
                     onClick={() => openEdit(it)}
-                    className="shrink-0 p-2 rounded-xl bg-ocean/5 text-ocean/50 hover:bg-turquoise/20 hover:text-ocean transition opacity-0 group-hover:opacity-100"
+                    className="shrink-0 p-2 rounded-xl bg-ocean/5 text-ocean/50 hover:bg-turquoise/20 hover:text-ocean transition opacity-100 md:opacity-0 md:group-hover:opacity-100"
                   >
                     <Pencil size={14} />
                   </button>
@@ -336,7 +337,7 @@ export function MenuAdmin() {
                 </div>
               )}
               
-              <div className="absolute inset-0 bg-ocean/40 opacity-0 hover:opacity-100 transition flex items-center justify-center gap-3">
+              <div className="absolute inset-0 bg-ocean/40 opacity-100 md:opacity-0 md:hover:opacity-100 transition flex items-center justify-center gap-3">
                 <label className={`inline-flex items-center gap-2 bg-white text-ocean px-4 py-2 rounded-xl text-sm font-bold cursor-pointer hover:bg-turquoise transition shadow-lg ${
                   uploading === editingItem.id ? "opacity-50 pointer-events-none" : ""
                 }`}>

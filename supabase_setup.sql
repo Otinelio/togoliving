@@ -34,14 +34,22 @@ CREATE TABLE IF NOT EXISTS menu_items (
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
--- 4. Create rooms_status table (for admin tracking)
+-- 4. Create rooms_status table (for individual room details and admin tracking)
 CREATE TABLE IF NOT EXISTS rooms_status (
   id TEXT PRIMARY KEY,
+  title TEXT,
   type TEXT NOT NULL,
   status TEXT DEFAULT 'Disponible',
   guest TEXT,
   notes TEXT,
   floor INTEGER,
+  description TEXT,
+  images JSONB,
+  "videoUrl" TEXT,
+  amenities JSONB,
+  capacity TEXT,
+  "price_per_night" TEXT,
+  "price_per_month" TEXT,
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 

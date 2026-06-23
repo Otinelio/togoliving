@@ -35,7 +35,7 @@ const ROOM_DATA = [
     ],
   },
   {
-    category: "1 Chambre Salon",
+    category: "Chambre Salon",
     badge: "2 Pièces",
     icon: Sofa,
     desc: "Grand salon avec espace de vie, idéal pour des séjours prolongés.",

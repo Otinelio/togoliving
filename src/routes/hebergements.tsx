@@ -114,15 +114,8 @@ function Page() {
   // Use DB data exclusively
   const rooms = dbRooms;
 
-  const availableRoomIds = new Set(dbRoomStatuses.filter(r => r.status === "Disponible").map(r => r.id));
-  const isFallbackRooms = dbRoomStatuses.length === 0;
-
-  const getAvailableString = (numString: string) => {
-    if (isFallbackRooms) return numString;
-    const parts = numString.replace("N°", "").split(",").map(s => s.trim());
-    const available = parts.filter(p => availableRoomIds.has(p));
-    return available.length > 0 ? `N° ${available.join(", ")}` : "";
-  };
+  // No longer needed to calculate available string on the category page
+  // The detailed page will handle individual rooms.
 
   return (
     <>
@@ -181,47 +174,14 @@ function Page() {
                         );
                       })}
                     </div>
-                    {prices.length > 0 && (
-                      <div className="mt-6 flex flex-col gap-3">
-                        <span className="text-sm font-semibold text-ocean uppercase tracking-wide">Tarifs & Réservation directe</span>
-                        <div className="grid gap-3">
-                          {prices.map((p, idx) => {
-                            const availNum = getAvailableString(p.num);
-                            const isFull = !availNum && !isFallbackRooms;
-
-                            return (
-                            <div key={idx} className={`rounded-xl border ${isFull ? 'bg-sand/30 border-turquoise/10 opacity-75' : 'bg-white/60 border-ocean/10 hover:border-turquoise/40'} transition overflow-hidden`}>
-                              <div className={`px-4 py-1.5 text-xs font-semibold tracking-wider ${isFull ? 'bg-sand/50 text-ocean/50 border-b border-turquoise/10' : r.isPremium ? "bg-gold/20 text-ocean border-b border-gold/20" : "bg-turquoise/10 text-ocean border-b border-turquoise/15"}`}>
-                                {p.variant ?? p.num} {isFull && "— Complet"}
-                              </div>
-                              <div className="flex flex-col sm:flex-row sm:items-center justify-between p-3.5">
-                                <div>
-                                  <span className={`font-medium font-display text-base ${isFull ? 'text-ocean/50' : 'text-ocean'}`}>
-                                    {isFull ? "Aucune chambre disponible" : `Disponibles : ${availNum}`}
-                                  </span>
-                                  <div className={`text-sm mt-1 flex flex-wrap gap-3 ${isFull ? 'text-muted-foreground/50' : 'text-muted-foreground'}`}>
-                                    <span><strong className={isFull ? 'text-ocean/50' : 'text-ocean'}>{p.day}</strong> / jour</span>
-                                    <span><strong className={isFull ? 'text-ocean/50' : 'text-ocean'}>{p.month}</strong> / mois</span>
-                                  </div>
-                                </div>
-                                {isFull ? (
-                                  <span className="mt-3 sm:mt-0 inline-flex items-center justify-center px-5 py-2.5 rounded-lg bg-sand border border-turquoise/20 text-ocean/50 text-sm font-medium whitespace-nowrap cursor-not-allowed">
-                                    Complet
-                                  </span>
-                                ) : (
-                                  <a
-                                    href={`/reserver?cat=${i}&var=${idx}&room=${encodeURIComponent(availNum.replace("N°", "").split(",")[0].trim())}`}
-                                    className="mt-3 sm:mt-0 inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-lg bg-ocean text-white text-sm font-medium hover:bg-gold hover:text-ocean transition shimmer-gold whitespace-nowrap"
-                                  >
-                                    Réserver →
-                                  </a>
-                                )}
-                              </div>
-                            </div>
-                          )})}
-                        </div>
-                      </div>
-                    )}
+                    <div className="mt-8">
+                      <Link
+                        to={`/hebergements/${encodeURIComponent(r.title.toLowerCase().replace(/ /g, "-"))}`}
+                        className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full bg-ocean text-white font-medium hover:bg-gold hover:text-ocean transition shimmer-gold"
+                      >
+                        Voir les {r.title} →
+                      </Link>
+                    </div>
                   </div>
                 </motion.div>
               );

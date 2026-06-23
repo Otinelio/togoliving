@@ -23,7 +23,15 @@ export function useAccommodations() {
     queryFn: async () => {
       const { data, error } = await supabase.from("accommodations").select("*").order("title");
       if (error) throw error;
-      return data as Accommodation[];
+      
+      // Fix old category names dynamically to match the new type names
+      const fixedData = (data as Accommodation[]).map(cat => {
+        if (cat.title === "1 Chambre Salon") {
+          return { ...cat, title: "Chambre Salon" };
+        }
+        return cat;
+      });
+      return fixedData;
     },
   });
 
