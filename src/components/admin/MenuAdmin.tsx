@@ -348,7 +348,10 @@ export function MenuAdmin() {
                 
                 {editingItem.image && (
                   <button
-                    onClick={() => handleRemoveImage(editingItem.id, editingItem.image)}
+                    onClick={() => {
+                      if (!window.confirm("Êtes-vous sûr de vouloir supprimer cette photo ?")) return;
+                      handleRemoveImage(editingItem.id, editingItem.image);
+                    }}
                     className="bg-red-500 text-white p-2.5 rounded-xl hover:bg-red-600 transition shadow-lg"
                     title="Supprimer la photo"
                   >

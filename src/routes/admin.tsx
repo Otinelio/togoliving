@@ -2,11 +2,14 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import {
   LayoutDashboard, UtensilsCrossed, BedDouble, QrCode, Settings,
-  LogOut, Plus, Trash2, Clock, Building, Globe, Phone, Lock, AlertTriangle, Image as ImageIcon, Home, FileText, User, Star
+  LogOut, Plus, Trash2, Clock, Building, Globe, Phone, Lock, AlertTriangle, Image as ImageIcon, Home, FileText, User, Star, Pencil, X, Check, Briefcase
 } from "lucide-react";
 import { GalleryAdmin } from "@/components/admin/GalleryAdmin";
 import { AccommodationsAdmin } from "@/components/admin/AccommodationsAdmin";
 import { MenuAdmin } from "@/components/admin/MenuAdmin";
+import { EventsAdmin } from "@/components/admin/EventsAdmin";
+import { JobsAdmin } from "@/components/admin/JobsAdmin";
+import { ApplicationsAdmin } from "@/components/admin/ApplicationsAdmin";
 import { PinScreen } from "@/components/PinScreen";
 import { QRCodeCard } from "@/components/QRCodeCard";
 import { useMenu } from "@/hooks/useMenu";
@@ -20,7 +23,7 @@ import { formatFCFA } from "@/lib/whatsapp";
 
 export const Route = createFileRoute("/admin")({ component: Page });
 
-type Section = "overview" | "menu" | "gallery" | "accommodations" | "rooms" | "qr" | "reviews" | "settings";
+type Section = "overview" | "menu" | "gallery" | "accommodations" | "rooms" | "qr" | "reviews" | "settings" | "events" | "jobs" | "applications";
 
 function Page() {
   const { settings } = useSettings();
@@ -31,55 +34,70 @@ function Page() {
 
 function Dash() {
   const [section, setSection] = useState<Section>("overview");
-  const nav: { id: Section; icon: typeof LayoutDashboard; label: string }[] = [
-    { id: "overview", icon: LayoutDashboard, label: "Vue Generale" },
-    { id: "menu", icon: UtensilsCrossed, label: "Gestion Menu" },
-    { id: "gallery", icon: ImageIcon, label: "Galerie Photos" },
-    { id: "accommodations", icon: Home, label: "Hébergements" },
-    { id: "rooms", icon: BedDouble, label: "Disponibilité" },
-    { id: "reviews", icon: Star, label: "Avis" },
-    { id: "qr", icon: QrCode, label: "QR Codes" },
-    { id: "settings", icon: Settings, label: "Parametres" },
+  const nav: { id: Section; icon: any; label: string }[] = [
+    { id: "overview", label: "Vue d'ensemble", icon: LayoutDashboard },
+    { id: "accommodations", label: "Hébergements", icon: Home },
+    { id: "rooms", label: "État Chambres", icon: BedDouble },
+    { id: "menu", label: "Menu", icon: UtensilsCrossed },
+    { id: "qr", label: "QR Codes", icon: QrCode },
+    { id: "gallery", label: "Galerie", icon: ImageIcon },
+    { id: "events", label: "Événements", icon: Star },
+    { id: "jobs", label: "Emplois", icon: Briefcase },
+    { id: "applications", label: "Candidatures", icon: User },
+    { id: "reviews", label: "Avis Clients", icon: FileText },
+    { id: "settings", label: "Paramètres", icon: Settings },
   ];
 
   return (
-    <div className="min-h-screen bg-sand flex font-body">
-      <aside className="w-72 shrink-0 bg-ocean text-white p-6 hidden md:flex md:flex-col shadow-2xl sticky top-0 h-screen overflow-y-auto z-20">
+    <div className="h-screen bg-sand flex flex-col md:flex-row font-body overflow-hidden">
+      <aside className="w-72 shrink-0 bg-ocean text-white p-6 hidden md:flex md:flex-col shadow-2xl z-20">
         <div className="font-display text-3xl mb-10 flex flex-col">
           <div><span className="text-white">TOGO</span><span className="text-turquoise">LIVING</span></div>
           <span className="text-[10px] text-turquoise/70 font-accent uppercase tracking-[0.2em] mt-1">Administration</span>
         </div>
-        <nav className="space-y-2 flex-1">
+        <nav className="space-y-2 flex-1 overflow-y-auto pr-2 no-scrollbar pb-4">
           {nav.map((n) => (
             <button key={n.id} onClick={() => setSection(n.id)}
-              className={`w-full flex items-center gap-3 px-4 py-3.5 rounded-xl text-sm font-medium transition-all ${section === n.id ? "bg-turquoise text-ocean shadow-lg shadow-turquoise/20 scale-[1.02]" : "hover:bg-white/10 text-white/70 hover:text-white"
+              className={`w-full flex items-center gap-3 px-4 py-3.5 rounded-xl text-sm font-medium transition-all shrink-0 ${section === n.id ? "bg-turquoise text-ocean shadow-lg shadow-turquoise/20 scale-[1.02]" : "hover:bg-white/10 text-white/70 hover:text-white"
                 }`}>
               <n.icon size={18} className={section === n.id ? "text-ocean" : "text-turquoise"} /> {n.label}
             </button>
           ))}
         </nav>
-        <a href="/" className="mt-auto flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-white/5 hover:bg-white/10 text-sm font-medium text-white transition-all"><LogOut size={16} /> Quitter vers le site</a>
+        <a href="/" className="mt-4 flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-white/5 hover:bg-white/10 text-sm font-medium text-white transition-all shrink-0"><LogOut size={16} /> Quitter vers le site</a>
       </aside>
 
-      <div className="md:hidden fixed bottom-0 inset-x-0 z-40 bg-ocean text-white flex overflow-x-auto shadow-[0_-10px_40px_rgba(0,0,0,0.2)]" style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}>
+      {/* Mobile Top Header */}
+      <div className="md:hidden bg-ocean text-white px-4 py-4 shrink-0 flex items-center justify-between z-20 shadow-md">
+        <div className="font-display text-xl">
+          <span className="text-white">TOGO</span><span className="text-turquoise">LIVING</span>
+        </div>
+        <a href="/" className="p-2 rounded-xl bg-white/5 hover:bg-white/10 transition-all"><LogOut size={18} /></a>
+      </div>
+
+      {/* Mobile Bottom Navbar (Scrollable horizontally) */}
+      <div className="md:hidden fixed bottom-0 inset-x-0 z-40 bg-ocean text-white flex overflow-x-auto no-scrollbar shadow-[0_-10px_40px_rgba(0,0,0,0.2)]" style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}>
         {nav.map((n) => (
           <button key={n.id} onClick={() => setSection(n.id)}
-            className={`shrink-0 min-w-[11.1%] flex-1 py-4 flex flex-col items-center justify-center transition-colors relative ${section === n.id ? "text-turquoise bg-white/5" : "text-white/50 hover:text-white hover:bg-white/5"}`}>
-            <n.icon size={22} className="mb-1" />
+            className={`min-w-[72px] shrink-0 py-3.5 flex flex-col items-center justify-center transition-colors relative ${section === n.id ? "text-turquoise bg-white/5" : "text-white/50 hover:text-white hover:bg-white/5"}`}>
+            <n.icon size={20} />
             {section === n.id && (
-              <span className="absolute bottom-2 w-1.5 h-1.5 rounded-full bg-turquoise"></span>
+              <span className="absolute bottom-1 w-1 h-1 rounded-full bg-turquoise"></span>
             )}
           </button>
         ))}
       </div>
 
-      <main className="flex-1 min-w-0 p-4 sm:p-6 md:p-10 md:pt-12 pb-32 md:pb-12">
+      <main className="flex-1 min-w-0 overflow-y-auto p-4 sm:p-6 md:p-10 pb-32 md:pb-10 bg-sand/30 relative">
         {section === "overview" && <Overview onNavigate={setSection} />}
         {section === "menu" && <MenuAdmin />}
         {section === "gallery" && <GalleryAdmin />}
         {section === "accommodations" && <AccommodationsAdmin />}
         {section === "rooms" && <Rooms />}
         {section === "qr" && <QRSection />}
+        {section === "events" && <EventsAdmin />}
+        {section === "jobs" && <JobsAdmin />}
+        {section === "applications" && <ApplicationsAdmin />}
         {section === "reviews" && <ReviewsAdmin />}
         {section === "settings" && <SettingsSection />}
       </main>

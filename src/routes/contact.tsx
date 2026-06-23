@@ -43,7 +43,7 @@ function Page() {
             <h2 className="font-display text-3xl text-ocean mb-6">Nos Coordonnees</h2>
             <ul className="space-y-4 text-ocean">
               {[
-                { i: MapPin, l: "Kpogan Agbetsiko, face Station Total, Route N2, Lome, Togo" },
+                { i: MapPin, l: "Kpogan Agbetsiko, face Station Total, Route N2, 36BP50 Lomé, Togo" },
                 { i: Phone,  l: "+228 93 87 20 88", href: "tel:+22893872088" },
                 { i: Mail,   l: "contact@togoliving.net", href: "mailto:contact@togoliving.net" },
                 { i: Globe,  l: "togoliving.net" },
@@ -59,9 +59,11 @@ function Page() {
             <div className="mt-8 rounded-2xl overflow-hidden border border-turquoise/30">
               <iframe
                 title="TOGOLIVING Localisation"
-                src="https://www.google.com/maps?q=Kpogan+Agbetsiko+Lome+Togo&output=embed"
+                src="https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d1983!2d1.38426!3d6.1794601!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x1023ef6ce7ef6e2b%3A0x147374ea27bbec54!2sResidence%20Togoliving!5e0!3m2!1sfr!2stg"
                 className="w-full h-64"
                 loading="lazy"
+                allowFullScreen
+                referrerPolicy="no-referrer-when-downgrade"
               />
             </div>
           </motion.div>

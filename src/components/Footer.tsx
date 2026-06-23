@@ -41,12 +41,15 @@ export function Footer() {
             <ul className="space-y-2 text-sm">
               {[
                 ["/", "Accueil"],
-                ["/hebergements", "Hebergements"],
+                ["/hebergements", "Hébergements"],
                 ["/restaurant", "Restaurant & Bar"],
                 ["/galerie", "Galerie"],
-                ["/a-propos", "A Propos"],
+                ["/a-propos", "À Propos"],
+                ["/loisirs", "Loisirs & Détente"],
+                ["/evenements", "Événements"],
+                ["/carrieres", "Carrières"],
                 ["/contact", "Contact"],
-                ["/reserver", "Reserver"],
+                ["/reserver", "Réserver"],
               ].map(([to, label]) => (
                 <li key={to}>
                   <Link to={to} className="text-white/80 hover:text-turquoise transition">{label}</Link>
@@ -61,7 +64,7 @@ export function Footer() {
               <li className="flex items-start gap-3"><Phone size={16} className="mt-0.5 text-turquoise shrink-0" /><a href="tel:+22893872088" className="hover:text-turquoise">+228 93 87 20 88</a></li>
               <li className="flex items-start gap-3"><Mail size={16} className="mt-0.5 text-turquoise shrink-0" /><a href="mailto:contact@togoliving.net" className="hover:text-turquoise">contact@togoliving.net</a></li>
               <li className="flex items-start gap-3"><Globe size={16} className="mt-0.5 text-turquoise shrink-0" /><span>togoliving.net</span></li>
-              <li className="flex items-start gap-3"><MapPin size={16} className="mt-0.5 text-turquoise shrink-0" /><span>Kpogan Agbetsiko, Route N2, Lome, Togo</span></li>
+              <li className="flex items-start gap-3"><MapPin size={16} className="mt-0.5 text-turquoise shrink-0" /><span>Kpogan Agbetsiko, Route N2, 36BP50 Lomé, Togo</span></li>
             </ul>
 
             <div className="flex gap-3 mt-5">

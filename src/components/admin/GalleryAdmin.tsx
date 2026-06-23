@@ -70,6 +70,7 @@ export function GalleryAdmin() {
                 <div className="flex justify-between items-start">
                   <span className="bg-white/90 text-ocean px-2 py-1 rounded-lg text-xs font-bold">{item.category}</span>
                   <button onClick={async () => {
+                      if (!window.confirm("Êtes-vous sûr de vouloir supprimer cette image ?")) return;
                       removeItem(item.id);
                       if (item.imageUrl && item.imageUrl.includes("supabase.co")) {
                         const path = item.imageUrl.split("/media/")[1];

@@ -142,7 +142,7 @@ function HomePage() {
             initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}
             className="font-accent text-turquoise text-xl md:text-2xl mb-3"
           >
-            Villa Balneaire Tropicale
+            Villa Balnéaire Tropicale · Hôtel ★★★★
           </motion.p>
           <motion.h1
             initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}
@@ -446,9 +446,11 @@ function HomePage() {
           <div className="mt-12 rounded-2xl overflow-hidden border-2 border-turquoise/30">
             <iframe
               title="Carte TOGOLIVING"
-              src="https://www.google.com/maps?q=Kpogan+Agbetsiko+Lome+Togo&output=embed"
+              src="https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d1983!2d1.38426!3d6.1794601!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x1023ef6ce7ef6e2b%3A0x147374ea27bbec54!2sResidence%20Togoliving!5e0!3m2!1sfr!2stg"
               className="w-full h-80"
               loading="lazy"
+              allowFullScreen
+              referrerPolicy="no-referrer-when-downgrade"
             />
           </div>
         </div>

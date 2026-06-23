@@ -315,7 +315,7 @@ function RoomCard({ room, matchedCategory }: { room: Room; matchedCategory: any 
             )}
           </h3>
           <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-            {displayedAmenities.map((am) => {
+            {displayedAmenities.map((am: string) => {
               const Icon = ICON_MAP[am] || Wifi;
               return (
                 <div key={am} className="flex items-center gap-3 text-sm text-ocean/80">
@@ -343,6 +343,7 @@ function RoomCard({ room, matchedCategory }: { room: Room; matchedCategory: any 
 
           {isAvailable ? (
             <Link
+              // @ts-ignore
               to={`/reserver?room=${encodeURIComponent(room.id)}`}
               className="inline-flex items-center gap-2 px-8 py-4 rounded-full bg-ocean text-white font-medium hover:bg-gold hover:text-ocean transition shimmer-gold shadow-lg w-full sm:w-auto justify-center"
             >

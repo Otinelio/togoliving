@@ -176,6 +176,7 @@ function Page() {
                     </div>
                     <div className="mt-8">
                       <Link
+                        // @ts-ignore
                         to={`/hebergements/${encodeURIComponent(r.title.toLowerCase().replace(/ /g, "-"))}`}
                         className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full bg-ocean text-white font-medium hover:bg-gold hover:text-ocean transition shimmer-gold"
                       >

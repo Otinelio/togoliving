@@ -342,7 +342,7 @@ function RoomPage() {
                       <span className="w-6 text-center">{i.qty}</span>
                       <button onClick={() => add(i.id, i.name, i.price)} className="w-8 h-8 rounded-full bg-white/10"><Plus size={14} className="mx-auto" /></button>
                     </div>
-                    <button onClick={() => removeItem(i.id)} className="text-white/50 hover:text-white"><Trash2 size={16} /></button>
+                    <button onClick={() => { if(window.confirm("Retirer cet article du panier ?")) removeItem(i.id); }} className="text-white/50 hover:text-white"><Trash2 size={16} /></button>
                   </div>
                 ))}
               </div>

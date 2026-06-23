@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { motion, useInView, useMotionValue, animate } from "framer-motion";
-import { Heart, Star, Shield } from "lucide-react";
+import { Heart, Star, Shield, Award } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { WaveDivider } from "@/components/WaveDivider";
 import { ASSETS } from "@/lib/assets";
@@ -38,7 +38,12 @@ function Page() {
         <div className="relative max-w-4xl mx-auto px-6 text-center">
           <p className="font-accent text-turquoise text-xl">A Propos</p>
           <h1 className="font-display text-5xl md:text-6xl">TOGOLIVING</h1>
-          <p className="font-accent text-turquoise text-xl mt-2">Votre Residence Balneaire au Togo</p>
+          <p className="font-accent text-turquoise text-xl mt-2">Votre Résidence Balnéaire au Togo</p>
+          <div className="inline-flex items-center gap-2 mt-4 px-5 py-2 rounded-full bg-gold/20 border border-gold/40">
+            <Award size={20} className="text-gold" />
+            <span className="text-gold font-semibold text-sm">Hôtel Classé 4 Étoiles</span>
+            <span className="flex gap-0.5">{[0,1,2,3].map(i => <Star key={i} size={14} className="text-gold fill-current" />)}</span>
+          </div>
         </div>
         <div className="absolute -bottom-1 inset-x-0"><WaveDivider color="#F8F5F0" /></div>
       </section>
@@ -47,7 +52,7 @@ function Page() {
         <div className="max-w-4xl mx-auto px-6 text-center space-y-6">
           <motion.p initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
             className="text-lg text-ocean leading-relaxed">
-            Offrant une vue sur la ville, l'établissement <strong>Résidence Togoliving</strong> se trouve à Toudji, très bien situé au bord du goudron National N2 et à seulement 100 m de la plage naturelle. 
+            Offrant une vue sur la ville, l'établissement <strong>Résidence Togoliving</strong> — classé <strong>Hôtel 4 Étoiles</strong> — se trouve à Toudji, très bien situé au bord du goudron National N2 et à seulement 100 m de la plage naturelle. 
             Kpogan est un quartier calme, situé sur la route nationale menant du Bénin au Ghana, près du marché d'Agbavi.
           </motion.p>
           <motion.p initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.1 }}
@@ -59,6 +64,10 @@ function Page() {
             className="text-lg text-ocean leading-relaxed">
             Chaque hébergement comprend une salle de bains privative avec une douche, la climatisation, une télévision à écran plat et un réfrigérateur. 
             L'établissement se situe à 17 km de l'Aéroport international de Lomé-Tokoin et propose un service de navette aéroport (en supplément).
+          </motion.p>
+          <motion.p initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.25 }}
+            className="text-sm text-ocean/70">
+            Code Postal : <strong>36BP50</strong> — Kpogan Agbetsiko, Lomé, Togo
           </motion.p>
         </div>
 
@@ -142,6 +151,22 @@ function Page() {
               </ul>
             </div>
           </div>
+        </div>
+        {/* License / Classification */}
+        <div className="max-w-6xl mx-auto px-6 mt-20">
+          <div className="text-center mb-8">
+            <h2 className="font-display text-4xl text-ocean">Classement Officiel</h2>
+            <p className="text-muted-foreground mt-2">Résidence Togoliving — Hôtel classé 4 Étoiles</p>
+          </div>
+          <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
+            className="max-w-md mx-auto">
+            <img
+              src="/images/togoliving_classement.jpeg"
+              alt="Licence de classement — Résidence Togoliving — Hôtel 4 Étoiles"
+              className="w-full rounded-2xl shadow-lg border border-ocean/10"
+              loading="lazy"
+            />
+          </motion.div>
         </div>
       </section>
 

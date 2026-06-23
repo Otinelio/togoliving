@@ -3,12 +3,45 @@ import { Plus, Trash2, Loader2, Image as ImageIcon, Video, X, Pencil, Check, Che
 import { useAccommodations, type Accommodation } from "@/hooks/useAccommodations";
 import { supabase } from "@/lib/supabase";
 import { compressImage } from "@/lib/media";
+import { useRooms } from "@/hooks/useRooms";
+import { type Room, type RoomStatus, type RoomType } from "@/data/defaultRooms";
 
 export function AccommodationsAdmin() {
   const { items, isLoading, addItem, updateItem, removeItem } = useAccommodations();
+  const { rooms, addRoom, updateRoom, removeRoom } = useRooms();
   const [modalItem, setModalItem] = useState<Partial<Accommodation> | null>(null);
-  const [activeTab, setActiveTab] = useState<"info" | "media" | "features" | "prices">("info");
+  const [activeTab, setActiveTab] = useState<"info" | "media" | "features" | "prices" | "rooms">("info");
+  const [editingRoom, setEditingRoom] = useState<Room | null>(null);
+  const [newRoomId, setNewRoomId] = useState("");
   const [uploading, setUploading] = useState<"imageUrl" | "videoUrl" | "posterUrl" | null>(null);
+  const [roomUploading, setRoomUploading] = useState<"images" | "videoUrls" | null>(null);
+
+  const handleRoomMediaUpload = async (e: React.ChangeEvent<HTMLInputElement>, field: "images" | "videoUrls") => {
+    const rawFiles = e.target.files;
+    if (!rawFiles || !editingRoom) return;
+
+    setRoomUploading(field);
+    try {
+      const newUrls: string[] = [];
+      for (let i = 0; i < rawFiles.length; i++) {
+        const rawFile = rawFiles[i];
+        const file = field === "videoUrls" ? rawFile : await compressImage(rawFile);
+        const fileName = `${Date.now()}_${file.name.replace(/[^a-zA-Z0-9.-]/g, "_")}`;
+        const { error } = await supabase.storage.from("media").upload(`accommodations/${fileName}`, file);
+        if (error) throw error;
+        const { data: publicData } = supabase.storage.from("media").getPublicUrl(`accommodations/${fileName}`);
+        newUrls.push(publicData.publicUrl);
+      }
+      
+      const currentUrls = editingRoom[field] || [];
+      setEditingRoom({ ...editingRoom, [field]: [...currentUrls, ...newUrls] });
+    } catch (err) {
+      console.error(err);
+      alert("Erreur lors du téléchargement");
+    } finally {
+      setRoomUploading(null);
+    }
+  };
 
   const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>, field: "imageUrl" | "videoUrl" | "posterUrl") => {
     const rawFile = e.target.files?.[0];
@@ -114,7 +147,7 @@ export function AccommodationsAdmin() {
               <div className="p-4 flex-1 flex flex-col justify-between gap-4">
                 <div className="text-sm text-ocean/80 line-clamp-2">{it.description || "Aucune description"}</div>
                 
-                <div className="flex justify-end gap-2 pt-4 border-t border-turquoise/10">
+                <div className="flex justify-end gap-2 pt-4 border-t border-turquoise/10 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity">
                   <button onClick={() => openEdit(it)} className="p-2 bg-turquoise/10 text-turquoise hover:bg-turquoise hover:text-ocean rounded-xl transition">
                     <Pencil size={18} />
                   </button>
@@ -136,7 +169,7 @@ export function AccommodationsAdmin() {
       {/* Modal Multi-Step pour Créer/Modifier */}
       {modalItem && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-ocean/80 backdrop-blur-sm animate-in fade-in duration-200">
-          <div className="bg-sand w-full max-w-3xl rounded-3xl shadow-2xl relative border border-white/40 overflow-hidden flex flex-col max-h-[90vh]">
+          <div className="bg-sand w-full max-w-3xl rounded-3xl shadow-2xl relative border border-white/40 overflow-hidden flex flex-col max-h-[85vh]">
             <div className="flex justify-between items-center p-6 border-b border-turquoise/20">
               <h2 className="font-display text-2xl text-ocean">{modalItem.id ? "Modifier Hébergement" : "Nouvel Hébergement"}</h2>
               <button onClick={() => setModalItem(null)} className="p-2 rounded-full hover:bg-white text-ocean transition-colors">
@@ -146,11 +179,11 @@ export function AccommodationsAdmin() {
 
             <div className="flex flex-col md:flex-row flex-1 overflow-hidden">
               {/* Sidebar / Tabs */}
-              <div className="w-full md:w-48 shrink-0 bg-ocean/5 p-4 flex md:flex-col gap-2 overflow-x-auto border-b md:border-b-0 md:border-r border-turquoise/20">
-                {(["info", "media", "features", "prices"] as const).map(t => (
+              <div className="w-full md:w-48 shrink-0 bg-ocean/5 p-4 flex md:flex-col gap-2 overflow-x-auto hide-scrollbar border-b md:border-b-0 md:border-r border-turquoise/20">
+                {(["info", "media", "features", "prices", "rooms"] as const).map(t => (
                   <button 
                     key={t} 
-                    onClick={() => setActiveTab(t)}
+                    onClick={() => { setActiveTab(t); setEditingRoom(null); }}
                     className={`flex items-center justify-between px-4 py-3 rounded-xl text-sm font-bold whitespace-nowrap transition-all ${
                       activeTab === t ? "bg-ocean text-white shadow-md" : "text-ocean/60 hover:bg-white"
                     }`}
@@ -159,6 +192,7 @@ export function AccommodationsAdmin() {
                     {t === "media" && "Médias"}
                     {t === "features" && "Équipements"}
                     {t === "prices" && "Tarifs & Variantes"}
+                    {t === "rooms" && "Chambres Physiques"}
                     {activeTab === t && <ChevronRight size={16} className="hidden md:block" />}
                   </button>
                 ))}
@@ -283,6 +317,7 @@ export function AccommodationsAdmin() {
                             className="flex-1 bg-white px-4 py-2.5 rounded-xl border border-turquoise/20 focus:border-turquoise focus:outline-none text-sm text-ocean"
                           />
                           <button onClick={() => {
+                            if (!window.confirm("Supprimer cet équipement ?")) return;
                             const nf = [...(modalItem.features || [])];
                             nf.splice(idx, 1);
                             setModalItem({ ...modalItem, features: nf });
@@ -313,6 +348,7 @@ export function AccommodationsAdmin() {
                       {(modalItem.prices || []).map((p: any, idx: number) => (
                         <div key={idx} className="bg-white p-4 rounded-2xl border border-turquoise/20 relative group shadow-sm">
                           <button onClick={() => {
+                            if (!window.confirm("Supprimer cette variante ?")) return;
                             const np = [...(modalItem.prices || [])];
                             np.splice(idx, 1);
                             setModalItem({ ...modalItem, prices: np });
@@ -377,6 +413,138 @@ export function AccommodationsAdmin() {
                           Aucune variante de prix ajoutée.
                         </div>
                       )}
+                    </div>
+                  </div>
+                )}
+
+                {/* ROOMS TAB */}
+                {activeTab === "rooms" && !editingRoom && (
+                  <div className="animate-in fade-in slide-in-from-right-4 duration-300">
+                    <div className="flex gap-2 mb-4">
+                      <input placeholder="N°" value={newRoomId} onChange={e => setNewRoomId(e.target.value)} className="w-20 bg-white px-3 py-2 rounded-xl border border-turquoise/20 focus:border-turquoise focus:outline-none text-sm text-ocean text-center font-bold" />
+                      <button onClick={() => { if (newRoomId) { addRoom({ id: newRoomId, type: modalItem.title as RoomType, status: "Disponible", floor: +newRoomId[0] || 1 }); setNewRoomId(""); } }} className="flex-1 bg-ocean text-white px-4 py-2 rounded-xl text-sm font-bold hover:bg-gold hover:text-ocean transition flex items-center justify-center gap-2">
+                        <Plus size={16} /> Ajouter une chambre
+                      </button>
+                    </div>
+
+                    <div className="space-y-3">
+                      {rooms.filter(r => r.type === modalItem.title).map(r => (
+                        <div key={r.id} className="bg-white p-3 rounded-2xl border border-turquoise/20 flex justify-between items-center group shadow-sm hover:shadow-md transition">
+                          <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 rounded-xl bg-turquoise/10 flex items-center justify-center font-display text-ocean text-lg">N°{r.id}</div>
+                            <div>
+                              <div className="font-bold text-ocean text-sm">{r.status}</div>
+                              <div className="text-xs text-ocean/50">{r.capacity || "Superficie non définie"}</div>
+                            </div>
+                          </div>
+                          <div className="flex gap-2 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity">
+                            <button onClick={() => setEditingRoom(r)} className="p-2 bg-turquoise/10 text-turquoise hover:bg-turquoise hover:text-ocean rounded-xl transition"><Pencil size={16} /></button>
+                            <button onClick={() => { if (window.confirm("Supprimer ?")) removeRoom(r.id); }} className="p-2 bg-red-50 text-red-500 hover:bg-red-500 hover:text-white rounded-xl transition"><Trash2 size={16} /></button>
+                          </div>
+                        </div>
+                      ))}
+                      {rooms.filter(r => r.type === modalItem.title).length === 0 && (
+                        <div className="text-center py-10 text-ocean/50 text-sm font-medium border-2 border-dashed border-turquoise/20 rounded-2xl">
+                          Aucune chambre créée pour cette catégorie.
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
+
+                {activeTab === "rooms" && editingRoom && (
+                  <div className="animate-in fade-in slide-in-from-right-4 duration-300">
+                    <button onClick={() => setEditingRoom(null)} className="mb-4 text-xs font-bold uppercase tracking-wider text-ocean/60 hover:text-ocean transition flex items-center gap-1">
+                      <ChevronRight size={14} className="rotate-180" /> Retour à la liste
+                    </button>
+                    
+                    <div className="grid grid-cols-2 gap-4 mb-4">
+                      <div>
+                        <label className="text-[10px] uppercase font-bold text-ocean/60 mb-1 block">Statut</label>
+                        <select value={editingRoom.status} onChange={e => setEditingRoom({...editingRoom, status: e.target.value as RoomStatus})} className="w-full bg-white px-3 py-2 rounded-xl border border-turquoise/20 focus:border-turquoise focus:outline-none text-sm text-ocean font-bold">
+                          <option value="Disponible">Disponible</option>
+                          <option value="Occupe">Occupée</option>
+                          <option value="Maintenance">Maintenance</option>
+                        </select>
+                      </div>
+                      <div>
+                        <label className="text-[10px] uppercase font-bold text-ocean/60 mb-1 block">Titre (optionnel)</label>
+                        <input value={editingRoom.title || ""} onChange={e => setEditingRoom({...editingRoom, title: e.target.value})} className="w-full bg-white px-3 py-2 rounded-xl border border-turquoise/20 focus:border-turquoise focus:outline-none text-sm text-ocean" />
+                      </div>
+                      <div>
+                        <label className="text-[10px] uppercase font-bold text-ocean/60 mb-1 block">Capacité / Superficie</label>
+                        <input value={editingRoom.capacity || ""} onChange={e => setEditingRoom({...editingRoom, capacity: e.target.value})} className="w-full bg-white px-3 py-2 rounded-xl border border-turquoise/20 focus:border-turquoise focus:outline-none text-sm text-ocean" />
+                      </div>
+                      <div>
+                        <label className="text-[10px] uppercase font-bold text-ocean/60 mb-1 block">Étage</label>
+                        <input type="number" value={editingRoom.floor || 0} onChange={e => setEditingRoom({...editingRoom, floor: parseInt(e.target.value) || 0})} className="w-full bg-white px-3 py-2 rounded-xl border border-turquoise/20 focus:border-turquoise focus:outline-none text-sm text-ocean" />
+                      </div>
+                      <div>
+                        <label className="text-[10px] uppercase font-bold text-ocean/60 mb-1 block">Prix / Nuit</label>
+                        <input value={editingRoom.price_per_night || ""} onChange={e => setEditingRoom({...editingRoom, price_per_night: e.target.value})} className="w-full bg-white px-3 py-2 rounded-xl border border-turquoise/20 focus:border-turquoise focus:outline-none text-sm text-ocean" />
+                      </div>
+                      <div>
+                        <label className="text-[10px] uppercase font-bold text-ocean/60 mb-1 block">Prix / Mois</label>
+                        <input value={editingRoom.price_per_month || ""} onChange={e => setEditingRoom({...editingRoom, price_per_month: e.target.value})} className="w-full bg-white px-3 py-2 rounded-xl border border-turquoise/20 focus:border-turquoise focus:outline-none text-sm text-ocean" />
+                      </div>
+                    </div>
+
+                    <div className="space-y-4">
+                      <div>
+                        <label className="text-[10px] uppercase font-bold text-ocean/60 mb-1 block">Description</label>
+                        <textarea rows={3} value={editingRoom.description || ""} onChange={e => setEditingRoom({...editingRoom, description: e.target.value})} className="w-full bg-white px-3 py-2 rounded-xl border border-turquoise/20 focus:border-turquoise focus:outline-none text-sm text-ocean resize-none" />
+                      </div>
+
+                      <div>
+                        <label className="text-[10px] uppercase font-bold text-ocean/60 mb-1 block">Équipements (un par ligne)</label>
+                        <textarea rows={3} value={(editingRoom.amenities || []).join("\n")} onChange={e => setEditingRoom({...editingRoom, amenities: e.target.value.split("\n").filter(Boolean)})} className="w-full bg-white px-3 py-2 rounded-xl border border-turquoise/20 focus:border-turquoise focus:outline-none text-sm text-ocean resize-none" />
+                      </div>
+
+                      <div>
+                        <label className="text-[10px] uppercase font-bold text-ocean/60 mb-1 block">Images (Upload direct)</label>
+                        <div className="grid grid-cols-4 sm:grid-cols-5 gap-2">
+                          {(editingRoom.images || []).map((img, idx) => (
+                            <div key={idx} className="aspect-square bg-ocean/5 rounded-xl overflow-hidden relative group border border-turquoise/20 shadow-sm">
+                              <img src={img} className="w-full h-full object-cover" />
+                              <button onClick={() => {
+                                if (!window.confirm("Supprimer cette image ?")) return;
+                                const n = [...(editingRoom.images || [])];
+                                n.splice(idx, 1);
+                                setEditingRoom({...editingRoom, images: n});
+                              }} className="absolute top-1 right-1 p-1 bg-red-500/90 hover:bg-red-600 text-white rounded-lg opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-all"><Trash2 size={12} /></button>
+                            </div>
+                          ))}
+                          <label className="aspect-square bg-white border-2 border-dashed border-turquoise/30 rounded-xl flex flex-col items-center justify-center cursor-pointer hover:bg-turquoise/5 transition">
+                            {roomUploading === "images" ? <Loader2 className="animate-spin text-ocean/50" /> : <Plus size={24} className="text-turquoise/50" />}
+                            <input type="file" accept="image/*" multiple onChange={e => handleRoomMediaUpload(e, "images")} className="hidden" />
+                          </label>
+                        </div>
+                      </div>
+
+                      <div>
+                        <label className="text-[10px] uppercase font-bold text-ocean/60 mb-1 block">Vidéos (Upload direct)</label>
+                        <div className="grid grid-cols-4 sm:grid-cols-5 gap-2">
+                          {(editingRoom.videoUrls || []).map((vid, idx) => (
+                            <div key={idx} className="aspect-square bg-ocean/5 rounded-xl overflow-hidden relative group border border-turquoise/20 shadow-sm">
+                              <video src={vid} className="w-full h-full object-cover" muted />
+                              <button onClick={() => {
+                                if (!window.confirm("Supprimer cette vidéo ?")) return;
+                                const n = [...(editingRoom.videoUrls || [])];
+                                n.splice(idx, 1);
+                                setEditingRoom({...editingRoom, videoUrls: n});
+                              }} className="absolute top-1 right-1 p-1 bg-red-500/90 hover:bg-red-600 text-white rounded-lg opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-all"><Trash2 size={12} /></button>
+                            </div>
+                          ))}
+                          <label className="aspect-square bg-white border-2 border-dashed border-turquoise/30 rounded-xl flex flex-col items-center justify-center cursor-pointer hover:bg-turquoise/5 transition">
+                            {roomUploading === "videoUrls" ? <Loader2 className="animate-spin text-ocean/50" /> : <Plus size={24} className="text-turquoise/50" />}
+                            <input type="file" accept="video/*" multiple onChange={e => handleRoomMediaUpload(e, "videoUrls")} className="hidden" />
+                          </label>
+                        </div>
+                      </div>
+                      
+                      <button onClick={() => { updateRoom(editingRoom.id, editingRoom); setEditingRoom(null); }} className="w-full flex items-center justify-center gap-2 bg-ocean text-white px-4 py-2.5 rounded-xl font-bold hover:bg-gold hover:text-ocean transition">
+                        <Check size={16} /> Sauvegarder la chambre N° {editingRoom.id}
+                      </button>
                     </div>
                   </div>
                 )}

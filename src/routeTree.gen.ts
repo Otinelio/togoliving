@@ -12,10 +12,13 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as RestaurantRouteImport } from './routes/restaurant'
 import { Route as ReserverRouteImport } from './routes/reserver'
 import { Route as ReceptionRouteImport } from './routes/reception'
+import { Route as LoisirsRouteImport } from './routes/loisirs'
 import { Route as KitchenRouteImport } from './routes/kitchen'
 import { Route as HebergementsRouteImport } from './routes/hebergements'
 import { Route as GalerieRouteImport } from './routes/galerie'
+import { Route as EvenementsRouteImport } from './routes/evenements'
 import { Route as ContactRouteImport } from './routes/contact'
+import { Route as CarrieresRouteImport } from './routes/carrieres'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as AProposRouteImport } from './routes/a-propos'
 import { Route as IndexRouteImport } from './routes/index'
@@ -37,6 +40,11 @@ const ReceptionRoute = ReceptionRouteImport.update({
   path: '/reception',
   getParentRoute: () => rootRouteImport,
 } as any)
+const LoisirsRoute = LoisirsRouteImport.update({
+  id: '/loisirs',
+  path: '/loisirs',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const KitchenRoute = KitchenRouteImport.update({
   id: '/kitchen',
   path: '/kitchen',
@@ -52,9 +60,19 @@ const GalerieRoute = GalerieRouteImport.update({
   path: '/galerie',
   getParentRoute: () => rootRouteImport,
 } as any)
+const EvenementsRoute = EvenementsRouteImport.update({
+  id: '/evenements',
+  path: '/evenements',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ContactRoute = ContactRouteImport.update({
   id: '/contact',
   path: '/contact',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CarrieresRoute = CarrieresRouteImport.update({
+  id: '/carrieres',
+  path: '/carrieres',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminRoute = AdminRouteImport.update({
@@ -87,10 +105,13 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/a-propos': typeof AProposRoute
   '/admin': typeof AdminRoute
+  '/carrieres': typeof CarrieresRoute
   '/contact': typeof ContactRoute
+  '/evenements': typeof EvenementsRoute
   '/galerie': typeof GalerieRoute
   '/hebergements': typeof HebergementsRoute
   '/kitchen': typeof KitchenRoute
+  '/loisirs': typeof LoisirsRoute
   '/reception': typeof ReceptionRoute
   '/reserver': typeof ReserverRoute
   '/restaurant': typeof RestaurantRoute
@@ -101,10 +122,13 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/a-propos': typeof AProposRoute
   '/admin': typeof AdminRoute
+  '/carrieres': typeof CarrieresRoute
   '/contact': typeof ContactRoute
+  '/evenements': typeof EvenementsRoute
   '/galerie': typeof GalerieRoute
   '/hebergements': typeof HebergementsRoute
   '/kitchen': typeof KitchenRoute
+  '/loisirs': typeof LoisirsRoute
   '/reception': typeof ReceptionRoute
   '/reserver': typeof ReserverRoute
   '/restaurant': typeof RestaurantRoute
@@ -116,10 +140,13 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/a-propos': typeof AProposRoute
   '/admin': typeof AdminRoute
+  '/carrieres': typeof CarrieresRoute
   '/contact': typeof ContactRoute
+  '/evenements': typeof EvenementsRoute
   '/galerie': typeof GalerieRoute
   '/hebergements': typeof HebergementsRoute
   '/kitchen': typeof KitchenRoute
+  '/loisirs': typeof LoisirsRoute
   '/reception': typeof ReceptionRoute
   '/reserver': typeof ReserverRoute
   '/restaurant': typeof RestaurantRoute
@@ -132,10 +159,13 @@ export interface FileRouteTypes {
     | '/'
     | '/a-propos'
     | '/admin'
+    | '/carrieres'
     | '/contact'
+    | '/evenements'
     | '/galerie'
     | '/hebergements'
     | '/kitchen'
+    | '/loisirs'
     | '/reception'
     | '/reserver'
     | '/restaurant'
@@ -146,10 +176,13 @@ export interface FileRouteTypes {
     | '/'
     | '/a-propos'
     | '/admin'
+    | '/carrieres'
     | '/contact'
+    | '/evenements'
     | '/galerie'
     | '/hebergements'
     | '/kitchen'
+    | '/loisirs'
     | '/reception'
     | '/reserver'
     | '/restaurant'
@@ -160,10 +193,13 @@ export interface FileRouteTypes {
     | '/'
     | '/a-propos'
     | '/admin'
+    | '/carrieres'
     | '/contact'
+    | '/evenements'
     | '/galerie'
     | '/hebergements'
     | '/kitchen'
+    | '/loisirs'
     | '/reception'
     | '/reserver'
     | '/restaurant'
@@ -175,10 +211,13 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AProposRoute: typeof AProposRoute
   AdminRoute: typeof AdminRoute
+  CarrieresRoute: typeof CarrieresRoute
   ContactRoute: typeof ContactRoute
+  EvenementsRoute: typeof EvenementsRoute
   GalerieRoute: typeof GalerieRoute
   HebergementsRoute: typeof HebergementsRoute
   KitchenRoute: typeof KitchenRoute
+  LoisirsRoute: typeof LoisirsRoute
   ReceptionRoute: typeof ReceptionRoute
   ReserverRoute: typeof ReserverRoute
   RestaurantRoute: typeof RestaurantRoute
@@ -209,6 +248,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ReceptionRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/loisirs': {
+      id: '/loisirs'
+      path: '/loisirs'
+      fullPath: '/loisirs'
+      preLoaderRoute: typeof LoisirsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/kitchen': {
       id: '/kitchen'
       path: '/kitchen'
@@ -230,11 +276,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof GalerieRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/evenements': {
+      id: '/evenements'
+      path: '/evenements'
+      fullPath: '/evenements'
+      preLoaderRoute: typeof EvenementsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/contact': {
       id: '/contact'
       path: '/contact'
       fullPath: '/contact'
       preLoaderRoute: typeof ContactRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/carrieres': {
+      id: '/carrieres'
+      path: '/carrieres'
+      fullPath: '/carrieres'
+      preLoaderRoute: typeof CarrieresRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin': {
@@ -279,10 +339,13 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AProposRoute: AProposRoute,
   AdminRoute: AdminRoute,
+  CarrieresRoute: CarrieresRoute,
   ContactRoute: ContactRoute,
+  EvenementsRoute: EvenementsRoute,
   GalerieRoute: GalerieRoute,
   HebergementsRoute: HebergementsRoute,
   KitchenRoute: KitchenRoute,
+  LoisirsRoute: LoisirsRoute,
   ReceptionRoute: ReceptionRoute,
   ReserverRoute: ReserverRoute,
   RestaurantRoute: RestaurantRoute,

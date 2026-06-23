@@ -1,18 +1,26 @@
 import { Link, useRouterState } from "@tanstack/react-router";
 import { AnimatePresence, motion } from "framer-motion";
-import { Menu, X } from "lucide-react";
-import { useEffect, useState } from "react";
+import { Menu, X, ChevronDown } from "lucide-react";
+import { useEffect, useState, useRef } from "react";
 import { Logo } from "./Logo";
 import { LanguageSelector } from "./LanguageSelector";
 
-const links = [
+const navItems = [
   { to: "/", label: "Accueil" },
   { to: "/hebergements", label: "Hebergements" },
   { to: "/restaurant", label: "Restaurant & Bar" },
   { to: "/galerie", label: "Galerie" },
-  { to: "/a-propos", label: "A Propos" },
+  {
+    label: "Découvrir",
+    subLinks: [
+      { to: "/a-propos", label: "À Propos" },
+      { to: "/loisirs", label: "Loisirs & Détente" },
+      { to: "/evenements", label: "Événements" },
+      { to: "/carrieres", label: "Carrières" },
+    ]
+  },
   { to: "/contact", label: "Contact" },
-] as const;
+];
 
 export function Navbar() {
   const [scrolled, setScrolled] = useState(false);
@@ -43,17 +51,21 @@ export function Navbar() {
         />
 
         <nav className="hidden lg:flex items-center gap-7">
-          {links.map((l) => {
-            const active = location.pathname === l.to;
+          {navItems.map((item, idx) => {
+            if (item.subLinks) {
+              return <DropdownMenu key={idx} item={item} scrolled={scrolled} />;
+            }
+            
+            const active = location.pathname === item.to;
             return (
               <Link
-                key={l.to}
-                to={l.to}
+                key={item.to}
+                to={item.to!}
                 className={`text-sm tracking-wide transition-colors relative ${
                   scrolled ? "text-white/90 hover:text-turquoise" : "text-white hover:text-turquoise"
                 } ${active ? "text-turquoise" : ""}`}
               >
-                {l.label}
+                {item.label}
                 {active && (
                   <span className="absolute -bottom-1 left-0 right-0 h-0.5 bg-turquoise rounded-full" />
                 )}
@@ -90,14 +102,32 @@ export function Navbar() {
             className="lg:hidden bg-ocean/98 backdrop-blur-md border-t border-turquoise/20"
           >
             <div className="px-5 py-6 flex flex-col gap-4">
-              {links.map((l) => (
-                <Link
-                  key={l.to}
-                  to={l.to}
-                  className="text-white/90 hover:text-turquoise text-lg font-display"
-                >
-                  {l.label}
-                </Link>
+              {navItems.map((item, idx) => (
+                <div key={idx} className="flex flex-col gap-2">
+                  {item.subLinks ? (
+                    <>
+                      <div className="text-turquoise/80 text-sm font-semibold uppercase tracking-wider mt-2">{item.label}</div>
+                      <div className="flex flex-col gap-3 pl-3 border-l border-turquoise/20">
+                        {item.subLinks.map(sub => (
+                          <Link
+                            key={sub.to}
+                            to={sub.to}
+                            className="text-white/80 hover:text-turquoise text-lg font-display"
+                          >
+                            {sub.label}
+                          </Link>
+                        ))}
+                      </div>
+                    </>
+                  ) : (
+                    <Link
+                      to={item.to!}
+                      className="text-white/90 hover:text-turquoise text-lg font-display"
+                    >
+                      {item.label}
+                    </Link>
+                  )}
+                </div>
               ))}
               <Link
                 to="/reserver"
@@ -112,3 +142,60 @@ export function Navbar() {
     </header>
   );
 }
+
+function DropdownMenu({ item, scrolled }: { item: any; scrolled: boolean }) {
+  const [open, setOpen] = useState(false);
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  const handleMouseEnter = () => {
+    if (timeoutRef.current) clearTimeout(timeoutRef.current);
+    setOpen(true);
+  };
+
+  const handleMouseLeave = () => {
+    timeoutRef.current = setTimeout(() => {
+      setOpen(false);
+    }, 150);
+  };
+
+  return (
+    <div
+      className="relative"
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+    >
+      <button
+        className={`flex items-center gap-1 text-sm tracking-wide transition-colors ${
+          scrolled ? "text-white/90 hover:text-turquoise" : "text-white hover:text-turquoise"
+        } ${open ? "text-turquoise" : ""}`}
+      >
+        {item.label} <ChevronDown size={14} className={`transition-transform ${open ? "rotate-180" : ""}`} />
+      </button>
+
+      <AnimatePresence>
+        {open && (
+          <motion.div
+            initial={{ opacity: 0, y: 10, scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 5, scale: 0.95 }}
+            transition={{ duration: 0.2 }}
+            className="absolute top-full right-0 mt-4 w-56 p-2 rounded-xl bg-ocean/95 backdrop-blur-xl border border-turquoise/20 shadow-xl shadow-ocean/50 origin-top-right flex flex-col"
+          >
+            <div className="absolute -top-2 right-4 w-4 h-4 rotate-45 bg-ocean border-l border-t border-turquoise/20"></div>
+            {item.subLinks.map((sub: any) => (
+              <Link
+                key={sub.to}
+                to={sub.to}
+                className="relative z-10 px-4 py-2.5 rounded-lg text-sm text-white/90 hover:text-ocean hover:bg-turquoise font-medium transition-colors"
+                onClick={() => setOpen(false)}
+              >
+                {sub.label}
+              </Link>
+            ))}
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}
+
