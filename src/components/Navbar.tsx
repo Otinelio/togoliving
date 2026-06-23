@@ -9,11 +9,11 @@ const navItems = [
   { to: "/", label: "Accueil" },
   { to: "/hebergements", label: "Hebergements" },
   { to: "/restaurant", label: "Restaurant & Bar" },
-  { to: "/galerie", label: "Galerie" },
+  { to: "/a-propos", label: "À Propos" },
   {
     label: "Découvrir",
     subLinks: [
-      { to: "/a-propos", label: "À Propos" },
+      { to: "/galerie", label: "Galerie" },
       { to: "/loisirs", label: "Loisirs & Détente" },
       { to: "/evenements", label: "Événements" },
       { to: "/carrieres", label: "Carrières" },
