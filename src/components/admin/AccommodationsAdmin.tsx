@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Plus, Trash2, Loader2, Image as ImageIcon, Video, X, Pencil, Check, ChevronRight } from "lucide-react";
 import { useAccommodations, type Accommodation } from "@/hooks/useAccommodations";
 import { supabase } from "@/lib/supabase";
-import { compressImage } from "@/lib/media";
+import { compressImage, prepareVideoForUpload } from "@/lib/media";
 import { useRooms } from "@/hooks/useRooms";
 import { type Room, type RoomStatus, type RoomType } from "@/data/defaultRooms";
 
@@ -25,7 +25,15 @@ export function AccommodationsAdmin() {
       const newUrls: string[] = [];
       for (let i = 0; i < rawFiles.length; i++) {
         const rawFile = rawFiles[i];
-        const file = field === "videoUrls" ? rawFile : await compressImage(rawFile);
+        
+        // Prepare the file: compress images, fix video MIME types
+        let file: File = rawFile;
+        if (field === "videoUrls") {
+          file = prepareVideoForUpload(rawFile);
+        } else {
+          file = await compressImage(rawFile);
+        }
+
         const fileName = `${Date.now()}_${file.name.replace(/[^a-zA-Z0-9.-]/g, "_")}`;
         const { error } = await supabase.storage.from("media").upload(`accommodations/${fileName}`, file);
         if (error) throw error;
@@ -33,13 +41,18 @@ export function AccommodationsAdmin() {
         newUrls.push(publicData.publicUrl);
       }
       
-      const currentUrls = editingRoom[field] || [];
-      setEditingRoom({ ...editingRoom, [field]: [...currentUrls, ...newUrls] });
-    } catch (err) {
-      console.error(err);
-      alert("Erreur lors du téléchargement");
+      setEditingRoom(prev => {
+        if (!prev) return prev;
+        const currentUrls = prev[field] || [];
+        return { ...prev, [field]: [...currentUrls, ...newUrls] };
+      });
+    } catch (err: any) {
+      console.error("Upload error details:", err);
+      alert(`Erreur lors du téléchargement: ${err?.message || "Erreur inconnue"}`);
     } finally {
       setRoomUploading(null);
+      // Reset the input value so the same file can be selected again if needed
+      e.target.value = '';
     }
   };
 
@@ -49,7 +62,13 @@ export function AccommodationsAdmin() {
 
     setUploading(field);
     try {
-      const file = field === "videoUrl" ? rawFile : await compressImage(rawFile);
+      let file: File = rawFile;
+      if (field === "videoUrl") {
+        file = prepareVideoForUpload(rawFile);
+      } else {
+        file = await compressImage(rawFile);
+      }
+
       const fileName = `${Date.now()}_${file.name.replace(/[^a-zA-Z0-9.-]/g, "_")}`;
       const { data, error } = await supabase.storage.from("media").upload(`accommodations/${fileName}`, file);
       
@@ -57,12 +76,16 @@ export function AccommodationsAdmin() {
 
       const { data: publicData } = supabase.storage.from("media").getPublicUrl(`accommodations/${fileName}`);
       
-      setModalItem({ ...modalItem, [field]: publicData.publicUrl });
-    } catch (err) {
-      console.error(err);
-      alert("Erreur lors du téléchargement");
+      setModalItem(prev => {
+        if (!prev) return prev;
+        return { ...prev, [field]: publicData.publicUrl };
+      });
+    } catch (err: any) {
+      console.error("Upload error details:", err);
+      alert(`Erreur lors du téléchargement: ${err?.message || "Erreur inconnue"}`);
     } finally {
       setUploading(null);
+      e.target.value = '';
     }
   };
 
@@ -90,6 +113,14 @@ export function AccommodationsAdmin() {
       alert("Le titre est obligatoire");
       return;
     }
+
+    // Save the physical room if one is currently being edited
+    if (activeTab === "rooms" && editingRoom) {
+      updateRoom(editingRoom.id, editingRoom);
+      setEditingRoom(null);
+    }
+
+    // Save the accommodation
     if (modalItem.id) {
       updateItem(modalItem.id, modalItem);
     } else {
@@ -540,7 +571,7 @@ export function AccommodationsAdmin() {
                         <div className="grid grid-cols-4 sm:grid-cols-5 gap-2">
                           {(editingRoom.videoUrls || []).map((vid, idx) => (
                             <div key={idx} className="aspect-square bg-ocean/5 rounded-xl overflow-hidden relative group border border-turquoise/20 shadow-sm">
-                              <video src={vid} className="w-full h-full object-cover" muted />
+                              <video src={vid} className="w-full h-full object-cover" autoPlay loop muted playsInline controls />
                               <button onClick={() => {
                                 if (!window.confirm("Supprimer cette vidéo ?")) return;
                                 const n = [...(editingRoom.videoUrls || [])];

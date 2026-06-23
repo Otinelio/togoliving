@@ -12,7 +12,7 @@ export function useRooms() {
         const { data, error } = await supabase.from("rooms_status").select("*").order("id");
         if (error) return DEFAULT_ROOMS;
         if (!data || data.length === 0) return DEFAULT_ROOMS;
-        
+
         // Merge fetched data with DEFAULT_ROOMS to ensure rich content is always present
         // even if the user hasn't run the SQL seed script yet.
         const mergedData = data.map(fetchedRoom => {
@@ -20,7 +20,7 @@ export function useRooms() {
           if (fetchedRoom.type === "1 Chambre Salon") {
             fetchedRoom.type = "Chambre Salon";
           }
-          
+
           const defaultRoom = DEFAULT_ROOMS.find(r => r.id === fetchedRoom.id);
           if (defaultRoom) {
             return {
@@ -46,7 +46,7 @@ export function useRooms() {
             mergedData.push(defaultRoom);
           }
         });
-        
+
         return mergedData as Room[];
       } catch (err) {
         console.error("Supabase fallback to default rooms:", err);
@@ -66,9 +66,26 @@ export function useRooms() {
 
   const updateRoomMutation = useMutation({
     mutationFn: async ({ id, patch }: { id: string; patch: Partial<Room> }) => {
-      const { data, error } = await supabase.from("rooms_status").update(patch).eq("id", id).select().single();
-      if (error) throw error;
-      return data;
+      // 1. On vérifie si la chambre existe déjà dans la base
+      const { data: existing } = await supabase.from("rooms_status").select("id").eq("id", id).maybeSingle();
+      
+      let res;
+      if (existing) {
+        // Mise à jour classique
+        res = await supabase.from("rooms_status").update(patch).eq("id", id).select().single();
+      } else {
+        // 2. La chambre n'existe pas encore (elle vient des valeurs par défaut) -> on l'insère
+        const defaultRoom = DEFAULT_ROOMS.find(r => r.id === id);
+        if (!defaultRoom) throw new Error("Chambre introuvable");
+        const fullRoom = { ...defaultRoom, ...patch, id };
+        res = await supabase.from("rooms_status").insert(fullRoom).select().single();
+      }
+      
+      if (res.error) {
+        console.error("Erreur de sauvegarde:", res.error);
+        throw res.error;
+      }
+      return res.data;
     },
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["roomsStatus"] }),
   });
