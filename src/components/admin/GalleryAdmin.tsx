@@ -8,8 +8,10 @@ export function GalleryAdmin() {
   const { items, isLoading, addItem, removeItem } = useGallery();
   const [category, setCategory] = useState("Tout");
   const [uploading, setUploading] = useState(false);
+  const [showAddModal, setShowAddModal] = useState(false);
+  const [newImage, setNewImage] = useState({ url: "", altText: "", category: "Piscine" });
 
-  const categories = ["Tout", "Piscine", "Plage", "Appartements", "Intérieur", "Bar"];
+  const categories = ["Tout", "Piscine", "Plage", "Appartements", "Intérieur", "Bar", "Loisir et détente"];
 
   const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const rawFile = e.target.files?.[0];
@@ -24,18 +26,27 @@ export function GalleryAdmin() {
       if (error) throw error;
 
       const { data: publicData } = supabase.storage.from("media").getPublicUrl(`gallery/${fileName}`);
-      
-      addItem({
-        category: category === "Tout" ? "Piscine" : category, // Default category
-        imageUrl: publicData.publicUrl,
-        altText: file.name
-      });
+      setNewImage(prev => ({ ...prev, url: publicData.publicUrl, altText: prev.altText || file.name }));
     } catch (err) {
       console.error(err);
       alert("Erreur lors du téléchargement");
     } finally {
       setUploading(false);
     }
+  };
+
+  const handleSaveItem = () => {
+    if (!newImage.url) {
+      alert("L'URL de l'image est obligatoire");
+      return;
+    }
+    addItem({
+      category: newImage.category,
+      imageUrl: newImage.url,
+      altText: newImage.altText || "Image de la galerie"
+    });
+    setShowAddModal(false);
+    setNewImage({ url: "", altText: "", category: "Piscine" });
   };
 
   const filteredItems = category === "Tout" ? items : items.filter(i => i.category === category);
@@ -52,11 +63,12 @@ export function GalleryAdmin() {
           ))}
         </div>
         
-        <label className={`cursor-pointer inline-flex items-center gap-2 bg-turquoise text-ocean px-5 py-3 rounded-xl font-bold hover:bg-gold transition shadow-lg ${uploading ? "opacity-50 pointer-events-none" : ""}`}>
-          {uploading ? <Loader2 size={18} className="animate-spin" /> : <ImageIcon size={18} />}
-          {uploading ? "Envoi..." : "Uploader une image"}
-          <input type="file" accept="image/*" onChange={handleUpload} className="hidden" />
-        </label>
+        <button onClick={() => {
+          setNewImage({ url: "", altText: "", category: category === "Tout" ? "Piscine" : category });
+          setShowAddModal(true);
+        }} className="inline-flex items-center gap-2 bg-turquoise text-ocean px-5 py-3 rounded-xl font-bold hover:bg-gold transition shadow-lg">
+          <Plus size={18} /> Ajouter une image
+        </button>
       </div>
 
       {isLoading ? (
@@ -89,6 +101,68 @@ export function GalleryAdmin() {
               Aucune image trouvée dans cette catégorie.
             </div>
           )}
+        </div>
+      )}
+
+      {/* Modal d'ajout d'image */}
+      {showAddModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-ocean/80 backdrop-blur-sm animate-in fade-in duration-200" onClick={() => setShowAddModal(false)}>
+          <div className="bg-sand w-full max-w-md rounded-3xl shadow-2xl relative border border-white/40 overflow-hidden" onClick={e => e.stopPropagation()}>
+            <div className="p-6 border-b border-turquoise/20">
+              <h2 className="font-display text-2xl text-ocean">Ajouter à la galerie</h2>
+            </div>
+            
+            <div className="p-6 space-y-4">
+              <div>
+                <label className="text-[10px] uppercase font-bold text-ocean/60 mb-1 block">Catégorie</label>
+                <select 
+                  value={newImage.category} 
+                  onChange={e => setNewImage({...newImage, category: e.target.value})}
+                  className="w-full bg-white px-3 py-2.5 rounded-xl border border-turquoise/20 focus:border-turquoise focus:outline-none text-sm text-ocean"
+                >
+                  {categories.filter(c => c !== "Tout").map(c => <option key={c} value={c}>{c}</option>)}
+                </select>
+              </div>
+              
+              <div>
+                <label className="text-[10px] uppercase font-bold text-ocean/60 mb-1 block">URL de l'image (Entrer URL ou Uploader)</label>
+                <div className="flex gap-2">
+                  <input 
+                    type="text" 
+                    placeholder="https://..." 
+                    value={newImage.url} 
+                    onChange={e => setNewImage({...newImage, url: e.target.value})}
+                    className="flex-1 bg-white px-3 py-2.5 rounded-xl border border-turquoise/20 focus:border-turquoise focus:outline-none text-sm text-ocean"
+                  />
+                  <label className={`cursor-pointer inline-flex items-center justify-center gap-2 bg-turquoise/20 text-turquoise-dark px-3 py-2.5 rounded-xl font-bold hover:bg-turquoise hover:text-ocean transition shrink-0 ${uploading ? "opacity-50 pointer-events-none" : ""}`}>
+                    {uploading ? <Loader2 size={16} className="animate-spin" /> : <ImageIcon size={16} />}
+                    <input type="file" accept="image/*" onChange={handleUpload} className="hidden" />
+                  </label>
+                </div>
+                {newImage.url && (
+                  <div className="mt-2 aspect-video bg-ocean/5 rounded-xl overflow-hidden border border-turquoise/20 relative">
+                    <img src={newImage.url} alt="Preview" className="w-full h-full object-cover" />
+                  </div>
+                )}
+              </div>
+
+              <div>
+                <label className="text-[10px] uppercase font-bold text-ocean/60 mb-1 block">Description de l'image (Pour indexation)</label>
+                <input 
+                  type="text" 
+                  placeholder="Ex: Belle vue sur la piscine..." 
+                  value={newImage.altText} 
+                  onChange={e => setNewImage({...newImage, altText: e.target.value})}
+                  className="w-full bg-white px-3 py-2.5 rounded-xl border border-turquoise/20 focus:border-turquoise focus:outline-none text-sm text-ocean"
+                />
+              </div>
+            </div>
+
+            <div className="p-4 border-t border-turquoise/20 flex justify-end gap-3 bg-white/50">
+              <button onClick={() => setShowAddModal(false)} className="px-5 py-2.5 rounded-xl font-bold text-ocean hover:bg-white transition">Annuler</button>
+              <button onClick={handleSaveItem} className="flex items-center gap-2 bg-turquoise text-ocean px-6 py-2.5 rounded-xl font-bold hover:bg-gold transition shadow-lg">Enregistrer</button>
+            </div>
+          </div>
         </div>
       )}
     </div>

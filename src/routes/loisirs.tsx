@@ -3,6 +3,8 @@ import { motion } from "framer-motion";
 import { Waves, Droplets, Gamepad2, Coffee, Tent, Music, Sun, ShieldCheck, Camera } from "lucide-react";
 import { WaveDivider } from "@/components/WaveDivider";
 import { ASSETS } from "@/lib/assets";
+import { useGallery } from "@/hooks/useGallery";
+import { Loader2 } from "lucide-react";
 
 export const Route = createFileRoute("/loisirs")({
   head: () => ({
@@ -17,6 +19,23 @@ export const Route = createFileRoute("/loisirs")({
 });
 
 function LoisirsPage() {
+  const { items, isLoading } = useGallery();
+  const loisirsGallery = items.filter(item => item.category === "Loisir et détente");
+
+  // Fallback aux images par défaut si la galerie est vide dans Supabase
+  const defaultImages = [
+    ASSETS.piscineIMG4283,
+    ASSETS.interieurIMG4230,
+    ASSETS.interieurBCC6,
+    ASSETS.poolImg,
+    ASSETS.plageIMG4188,
+    ASSETS.bar60DBC,
+    ASSETS.barIMG2449,
+    ASSETS.bar69A51
+  ];
+
+  const imagesToDisplay = loisirsGallery.length > 0 ? loisirsGallery.map(i => i.imageUrl) : defaultImages;
+
   return (
     <>
       <section className="relative pt-32 pb-20 bg-ocean text-white overflow-hidden">
@@ -148,28 +167,24 @@ function LoisirsPage() {
             <p className="text-ocean/70 mt-4 text-lg">Découvrez nos espaces de jeux et de détente en images.</p>
           </div>
 
-          {/* Espace Galerie: Ajoutez ou modifiez les images dans ce tableau */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            {[
-              ASSETS.piscineIMG4283,
-              ASSETS.interieurIMG4230,
-              ASSETS.interieurBCC6,
-              ASSETS.poolImg,
-              ASSETS.plageIMG4188,
-              ASSETS.bar60DBC,
-              ASSETS.barIMG2449,
-              ASSETS.bar69A51
-            ].map((src, i) => (
-              <motion.div key={i} initial={{ opacity: 0, scale: 0.9 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true }} transition={{ delay: i * 0.1 }}
-                className="aspect-square rounded-xl overflow-hidden relative group cursor-pointer shadow-sm border border-ocean/5">
-                <img src={src} alt={`Galerie Loisirs ${i + 1}`} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" loading="lazy" />
-                <div className="absolute inset-0 bg-ocean/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                  <div className="w-12 h-12 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center text-white">
-                    <Camera size={24} />
+            {isLoading && loisirsGallery.length === 0 ? (
+              <div className="col-span-full py-10 flex justify-center text-ocean">
+                <Loader2 size={32} className="animate-spin" />
+              </div>
+            ) : (
+              imagesToDisplay.map((src, i) => (
+                <motion.div key={i} initial={{ opacity: 0, scale: 0.9 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true }} transition={{ delay: i * 0.1 }}
+                  className="aspect-square rounded-xl overflow-hidden relative group cursor-pointer shadow-sm border border-ocean/5">
+                  <img src={src} alt={`Galerie Loisirs ${i + 1}`} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" loading="lazy" />
+                  <div className="absolute inset-0 bg-ocean/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                    <div className="w-12 h-12 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center text-white">
+                      <Camera size={24} />
+                    </div>
                   </div>
-                </div>
-              </motion.div>
-            ))}
+                </motion.div>
+              ))
+            )}
           </div>
         </div>
       </section>

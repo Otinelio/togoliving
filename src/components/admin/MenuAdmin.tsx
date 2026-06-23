@@ -15,12 +15,12 @@ export function MenuAdmin() {
   const { items, addItem, updateItem, removeItem, toggleSoldOut } = useMenu();
   const [tab, setTab] = useState<MenuCategory>("Petit-Déjeuner");
   const [showAddForm, setShowAddForm] = useState(false);
-  const [form, setForm] = useState({ name: "", price: "", description: "" });
+  const [form, setForm] = useState({ name: "", price: "", description: "", imageUrl: "" });
   const [addImage, setAddImage] = useState<File | null>(null);
   const [addImagePreview, setAddImagePreview] = useState<string | null>(null);
   const [uploading, setUploading] = useState<string | null>(null);
   const [editingItem, setEditingItem] = useState<ReturnType<typeof useMenu>["items"][0] | null>(null);
-  const [editForm, setEditForm] = useState({ name: "", price: "", description: "" });
+  const [editForm, setEditForm] = useState({ name: "", price: "", description: "", imageUrl: "" });
   const [confirmDelete, setConfirmDelete] = useState<string | null>(null);
 
   const addFileRef = useRef<HTMLInputElement>(null);
@@ -47,7 +47,7 @@ export function MenuAdmin() {
     e.preventDefault();
     if (!form.name || !form.price) return;
 
-    let imageUrl: string | undefined;
+    let imageUrl: string | undefined = form.imageUrl || undefined;
     if (addImage) {
       setUploading("new");
       try {
@@ -66,7 +66,7 @@ export function MenuAdmin() {
       description: form.description,
       image: imageUrl,
     });
-    setForm({ name: "", price: "", description: "" });
+    setForm({ name: "", price: "", description: "", imageUrl: "" });
     setAddImage(null);
     setAddImagePreview(null);
     setUploading(null);
@@ -112,13 +112,14 @@ export function MenuAdmin() {
       name: editForm.name,
       price: +editForm.price,
       description: editForm.description,
+      image: editForm.imageUrl || editingItem.image,
     });
     setEditingItem(null);
   };
 
   const openEdit = (item: ReturnType<typeof useMenu>["items"][0]) => {
     setEditingItem(item);
-    setEditForm({ name: item.name, price: String(item.price), description: item.description || "" });
+    setEditForm({ name: item.name, price: String(item.price), description: item.description || "", imageUrl: item.image || "" });
   };
 
   const filtered = items.filter((i) => i.category === tab);
@@ -204,6 +205,13 @@ export function MenuAdmin() {
 
             {/* Text fields */}
             <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="md:col-span-2">
+                <label className="text-[10px] uppercase tracking-widest font-bold text-ocean/60 mb-1.5 block">Image (URL) - Optionnel si upload</label>
+                <input placeholder="https://..."
+                  value={form.imageUrl} onChange={(e) => setForm({ ...form, imageUrl: e.target.value })}
+                  className="w-full bg-white px-4 py-3.5 rounded-xl border-2 border-turquoise/20 focus:border-turquoise focus:outline-none text-sm font-medium text-ocean placeholder:text-ocean/30"
+                />
+              </div>
               <div>
                 <label className="text-[10px] uppercase tracking-widest font-bold text-ocean/60 mb-1.5 block">Nom *</label>
                 <input required placeholder="Ex: Poulet Braisé"
@@ -342,7 +350,7 @@ export function MenuAdmin() {
                   uploading === editingItem.id ? "opacity-50 pointer-events-none" : ""
                 }`}>
                   {uploading === editingItem.id ? <Loader2 size={16} className="animate-spin" /> : <Upload size={16} />}
-                  {editingItem.image ? "Changer" : "Ajouter une photo"}
+                  {editingItem.image ? "Uploader" : "Uploader une photo"}
                   <input type="file" accept="image/*" onChange={(e) => handleItemImageUpload(e, editingItem.id)} className="hidden" />
                 </label>
                 
@@ -372,6 +380,15 @@ export function MenuAdmin() {
                     value={editForm.name}
                     onChange={(e) => setEditForm({ ...editForm, name: e.target.value })}
                     className="w-full bg-white px-4 py-3 rounded-xl border-2 border-turquoise/20 focus:border-turquoise focus:outline-none text-sm font-display text-ocean"
+                  />
+                </div>
+                <div>
+                  <label className="text-[10px] uppercase tracking-widest font-bold text-ocean/60 mb-1 block">URL de l'image</label>
+                  <input
+                    value={editForm.imageUrl}
+                    onChange={(e) => setEditForm({ ...editForm, imageUrl: e.target.value })}
+                    className="w-full bg-white px-4 py-3 rounded-xl border-2 border-turquoise/20 focus:border-turquoise focus:outline-none text-sm text-ocean"
+                    placeholder="https://..."
                   />
                 </div>
                 <div>

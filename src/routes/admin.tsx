@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import {
   LayoutDashboard, UtensilsCrossed, BedDouble, QrCode, Settings,
-  LogOut, Plus, Trash2, Clock, Building, Globe, Phone, Lock, AlertTriangle, Image as ImageIcon, Home, FileText, User, Star, Pencil, X, Check, Briefcase
+  LogOut, Plus, Trash2, Clock, Building, Globe, Phone, Lock, AlertTriangle, Image as ImageIcon, Home, FileText, User, Star, Pencil, X, Check, Briefcase, Loader2
 } from "lucide-react";
 import { GalleryAdmin } from "@/components/admin/GalleryAdmin";
 import { AccommodationsAdmin } from "@/components/admin/AccommodationsAdmin";
@@ -14,13 +14,13 @@ import { PinScreen } from "@/components/PinScreen";
 import { QRCodeCard } from "@/components/QRCodeCard";
 import { useMenu } from "@/hooks/useMenu";
 import { useRooms } from "@/hooks/useRooms";
-import { useOrders } from "@/hooks/useOrders";
 import { useReviews } from "@/hooks/useReviews";
 import { useSettings, DEFAULT_SETTINGS } from "@/hooks/useSettings";
 import { MENU_CATEGORIES, type MenuCategory } from "@/data/defaultMenu";
 import type { Room, RoomStatus, RoomType } from "@/data/defaultRooms";
 import { formatFCFA } from "@/lib/whatsapp";
-
+import { supabase } from "@/lib/supabase";
+import { compressImage } from "@/lib/media";
 export const Route = createFileRoute("/admin")({ component: Page });
 
 type Section = "overview" | "menu" | "gallery" | "accommodations" | "rooms" | "qr" | "reviews" | "settings" | "events" | "jobs" | "applications";
@@ -106,7 +106,6 @@ function Dash() {
 }
 
 function Overview({ onNavigate }: { onNavigate: (section: Section) => void }) {
-  const orders = useOrders(5000);
   const { rooms } = useRooms();
   const { items } = useMenu();
   const occ = rooms.filter((r) => r.status === "Occupe").length;
@@ -151,25 +150,6 @@ function Overview({ onNavigate }: { onNavigate: (section: Section) => void }) {
           </div>
           <div className="font-display text-3xl text-ocean relative z-10">{active}</div>
         </div>
-      </div>
-
-      <div className="glass p-8 rounded-2xl">
-        <h2 className="font-display text-2xl text-ocean mb-6 flex items-center gap-3"><Clock size={24} className="text-turquoise" /> Activité récente</h2>
-        <ul className="space-y-3">
-          {orders.slice(0, 8).map((o) => (
-            <li key={o.id} className="p-4 rounded-xl bg-white/60 border border-turquoise/10 flex justify-between items-center hover:border-turquoise/40 hover:bg-white transition-all shadow-sm">
-              <div className="flex items-center gap-4">
-                <div className="w-12 h-12 rounded-xl bg-ocean/5 flex items-center justify-center text-ocean font-bold font-display text-lg">{o.roomId}</div>
-                <div>
-                  <div className="text-sm font-bold text-ocean">{o.items.length} article(s)</div>
-                  <div className="text-xs font-medium text-muted-foreground mt-0.5">{o.status}</div>
-                </div>
-              </div>
-              <span className="font-bold text-ocean bg-gold/20 px-4 py-1.5 rounded-full text-sm border border-gold/30">{formatFCFA(o.totalPrice)}</span>
-            </li>
-          ))}
-          {orders.length === 0 && <li className="py-10 text-center text-muted-foreground bg-white/40 rounded-xl border-2 border-dashed border-turquoise/20 font-medium">Aucune commande récente</li>}
-        </ul>
       </div>
     </div>
   );
@@ -400,10 +380,37 @@ function QRSection() {
 function SettingsSection() {
   const { settings, setSettings } = useSettings();
   const [confirm, setConfirm] = useState(false);
+  const [uploading, setUploading] = useState<"hero" | "gallery" | null>(null);
 
   const reset = () => {
     ["togoliving_menu", "togoliving_rooms", "togoliving_orders", "togoliving_settings"].forEach((k) => localStorage.removeItem(k));
     location.reload();
+  };
+
+  const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>, type: "hero" | "gallery") => {
+    const rawFile = e.target.files?.[0];
+    if (!rawFile) return;
+
+    setUploading(type);
+    try {
+      const file = await compressImage(rawFile);
+      const fileName = `${Date.now()}_${file.name.replace(/[^a-zA-Z0-9.-]/g, "_")}`;
+      const { error } = await supabase.storage.from("media").upload(`settings/${fileName}`, file);
+      
+      if (error) throw error;
+
+      const { data } = supabase.storage.from("media").getPublicUrl(`settings/${fileName}`);
+      if (type === "hero") {
+        setSettings({ ...settings, heroImageUrl: data.publicUrl });
+      } else {
+        setSettings({ ...settings, galleryHeroUrl: data.publicUrl });
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Erreur lors du téléchargement");
+    } finally {
+      setUploading(null);
+    }
   };
 
   const field = (k: keyof typeof settings, label: string, type = "text", icon: React.ReactNode) => (
@@ -430,6 +437,35 @@ function SettingsSection() {
           {field("domain", "Domaine URL (QR)", "text", <Globe size={16} className="text-turquoise" />)}
           {field("whatsapp", "Numéro WhatsApp Principal", "text", <Phone size={16} className="text-turquoise" />)}
           {field("additionalNumbers", "Autres numéros (séparés par virgule)", "text", <Phone size={16} className="text-turquoise" />)}
+        </div>
+
+        <h2 className="font-display text-2xl text-ocean mt-10 mb-6 border-b-2 border-turquoise/20 pb-3">Médias Globaux</h2>
+        <div className="grid md:grid-cols-2 gap-6">
+          <div className="block group">
+            <span className="text-xs font-bold uppercase tracking-wider text-ocean mb-2 flex items-center justify-between">
+              <span className="flex items-center gap-2"><ImageIcon size={16} className="text-turquoise" /> Image Accueil (Hero)</span>
+              <label className="cursor-pointer text-turquoise hover:text-ocean transition">
+                {uploading === "hero" ? <Loader2 size={16} className="animate-spin" /> : "Uploader"}
+                <input type="file" accept="image/*" onChange={(e) => handleUpload(e, "hero")} className="hidden" />
+              </label>
+            </span>
+            <input type="text" value={settings.heroImageUrl || ""} onChange={(e) => setSettings({ ...settings, heroImageUrl: e.target.value })}
+              className="w-full bg-white px-4 py-3.5 rounded-xl border-2 border-turquoise/20 focus:border-turquoise focus:outline-none transition-colors group-hover:border-turquoise/40 font-medium text-ocean mb-2 text-xs" />
+            {settings.heroImageUrl && <div className="aspect-video bg-ocean/5 rounded-xl overflow-hidden"><img src={settings.heroImageUrl} className="w-full h-full object-cover" /></div>}
+          </div>
+
+          <div className="block group">
+            <span className="text-xs font-bold uppercase tracking-wider text-ocean mb-2 flex items-center justify-between">
+              <span className="flex items-center gap-2"><ImageIcon size={16} className="text-turquoise" /> Image Galerie (Hero)</span>
+              <label className="cursor-pointer text-turquoise hover:text-ocean transition">
+                {uploading === "gallery" ? <Loader2 size={16} className="animate-spin" /> : "Uploader"}
+                <input type="file" accept="image/*" onChange={(e) => handleUpload(e, "gallery")} className="hidden" />
+              </label>
+            </span>
+            <input type="text" value={settings.galleryHeroUrl || ""} onChange={(e) => setSettings({ ...settings, galleryHeroUrl: e.target.value })}
+              className="w-full bg-white px-4 py-3.5 rounded-xl border-2 border-turquoise/20 focus:border-turquoise focus:outline-none transition-colors group-hover:border-turquoise/40 font-medium text-ocean mb-2 text-xs" />
+            {settings.galleryHeroUrl && <div className="aspect-video bg-ocean/5 rounded-xl overflow-hidden"><img src={settings.galleryHeroUrl} className="w-full h-full object-cover" /></div>}
+          </div>
         </div>
 
         <h2 className="font-display text-2xl text-ocean mt-10 mb-6 border-b-2 border-turquoise/20 pb-3">Sécurité (Codes PIN)</h2>

@@ -8,6 +8,8 @@ export function EventsAdmin() {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [formData, setFormData] = useState<Partial<AppEvent>>({});
 
+  const [uploading, setUploading] = useState(false);
+
   const handleEdit = (evt: AppEvent) => {
     setEditingId(evt.id);
     setFormData(evt);
@@ -43,16 +45,9 @@ export function EventsAdmin() {
       </div>
 
       <div className="grid gap-4">
-        {editingId === "new" && (
-          <EventEditor formData={formData} setFormData={setFormData} onSave={handleSave} onCancel={() => setEditingId(null)} />
-        )}
-
         {events.map((evt) => (
           <div key={evt.id} className="bg-white p-4 rounded-xl border border-ocean/10 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-            {editingId === evt.id ? (
-              <EventEditor formData={formData} setFormData={setFormData} onSave={handleSave} onCancel={() => setEditingId(null)} />
-            ) : (
-              <>
+            <>
                 <div className="flex items-center gap-4">
                   <div className="w-16 h-16 rounded-lg overflow-hidden bg-ocean/5 shrink-0">
                     {evt.img ? <img src={evt.img} alt={evt.title} className="w-full h-full object-cover" /> : <ImageIcon className="w-full h-full p-4 text-ocean/20" />}
@@ -73,40 +68,100 @@ export function EventsAdmin() {
                   <button onClick={() => removeEvent(evt.id)} className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition"><Trash2 size={18} /></button>
                 </div>
               </>
-            )}
           </div>
         ))}
-        {events.length === 0 && editingId !== "new" && (
+        {events.length === 0 && (
           <div className="text-center py-12 bg-white rounded-2xl border border-dashed border-ocean/20">
             <p className="text-muted-foreground">Aucun événement trouvé.</p>
           </div>
         )}
       </div>
+
+      {editingId && (
+        <EventEditor 
+          formData={formData} 
+          setFormData={setFormData} 
+          onSave={handleSave} 
+          onCancel={() => setEditingId(null)} 
+          uploading={uploading}
+          setUploading={setUploading}
+        />
+      )}
     </div>
   );
 }
 
-function EventEditor({ formData, setFormData, onSave, onCancel }: { formData: Partial<AppEvent>, setFormData: any, onSave: () => void, onCancel: () => void }) {
+import { Loader2, X } from "lucide-react";
+import { supabase } from "@/lib/supabase";
+import { compressImage } from "@/lib/media";
+
+function EventEditor({ formData, setFormData, onSave, onCancel, uploading, setUploading }: { formData: Partial<AppEvent>, setFormData: any, onSave: () => void, onCancel: () => void, uploading: boolean, setUploading: any }) {
+  const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const rawFile = e.target.files?.[0];
+    if (!rawFile) return;
+
+    setUploading(true);
+    try {
+      const file = await compressImage(rawFile);
+      const fileName = `${Date.now()}_${file.name.replace(/[^a-zA-Z0-9.-]/g, "_")}`;
+      const { data, error } = await supabase.storage.from("media").upload(`events/${fileName}`, file);
+      
+      if (error) throw error;
+
+      const { data: publicData } = supabase.storage.from("media").getPublicUrl(`events/${fileName}`);
+      setFormData({ ...formData, img: publicData.publicUrl });
+    } catch (err) {
+      console.error(err);
+      alert("Erreur lors du téléchargement");
+    } finally {
+      setUploading(false);
+    }
+  };
+
   return (
-    <div className="w-full bg-sand/30 p-4 rounded-xl border border-ocean/10 space-y-4">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <input type="text" placeholder="Titre de l'événement" className="p-2 rounded-lg border border-ocean/10 w-full" 
-               value={formData.title || ''} onChange={e => setFormData({...formData, title: e.target.value})} />
-        <input type="text" placeholder="Date (ex: Samedi 15 Juillet - 20h00)" className="p-2 rounded-lg border border-ocean/10 w-full" 
-               value={formData.date || ''} onChange={e => setFormData({...formData, date: e.target.value})} />
-        <input type="text" placeholder="URL de l'image" className="p-2 rounded-lg border border-ocean/10 w-full" 
-               value={formData.img || ''} onChange={e => setFormData({...formData, img: e.target.value})} />
-        <select className="p-2 rounded-lg border border-ocean/10 w-full bg-white"
-                value={formData.status || 'published'} onChange={e => setFormData({...formData, status: e.target.value})}>
-          <option value="published">Publié</option>
-          <option value="draft">Brouillon</option>
-        </select>
-        <textarea placeholder="Description courte..." className="p-2 rounded-lg border border-ocean/10 w-full md:col-span-2" rows={2}
-                  value={formData.description || ''} onChange={e => setFormData({...formData, description: e.target.value})} />
-      </div>
-      <div className="flex justify-end gap-2">
-        <button onClick={onCancel} className="px-4 py-2 text-sm text-ocean hover:bg-ocean/5 rounded-lg transition">Annuler</button>
-        <button onClick={onSave} className="px-4 py-2 text-sm bg-ocean text-white rounded-lg hover:bg-ocean/90 transition flex items-center gap-2"><CheckCircle2 size={16} /> Enregistrer</button>
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-ocean/80 backdrop-blur-sm animate-in fade-in duration-200" onClick={onCancel}>
+      <div className="bg-sand w-full max-w-2xl rounded-3xl shadow-2xl relative border border-white/40 overflow-hidden flex flex-col max-h-[90vh]" onClick={e => e.stopPropagation()}>
+        <div className="flex justify-between items-center p-6 border-b border-turquoise/20">
+          <h2 className="font-display text-2xl text-ocean">Événement</h2>
+          <button onClick={onCancel} className="p-2 rounded-full hover:bg-white text-ocean transition-colors">
+            <X size={20} />
+          </button>
+        </div>
+        
+        <div className="p-6 overflow-y-auto space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <input type="text" placeholder="Titre de l'événement" className="p-2.5 rounded-xl border border-ocean/10 w-full focus:border-turquoise focus:outline-none" 
+                   value={formData.title || ''} onChange={e => setFormData({...formData, title: e.target.value})} />
+            <input type="text" placeholder="Date (ex: Samedi 15 Juillet - 20h00)" className="p-2.5 rounded-xl border border-ocean/10 w-full focus:border-turquoise focus:outline-none" 
+                   value={formData.date || ''} onChange={e => setFormData({...formData, date: e.target.value})} />
+            
+            <div className="md:col-span-2 flex flex-col gap-2">
+              <label className="text-[10px] uppercase tracking-widest font-bold text-ocean/60">Image de l'événement</label>
+              <div className="flex flex-col sm:flex-row gap-2">
+                <input type="text" placeholder="URL de l'image (Entrer l'URL ou uploader)" className="p-2.5 rounded-xl border border-ocean/10 flex-1 focus:border-turquoise focus:outline-none" 
+                       value={formData.img || ''} onChange={e => setFormData({...formData, img: e.target.value})} />
+                <label className={`cursor-pointer inline-flex items-center justify-center gap-2 bg-turquoise/20 text-turquoise-dark px-4 py-2.5 rounded-xl font-bold hover:bg-turquoise hover:text-ocean transition shrink-0 ${uploading ? "opacity-50 pointer-events-none" : ""}`}>
+                  {uploading ? <Loader2 size={18} className="animate-spin" /> : <ImageIcon size={18} />}
+                  Uploader
+                  <input type="file" accept="image/*" onChange={handleUpload} className="hidden" />
+                </label>
+              </div>
+            </div>
+
+            <select className="p-2.5 rounded-xl border border-ocean/10 w-full bg-white md:col-span-2 focus:border-turquoise focus:outline-none"
+                    value={formData.status || 'published'} onChange={e => setFormData({...formData, status: e.target.value})}>
+              <option value="published">Publié</option>
+              <option value="draft">Brouillon</option>
+            </select>
+            <textarea placeholder="Description courte..." className="p-2.5 rounded-xl border border-ocean/10 w-full md:col-span-2 focus:border-turquoise focus:outline-none resize-none" rows={3}
+                      value={formData.description || ''} onChange={e => setFormData({...formData, description: e.target.value})} />
+          </div>
+        </div>
+        
+        <div className="p-4 border-t border-turquoise/20 flex justify-end gap-3 bg-white/50 backdrop-blur-sm">
+          <button onClick={onCancel} className="px-5 py-2.5 rounded-xl font-bold text-ocean hover:bg-white transition">Annuler</button>
+          <button onClick={onSave} className="flex items-center gap-2 bg-turquoise text-ocean px-8 py-2.5 rounded-xl font-bold hover:bg-gold transition shadow-lg shadow-turquoise/20"><CheckCircle2 size={18} /> Enregistrer</button>
+        </div>
       </div>
     </div>
   );

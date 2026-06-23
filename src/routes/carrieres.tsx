@@ -6,6 +6,8 @@ import { WaveDivider } from "@/components/WaveDivider";
 import { ASSETS } from "@/lib/assets";
 import { useJobs } from "@/hooks/useJobs";
 import { useApplications } from "@/hooks/useApplications";
+import { supabase } from "@/lib/supabase";
+import { Loader2 } from "lucide-react";
 
 export const Route = createFileRoute("/carrieres")({
   head: () => ({
@@ -29,8 +31,9 @@ function CarrieresPage() {
   const [cvFile, setCvFile] = useState<File | null>(null);
   const [step, setStep] = useState(1);
   const [submitted, setSubmitted] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (step < 3) {
       setStep(step + 1);
@@ -39,15 +42,36 @@ function CarrieresPage() {
     
     // Soumission finale
     if (!selectedJob) return;
+    setIsSubmitting(true);
+
+    let uploadedResumeUrl = "";
+    if (cvFile) {
+      try {
+        const fileExt = cvFile.name.split('.').pop();
+        const fileName = `${Date.now()}_${Math.random().toString(36).substring(7)}.${fileExt}`;
+        const { error: uploadError } = await supabase.storage.from("media").upload(`resumes/${fileName}`, cvFile);
+        
+        if (!uploadError) {
+          const { data } = supabase.storage.from("media").getPublicUrl(`resumes/${fileName}`);
+          uploadedResumeUrl = data.publicUrl;
+        } else {
+          console.error("Error uploading CV:", uploadError);
+        }
+      } catch (error) {
+        console.error("Upload failed", error);
+      }
+    }
+
     addApplication({
       jobId: selectedJob,
       applicantName: formData.name,
       applicantEmail: formData.email,
       applicantPhone: formData.phone,
       message: formData.message,
-      resumeUrl: cvFile ? cvFile.name : "", // Fallback local pour l'admin
+      resumeUrl: uploadedResumeUrl || (cvFile ? cvFile.name : ""),
     });
     setSubmitted(true);
+    setIsSubmitting(false);
     setTimeout(() => {
       setSubmitted(false);
       setSelectedJob(null);
@@ -288,7 +312,8 @@ function CarrieresPage() {
                         ) : (
                           <div /> // Spacer
                         )}
-                        <button type="submit" className="px-6 py-2.5 rounded-xl bg-ocean text-white font-medium hover:bg-gold hover:text-ocean transition flex items-center gap-2">
+                        <button type="submit" disabled={isSubmitting} className={`px-6 py-2.5 rounded-xl bg-ocean text-white font-medium hover:bg-gold hover:text-ocean transition flex items-center gap-2 ${isSubmitting ? "opacity-50 cursor-not-allowed" : ""}`}>
+                          {isSubmitting ? <Loader2 size={16} className="animate-spin" /> : null}
                           {step < 3 ? "Suivant" : "Confirmer l'envoi"}
                         </button>
                       </div>

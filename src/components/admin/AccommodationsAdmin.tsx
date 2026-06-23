@@ -260,6 +260,13 @@ export function AccommodationsAdmin() {
                   <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-300">
                     <div className="space-y-2">
                       <label className="text-[10px] uppercase tracking-widest font-bold text-ocean/60 block">Image Principale</label>
+                      <input 
+                        type="text" 
+                        placeholder="Entrez l'URL de l'image" 
+                        value={modalItem.imageUrl || ""} 
+                        onChange={e => setModalItem({ ...modalItem, imageUrl: e.target.value })}
+                        className="w-full bg-white px-4 py-2 mb-2 rounded-xl border border-turquoise/20 focus:border-turquoise focus:outline-none text-sm text-ocean"
+                      />
                       <div className="aspect-[16/9] bg-white border-2 border-dashed border-turquoise/30 rounded-2xl overflow-hidden relative group">
                         {modalItem.imageUrl ? (
                           <img src={modalItem.imageUrl} className="w-full h-full object-cover" alt="Preview" />
@@ -270,13 +277,20 @@ export function AccommodationsAdmin() {
                           </div>
                         )}
                         <label className="absolute inset-0 bg-ocean/50 opacity-100 md:opacity-0 md:group-hover:opacity-100 flex items-center justify-center cursor-pointer transition text-white font-bold">
-                          {uploading === "imageUrl" ? <Loader2 className="animate-spin" /> : "Parcourir..."}
+                          {uploading === "imageUrl" ? <Loader2 className="animate-spin" /> : "Uploader depuis le PC..."}
                           <input type="file" accept="image/*" onChange={e => handleUpload(e, "imageUrl")} className="hidden" />
                         </label>
                       </div>
                     </div>
                     <div className="space-y-2">
                       <label className="text-[10px] uppercase tracking-widest font-bold text-ocean/60 block">Vidéo de Présentation (Optionnel)</label>
+                      <input 
+                        type="text" 
+                        placeholder="Entrez l'URL de la vidéo" 
+                        value={modalItem.videoUrl || ""} 
+                        onChange={e => setModalItem({ ...modalItem, videoUrl: e.target.value })}
+                        className="w-full bg-white px-4 py-2 mb-2 rounded-xl border border-turquoise/20 focus:border-turquoise focus:outline-none text-sm text-ocean"
+                      />
                       <div className="aspect-[16/9] bg-white border-2 border-dashed border-turquoise/30 rounded-2xl overflow-hidden relative group">
                         {modalItem.videoUrl ? (
                           <video src={modalItem.videoUrl} className="w-full h-full object-cover" muted controls />
@@ -287,7 +301,7 @@ export function AccommodationsAdmin() {
                           </div>
                         )}
                         <label className="absolute inset-0 bg-ocean/50 opacity-100 md:opacity-0 md:group-hover:opacity-100 flex items-center justify-center cursor-pointer transition text-white font-bold">
-                          {uploading === "videoUrl" ? <Loader2 className="animate-spin" /> : "Parcourir..."}
+                          {uploading === "videoUrl" ? <Loader2 className="animate-spin" /> : "Uploader depuis le PC..."}
                           <input type="file" accept="video/*" onChange={e => handleUpload(e, "videoUrl")} className="hidden" />
                         </label>
                       </div>
