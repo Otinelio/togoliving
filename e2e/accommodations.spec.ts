@@ -9,26 +9,29 @@ test.describe('Hébergements Public & Admin Flow', () => {
     // Mock Supabase API calls to return fake data and prevent writing to DB
     await page.route('**/rest/v1/accommodations*', async route => {
       const method = route.request().method();
+      const headers = { 'Access-Control-Allow-Origin': '*' };
       
       if (method === 'GET') {
         await route.fulfill({
           status: 200,
           contentType: 'application/json',
+          headers,
           body: JSON.stringify([
             {
               id: "test-acc-1",
               title: "Suite Royale E2E",
               isPremium: true,
+              badge: "Premium",
               description: "Une suite fantastique pour les tests E2E.",
               imageUrl: "https://via.placeholder.com/800x600?text=Suite+Royale"
             }
           ])
         });
       } else if (method === 'POST' || method === 'PATCH' || method === 'DELETE') {
-        // Mock successful creation/update/deletion without touching DB
         await route.fulfill({
           status: 200,
           contentType: 'application/json',
+          headers,
           body: JSON.stringify([{ id: "test-acc-new", title: "New Room" }])
         });
       } else {
@@ -38,8 +41,9 @@ test.describe('Hébergements Public & Admin Flow', () => {
   });
 
   test('Public site should display accommodations', async ({ page }) => {
-    // Go to public accommodations page
-    await page.goto('/hebergements');
+    // Go to home page first to trigger client-side navigation
+    await page.goto('/');
+    await page.click('a[href="/hebergements"]');
 
     // It should display the mocked accommodation
     await expect(page.locator('text=Suite Royale E2E')).toBeVisible();
@@ -48,28 +52,13 @@ test.describe('Hébergements Public & Admin Flow', () => {
   });
 
   test('Admin can view and open new accommodation modal', async ({ page }) => {
-    // Mock local storage to bypass PIN screen for testing if needed
-    // However, let's just test the PIN screen flow first.
-    
-    // We can't easily mock the admin auth state if it relies on localStorage 'togoliving_settings'.
-    // Let's just go to admin and enter the default PIN if we haven't mocked the hook.
-    // The default PIN is usually 1234 or configured in settings.
-    // To make this stable, we mock the settings API as well.
-    await page.route('**/rest/v1/settings*', async route => {
-      await route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify([{ key: 'pinAdmin', value: '1234' }])
-      });
-    });
-
     await page.goto('/admin');
 
-    // Enter PIN "1234"
-    await page.click('button:has-text("1")');
-    await page.click('button:has-text("2")');
-    await page.click('button:has-text("3")');
-    await page.click('button:has-text("4")');
+    // Enter PIN "9999" (Default if not mocked or from DB)
+    await page.click('button:has-text("9")');
+    await page.click('button:has-text("9")');
+    await page.click('button:has-text("9")');
+    await page.click('button:has-text("9")');
 
     // Wait for unlock
     await expect(page.locator('text=Vue Générale')).toBeVisible({ timeout: 5000 });

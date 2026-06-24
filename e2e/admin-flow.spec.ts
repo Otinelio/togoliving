@@ -17,25 +17,25 @@ test.describe('Admin General Flow', () => {
   test('Should navigate through different admin sections', async ({ page }) => {
     await page.goto('/admin');
 
-    // Enter PIN "1234" (assuming it falls back to 1234 or we mocked it)
-    await page.click('button:has-text("1")');
-    await page.click('button:has-text("2")');
-    await page.click('button:has-text("3")');
-    await page.click('button:has-text("4")');
+    // Enter PIN "9999" (assuming it falls back to 1234 or we mocked it)
+    await page.click('button:has-text("9")');
+    await page.click('button:has-text("9")');
+    await page.click('button:has-text("9")');
+    await page.click('button:has-text("9")');
 
     await expect(page.locator('text=Vue Générale')).toBeVisible({ timeout: 5000 });
 
     // Test navigation
     await page.click('button:has-text("Menu")');
-    await expect(page.locator('h1:has-text("Menu & Commandes")')).toBeVisible();
+    await expect(page.locator('h1:has-text("Gestion Menu")')).toBeVisible();
 
     await page.click('button:has-text("État Chambres")');
     await expect(page.locator('h1:has-text("Disponibilité")')).toBeVisible();
 
     await page.click('button:has-text("Événements")');
-    await expect(page.locator('h1:has-text("Événements Spéciaux")')).toBeVisible();
+    await expect(page.locator('h2:has-text("Gestion des Événements")')).toBeVisible();
 
     await page.click('button:has-text("Emplois")');
-    await expect(page.locator('h1:has-text("Offres d\'Emploi")')).toBeVisible();
+    await expect(page.locator('h2:has-text("Gestion des Emplois")')).toBeVisible();
   });
 });
