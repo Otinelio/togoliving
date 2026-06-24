@@ -29,7 +29,7 @@ export const Route = createFileRoute("/")({
     ],
     links: [
       { rel: "canonical", href: "https://residencetogoliving.com/" },
-      { rel: "preload", as: "image", href: getHeroPreloadUrl(), fetchpriority: "high" }
+      { rel: "preload", as: "image", href: getHeroPreloadUrl(), fetchPriority: "high" }
     ],
     scripts: [
       {

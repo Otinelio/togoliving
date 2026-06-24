@@ -12,21 +12,26 @@ const resources = {
   de: { translation: de }
 };
 
-i18n
-  .use(LanguageDetector)
-  .use(initReactI18next)
-  .init({
-    resources,
-    fallbackLng: 'fr',
-    supportedLngs: ['fr', 'en', 'de'],
-    interpolation: {
-      escapeValue: false // react already safes from xss
-    },
-    detection: {
-      order: ['querystring', 'localStorage', 'navigator'],
-      lookupQuerystring: 'lng',
-      caches: ['localStorage']
-    }
-  });
+const isBrowser = typeof window !== 'undefined';
+
+const i18nInstance = i18n.use(initReactI18next);
+
+if (isBrowser) {
+  i18nInstance.use(LanguageDetector);
+}
+
+i18nInstance.init({
+  resources,
+  fallbackLng: 'fr',
+  supportedLngs: ['fr', 'en', 'de'],
+  interpolation: {
+    escapeValue: false // react already safes from xss
+  },
+  detection: isBrowser ? {
+    order: ['querystring', 'localStorage', 'navigator'],
+    lookupQuerystring: 'lng',
+    caches: ['localStorage']
+  } : undefined
+});
 
 export default i18n;
