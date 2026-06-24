@@ -16,6 +16,12 @@ const Facebook = (p: React.SVGProps<SVGSVGElement>) => (
   </svg>
 );
 
+const Tiktok = (p: React.SVGProps<SVGSVGElement>) => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...p}>
+    <path d="M9 12a4 4 0 1 0 4 4V4a5 5 0 0 0 5 5v3a3 3 0 0 1-3-3v11a7 7 0 1 1-7-7z" />
+  </svg>
+);
+
 export function Footer() {
   const { t } = useTranslation();
 
@@ -26,8 +32,8 @@ export function Footer() {
       </div>
 
       <div className="max-w-7xl mx-auto px-5 md:px-8 pt-20 pb-8">
-        <div className="grid md:grid-cols-3 gap-12">
-          <div>
+        <div className="grid md:grid-cols-4 gap-8 lg:gap-12">
+          <div className="md:col-span-1">
             <div className="font-display text-2xl font-bold">
               <span className="text-white">TOGO</span>
               <span className="text-turquoise">LIVING</span>
@@ -38,9 +44,9 @@ export function Footer() {
             </p>
           </div>
 
-          <div>
+          <div className="md:col-span-2">
             <h4 className="font-display text-lg mb-4 text-turquoise">{t('footer.navigation')}</h4>
-            <ul className="space-y-2 text-sm">
+            <ul className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-2 text-sm">
               {[
                 ["/", t('nav.home')],
                 ["/hebergements", t('nav.accommodations')],
@@ -64,7 +70,7 @@ export function Footer() {
             </ul>
           </div>
 
-          <div>
+          <div className="md:col-span-1">
             <h4 className="font-display text-lg mb-4 text-turquoise">{t('footer.contact')}</h4>
             <ul className="space-y-3 text-sm text-white/80">
               <li className="flex items-start gap-3"><Phone size={16} className="mt-0.5 text-turquoise shrink-0" /><a href="tel:+22893872088" className="hover:text-turquoise">+228 93 87 20 88</a></li>
@@ -79,6 +85,9 @@ export function Footer() {
               </a>
               <a href="https://facebook.com/togoliving" target="_blank" rel="noreferrer" className="p-2 rounded-full bg-white/10 hover:bg-turquoise hover:text-ocean transition" aria-label="Facebook">
                 <Facebook width={18} height={18} />
+              </a>
+              <a href="https://www.tiktok.com/@togoliving" target="_blank" rel="noreferrer" className="p-2 rounded-full bg-white/10 hover:bg-turquoise hover:text-ocean transition" aria-label="TikTok">
+                <Tiktok width={18} height={18} />
               </a>
             </div>
           </div>

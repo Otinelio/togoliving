@@ -26,10 +26,12 @@ export function OptimizedImage({
   let finalSrc = src;
   
   if (!isDev && isAbsolute) {
-    const w = width ? width.toString().replace('px', '') : '1920';
-    // Pour s'assurer de matcher les sizes de Vercel, il faut idéalement passer un "w" valide, 
-    // l'optimiseur de Vercel fera le snap vers la taille supérieure la plus proche.
-    finalSrc = `/_vercel/image?url=${encodeURIComponent(src)}&w=${w}&q=${quality}`;
+    let wInt = width ? parseInt(width.toString().replace('px', ''), 10) : 1920;
+    if (isNaN(wInt)) wInt = 1920;
+    const allowedSizes = [640, 750, 828, 1080, 1200, 1920, 2048, 3840];
+    const snappedW = allowedSizes.find(s => s >= wInt) || allowedSizes[allowedSizes.length - 1];
+    
+    finalSrc = `/_vercel/image?url=${encodeURIComponent(src)}&w=${snappedW}&q=${quality}`;
   }
 
   return (

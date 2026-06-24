@@ -6,6 +6,24 @@ import { useState } from "react";
 import { WaveDivider } from "@/components/WaveDivider";
 import { whatsappUrl } from "@/lib/whatsapp";
 
+const Instagram = (p: React.SVGProps<SVGSVGElement>) => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...p}>
+    <rect x="2" y="2" width="20" height="20" rx="5" />
+    <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
+    <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" />
+  </svg>
+);
+const Facebook = (p: React.SVGProps<SVGSVGElement>) => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...p}>
+    <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z" />
+  </svg>
+);
+const Tiktok = (p: React.SVGProps<SVGSVGElement>) => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...p}>
+    <path d="M9 12a4 4 0 1 0 4 4V4a5 5 0 0 0 5 5v3a3 3 0 0 1-3-3v11a7 7 0 1 1-7-7z" />
+  </svg>
+);
+
 export const Route = createFileRoute("/contact")({
   head: () => ({
     meta: [
@@ -57,6 +75,18 @@ function Page() {
                 </li>
               ))}
             </ul>
+
+            <div className="flex gap-4 mt-8">
+              <a href="https://instagram.com/togoliving" target="_blank" rel="noreferrer" className="w-12 h-12 rounded-full bg-turquoise/15 hover:bg-turquoise text-turquoise hover:text-ocean flex items-center justify-center transition" aria-label="Instagram">
+                <Instagram width={20} height={20} />
+              </a>
+              <a href="https://facebook.com/togoliving" target="_blank" rel="noreferrer" className="w-12 h-12 rounded-full bg-turquoise/15 hover:bg-turquoise text-turquoise hover:text-ocean flex items-center justify-center transition" aria-label="Facebook">
+                <Facebook width={20} height={20} />
+              </a>
+              <a href="https://www.tiktok.com/@togoliving" target="_blank" rel="noreferrer" className="w-12 h-12 rounded-full bg-turquoise/15 hover:bg-turquoise text-turquoise hover:text-ocean flex items-center justify-center transition" aria-label="TikTok">
+                <Tiktok width={20} height={20} />
+              </a>
+            </div>
 
             <div className="mt-8 rounded-2xl overflow-hidden border border-turquoise/30">
               <iframe
