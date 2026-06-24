@@ -1,9 +1,11 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { useTranslation } from "react-i18next";
 import { motion, AnimatePresence } from "framer-motion";
 import { Briefcase, CheckCircle2, Send, Users, TrendingUp, HeartHandshake, X } from "lucide-react";
 import { useState } from "react";
 import { WaveDivider } from "@/components/WaveDivider";
 import { ASSETS } from "@/lib/assets";
+import { OptimizedImage } from "@/components/OptimizedImage";
 import { useJobs } from "@/hooks/useJobs";
 import { useApplications } from "@/hooks/useApplications";
 import { supabase } from "@/lib/supabase";
@@ -12,16 +14,17 @@ import { Loader2 } from "lucide-react";
 export const Route = createFileRoute("/carrieres")({
   head: () => ({
     meta: [
-      { title: "Carrières & Emplois — TOGOLIVING Residence Balneaire" },
+      { title: "Carrières & Emplois — TOGOLIVING Résidence Balnéaire" },
       { name: "description", content: "Rejoignez l'équipe TOGOLIVING. Découvrez nos offres d'emploi, nos valeurs et postulez pour faire carrière dans l'hôtellerie de luxe au Togo." },
-      { property: "og:url", content: "/carrieres" },
+      { property: "og:url", content: "https://residencetogoliving.com/carrieres" },
     ],
-    links: [{ rel: "canonical", href: "/carrieres" }],
+    links: [{ rel: "canonical", href: "https://residencetogoliving.com/carrieres" }],
   }),
   component: CarrieresPage,
 });
 
 function CarrieresPage() {
+  const { t } = useTranslation();
   const { jobs } = useJobs();
   const { addApplication } = useApplications();
   const openJobs = jobs.filter(j => j.status === "open");
@@ -91,13 +94,15 @@ function CarrieresPage() {
   return (
     <>
       <section className="relative pt-32 pb-20 bg-ocean text-white overflow-hidden">
-        <div className="absolute inset-0 bg-cover bg-center opacity-30" style={{ backgroundImage: `url(${ASSETS.poolImg})` }} />
+        <div className="absolute inset-0 opacity-30">
+          <OptimizedImage src={ASSETS.poolImg} alt="Carrières Hero" width="1920" height="600" className="w-full h-full object-cover object-center" />
+        </div>
         <div className="absolute inset-0 bg-gradient-to-b from-ocean/95 via-ocean/80 to-ocean" />
         <div className="relative max-w-4xl mx-auto px-6 text-center">
-          <p className="font-accent text-turquoise text-xl">Recrutement</p>
-          <h1 className="font-display text-5xl md:text-6xl mt-2">Rejoignez l'Aventure</h1>
+          <p className="font-accent text-turquoise text-xl">{t("careers.hero.subtitle")}</p>
+          <h1 className="font-display text-5xl md:text-6xl mt-2">{t("careers.hero.title")}</h1>
           <p className="text-white/80 mt-4 text-lg max-w-2xl mx-auto">
-            Faites carrière au sein d'une équipe passionnée par l'excellence et l'hospitalité. Découvrez nos opportunités et grandissez avec nous.
+            {t("careers.hero.desc")}
           </p>
         </div>
         <div className="absolute -bottom-1 inset-x-0"><WaveDivider color="#F8F5F0" /></div>
@@ -105,15 +110,15 @@ function CarrieresPage() {
 
       <section className="bg-sand py-20">
         <div className="max-w-7xl mx-auto px-6 text-center mb-16">
-          <p className="font-accent text-turquoise text-xl">Pourquoi TOGOLIVING ?</p>
-          <h2 className="font-display text-4xl text-ocean">Notre Philosophie Employeur</h2>
+          <p className="font-accent text-turquoise text-xl">{t("careers.philosophy.subtitle")}</p>
+          <h2 className="font-display text-4xl text-ocean">{t("careers.philosophy.title")}</h2>
         </div>
 
         <div className="max-w-6xl mx-auto grid md:grid-cols-3 gap-8 px-6">
           {[
-            { icon: HeartHandshake, title: "Esprit de Famille", desc: "Nous cultivons un environnement de travail bienveillant où le respect mutuel et l'entraide sont primordiaux." },
-            { icon: TrendingUp, title: "Évolution Rapide", desc: "Nous privilégions la promotion interne et l'accompagnement de nos talents vers des postes à responsabilité." },
-            { icon: Users, title: "Excellence & Formation", desc: "Nous offrons des formations continues pour maintenir nos standards élevés dans l'hôtellerie de luxe." },
+            { icon: HeartHandshake, title: t("careers.philosophy.v1_title"), desc: t("careers.philosophy.v1_desc") },
+            { icon: TrendingUp, title: t("careers.philosophy.v2_title"), desc: t("careers.philosophy.v2_desc") },
+            { icon: Users, title: t("careers.philosophy.v3_title"), desc: t("careers.philosophy.v3_desc") },
           ].map((val, i) => (
             <motion.div key={val.title} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.1 }}
               className="bg-white p-8 rounded-2xl shadow-sm border border-ocean/5 text-center">
@@ -133,8 +138,8 @@ function CarrieresPage() {
         <div className="max-w-6xl mx-auto px-6">
           <div className="flex flex-col md:flex-row justify-between items-end mb-12 gap-4">
             <div>
-              <p className="font-accent text-turquoise text-xl">Opportunités Actuelles</p>
-              <h2 className="font-display text-4xl">Postes à Pourvoir</h2>
+              <p className="font-accent text-turquoise text-xl">{t("careers.jobs.subtitle")}</p>
+              <h2 className="font-display text-4xl">{t("careers.jobs.title")}</h2>
             </div>
             <button onClick={() => setSelectedJob("spontaneous")} className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-gold text-ocean font-medium shimmer-gold transition hover:scale-105">
               <Send size={18} /> Candidature Spontanée
@@ -144,7 +149,7 @@ function CarrieresPage() {
           <div className="grid md:grid-cols-2 gap-6">
             {openJobs.length === 0 ? (
               <div className="col-span-2 text-center py-10 text-white/60">
-                Aucun poste n'est actuellement ouvert. N'hésitez pas à envoyer une candidature spontanée !
+                {t("careers.jobs.empty")}
               </div>
             ) : (
               openJobs.map((job, i) => (
@@ -158,7 +163,7 @@ function CarrieresPage() {
                   <p className="text-white/70 text-sm mb-6 flex-1 whitespace-pre-wrap">{job.description}</p>
                   <button onClick={() => setSelectedJob(job.id)}
                     className="w-full inline-flex justify-center items-center gap-2 px-4 py-2.5 rounded-lg border border-turquoise text-turquoise hover:bg-turquoise hover:text-ocean transition text-sm font-medium">
-                    Postuler <Briefcase size={16} />
+                    {t("careers.jobs.apply")} <Briefcase size={16} />
                   </button>
                 </motion.div>
               ))
@@ -169,13 +174,13 @@ function CarrieresPage() {
 
       <section className="bg-sand py-20">
         <div className="max-w-4xl mx-auto px-6 text-center">
-          <h2 className="font-display text-3xl text-ocean mb-8">Processus de Recrutement</h2>
+          <h2 className="font-display text-3xl text-ocean mb-8">{t("careers.process.title")}</h2>
           <div className="flex flex-col md:flex-row justify-between items-center gap-6">
             {[
-              "Envoi du CV & Lettre",
-              "Entretien Téléphonique",
-              "Entretien Physique",
-              "Intégration",
+              t("careers.process.s1"),
+              t("careers.process.s2"),
+              t("careers.process.s3"),
+              t("careers.process.s4"),
             ].map((step, idx, arr) => (
               <div key={idx} className="flex flex-col items-center relative w-full">
                 <div className="w-12 h-12 rounded-full bg-ocean text-white flex items-center justify-center font-display text-xl z-10">
@@ -203,9 +208,9 @@ function CarrieresPage() {
               {/* Header */}
               <div className="bg-sand px-8 py-6 flex items-center justify-between border-b border-ocean/5 relative">
                 <div>
-                  <h3 className="text-2xl font-display text-ocean">Postuler</h3>
+                  <h3 className="text-2xl font-display text-ocean">{t("careers.form.title")}</h3>
                   <p className="text-muted-foreground text-sm mt-1">
-                    {selectedJob === "spontaneous" ? "Candidature Spontanée" : jobs.find(j => j.id === selectedJob)?.title}
+                    {selectedJob === "spontaneous" ? t("careers.form.subtitle") : jobs.find(j => j.id === selectedJob)?.title}
                   </p>
                 </div>
                 <button onClick={closeForm} className="absolute top-6 right-6 p-2 text-ocean/50 hover:bg-ocean/10 hover:text-ocean rounded-full transition">
@@ -219,8 +224,8 @@ function CarrieresPage() {
                     <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ type: "spring" }}>
                       <CheckCircle2 size={72} className="text-green-500 mx-auto mb-6" />
                     </motion.div>
-                    <h3 className="text-2xl font-display text-ocean mb-3">Candidature Envoyée !</h3>
-                    <p className="text-muted-foreground">Nous avons bien reçu votre candidature. Notre équipe des ressources humaines reviendra vers vous très vite.</p>
+                    <h3 className="text-2xl font-display text-ocean mb-3">{t("careers.form.success_title")}</h3>
+                    <p className="text-muted-foreground">{t("careers.form.success_desc")}</p>
                   </div>
                 ) : (
                   <>
@@ -242,21 +247,21 @@ function CarrieresPage() {
                       {/* Step 1 : Informations personnelles */}
                       {step === 1 && (
                         <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} className="space-y-4">
-                          <h4 className="font-semibold text-ocean mb-4">Informations Personnelles</h4>
+                          <h4 className="font-semibold text-ocean mb-4">{t("careers.form.personal")}</h4>
                           <div>
-                            <label className="block text-sm font-medium text-ocean mb-1.5">Nom Complet</label>
+                            <label className="block text-sm font-medium text-ocean mb-1.5">{t("careers.form.name")}</label>
                             <input required type="text" className="w-full p-3 rounded-xl border border-ocean/10 bg-sand/30 focus:border-turquoise focus:ring-1 focus:ring-turquoise outline-none transition" 
-                              value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} placeholder="Ex: Jean Dupont" />
+                              value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} placeholder={t("careers.form.name_placeholder")} />
                           </div>
                           <div>
-                            <label className="block text-sm font-medium text-ocean mb-1.5">Adresse Email</label>
+                            <label className="block text-sm font-medium text-ocean mb-1.5">{t("careers.form.email")}</label>
                             <input required type="email" className="w-full p-3 rounded-xl border border-ocean/10 bg-sand/30 focus:border-turquoise focus:ring-1 focus:ring-turquoise outline-none transition"
-                              value={formData.email} onChange={e => setFormData({...formData, email: e.target.value})} placeholder="jean.dupont@email.com" />
+                              value={formData.email} onChange={e => setFormData({...formData, email: e.target.value})} placeholder={t("careers.form.email_placeholder")} />
                           </div>
                           <div>
-                            <label className="block text-sm font-medium text-ocean mb-1.5">Numéro de Téléphone</label>
+                            <label className="block text-sm font-medium text-ocean mb-1.5">{t("careers.form.phone")}</label>
                             <input required type="tel" className="w-full p-3 rounded-xl border border-ocean/10 bg-sand/30 focus:border-turquoise focus:ring-1 focus:ring-turquoise outline-none transition"
-                              value={formData.phone} onChange={e => setFormData({...formData, phone: e.target.value})} placeholder="+228 XX XX XX XX" />
+                              value={formData.phone} onChange={e => setFormData({...formData, phone: e.target.value})} placeholder={t("careers.form.phone_placeholder")} />
                           </div>
                         </motion.div>
                       )}
@@ -264,11 +269,11 @@ function CarrieresPage() {
                       {/* Step 2 : Lettre de motivation */}
                       {step === 2 && (
                         <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} className="space-y-4">
-                          <h4 className="font-semibold text-ocean mb-4">Message / Motivation</h4>
+                          <h4 className="font-semibold text-ocean mb-4">{t("careers.form.message_title")}</h4>
                           <div>
-                            <label className="block text-sm font-medium text-ocean mb-1.5">Présentez-vous brièvement</label>
+                            <label className="block text-sm font-medium text-ocean mb-1.5">{t("careers.form.message_label")}</label>
                             <textarea required rows={6} className="w-full p-3 rounded-xl border border-ocean/10 bg-sand/30 focus:border-turquoise focus:ring-1 focus:ring-turquoise outline-none transition resize-none"
-                              placeholder="Quelles sont vos motivations pour rejoindre l'équipe TOGOLIVING ?" value={formData.message} onChange={e => setFormData({...formData, message: e.target.value})} />
+                              placeholder={t("careers.form.message_placeholder")} value={formData.message} onChange={e => setFormData({...formData, message: e.target.value})} />
                           </div>
                         </motion.div>
                       )}
@@ -276,7 +281,7 @@ function CarrieresPage() {
                       {/* Step 3 : Upload CV */}
                       {step === 3 && (
                         <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} className="space-y-4">
-                          <h4 className="font-semibold text-ocean mb-4">Curriculum Vitae (CV)</h4>
+                          <h4 className="font-semibold text-ocean mb-4">{t("careers.form.cv_title")}</h4>
                           <div className="border-2 border-dashed border-turquoise/50 bg-turquoise/5 rounded-2xl p-8 text-center relative hover:bg-turquoise/10 transition">
                             <input 
                               type="file" 
@@ -290,13 +295,13 @@ function CarrieresPage() {
                                 <CheckCircle2 className="text-green-500 mb-2" size={32} />
                                 <span className="font-medium text-sm text-center">{cvFile.name}</span>
                                 <span className="text-xs text-muted-foreground mt-1">{(cvFile.size / 1024 / 1024).toFixed(2)} MB</span>
-                                <span className="text-xs text-turquoise underline mt-3">Cliquez pour changer de fichier</span>
+                                <span className="text-xs text-turquoise underline mt-3">{t("careers.form.cv_change")}</span>
                               </div>
                             ) : (
                               <div className="flex flex-col items-center text-ocean/60">
                                 <Send className="text-turquoise mb-3" size={32} />
-                                <span className="font-medium">Cliquez ou glissez votre CV ici</span>
-                                <span className="text-xs mt-2">Format accepté : PDF (Max 5MB)</span>
+                                <span className="font-medium">{t("careers.form.cv_upload")}</span>
+                                <span className="text-xs mt-2">{t("careers.form.cv_format")}</span>
                               </div>
                             )}
                           </div>
@@ -314,7 +319,7 @@ function CarrieresPage() {
                         )}
                         <button type="submit" disabled={isSubmitting} className={`px-6 py-2.5 rounded-xl bg-ocean text-white font-medium hover:bg-gold hover:text-ocean transition flex items-center gap-2 ${isSubmitting ? "opacity-50 cursor-not-allowed" : ""}`}>
                           {isSubmitting ? <Loader2 size={16} className="animate-spin" /> : null}
-                          {step < 3 ? "Suivant" : "Confirmer l'envoi"}
+                          {step < 3 ? t("careers.form.next") : t("careers.form.confirm")}
                         </button>
                       </div>
 

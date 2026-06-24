@@ -1,4 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useTranslation } from "react-i18next";
 import { motion, useInView, useMotionValue, animate } from "framer-motion";
 import {
   Waves, BedDouble, Droplets, UtensilsCrossed, Wifi, Wind, Tv, Coffee,
@@ -9,54 +10,88 @@ import { WaveDivider } from "@/components/WaveDivider";
 import { useAccommodations } from "@/hooks/useAccommodations";
 import { whatsappUrl } from "@/lib/whatsapp";
 import { ASSETS } from "@/lib/assets";
+import { OptimizedImage } from "@/components/OptimizedImage";
+
+const getHeroPreloadUrl = () => {
+  const isDev = import.meta.env?.DEV || false;
+  if (isDev) return ASSETS.heroImg;
+  return `/_vercel/image?url=${encodeURIComponent(ASSETS.heroImg)}&w=1920&q=75`;
+};
 
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "TOGOLIVING — Villa Balneaire Tropicale | Kpogan Agbetsiko, Lome, Togo" },
-      { name: "description", content: "Residence balneaire de luxe a 100m de la plage naturelle. Studio, appartements vue mer, piscine panoramique, restaurant aux saveurs du monde." },
-      { property: "og:title", content: "TOGOLIVING — L'Ocean a votre Porte" },
-      { property: "og:description", content: "Villa balneaire tropicale a Kpogan Agbetsiko, Lome." },
-      { property: "og:url", content: "/" },
+      { title: "TOGOLIVING — Villa Balnéaire Tropicale | Kpogan Agbetsiko, Lomé, Togo" },
+      { name: "description", content: "Résidence balnéaire de luxe à 100m de la plage naturelle. Studio, appartements vue mer, piscine panoramique, restaurant aux saveurs du monde." },
+      { property: "og:title", content: "TOGOLIVING — L'Océan à votre Porte" },
+      { property: "og:description", content: "Villa balnéaire tropicale à Kpogan Agbetsiko, Lomé." },
+      { property: "og:url", content: "https://residencetogoliving.com/" },
     ],
-    links: [{ rel: "canonical", href: "/" }],
+    links: [
+      { rel: "canonical", href: "https://residencetogoliving.com/" },
+      { rel: "preload", as: "image", href: getHeroPreloadUrl(), fetchpriority: "high" }
+    ],
+    scripts: [
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "Hotel",
+          name: "Résidence TOGOLIVING",
+          starRating: { "@type": "Rating", "ratingValue": "4" },
+          address: {
+            "@type": "PostalAddress",
+            streetAddress: "Kpogan Agbetsiko, Route N2",
+            postalCode: "36BP50",
+            addressLocality: "Lomé",
+            addressCountry: "TG"
+          },
+          telephone: "+22893872088",
+          url: "https://residencetogoliving.com",
+          priceRange: "$$",
+          aggregateRating: {
+            "@type": "AggregateRating",
+            ratingValue: "4.3",
+            bestRating: "5",
+            ratingCount: "20"
+          },
+          amenityFeature: [
+            { "@type": "LocationFeatureSpecification", name: "Piscine", value: true },
+            { "@type": "LocationFeatureSpecification", name: "WiFi", value: true },
+            { "@type": "LocationFeatureSpecification", name: "Restaurant", value: true }
+          ]
+        })
+      }
+    ],
   }),
   component: HomePage,
 });
-const rooms = [
+const roomsData = [
   {
     id: "studio",
-    title: "Studios",
-    badge: "1 Pièce",
+    key: "studio",
     img: ASSETS.studioIMG4201,
     features: ["WiFi", "AC", "TV Satellite", "Refrigerateur", "Patio"],
-    desc: "Espace confortable, ideal pour un sejour solo ou en couple.",
   },
   {
     id: "chambre-salon",
-    title: "Chambre Salon",
-    badge: "2 Pièces",
+    key: "chambre_salon",
     img: ASSETS.chambreSalonIMG4211,
     features: ["WiFi", "AC", "TV Satellite", "Table a manger", "Canapes", "Patio"],
-    desc: "Grand salon avec espace de vie ideal pour sejours prolonges.",
   },
   {
     id: "2-chambres",
-    title: "2 Chambres Salon",
-    badge: "3 Pièces",
+    key: "2_chambres",
     premium: true,
     img: ASSETS.deuxChambresIMG4212,
     features: ["Vue mer", "Terrasse", "Literie premium", "WiFi", "AC", "TV Satellite"],
-    desc: "Appartement spacieux avec deux chambres separees. Parfait pour familles.",
   },
   {
     id: "3-chambres",
-    title: "3 Chambres Salon",
-    badge: "VIP · 4 Pièces",
+    key: "3_chambres",
     premium: true,
     img: ASSETS.troisChambresSalonIMG4247,
     features: ["Grande Terrasse", "Lits King Size", "WiFi", "AC", "TV Satellite"],
-    desc: "Immense espace de vie avec trois chambres pour un maximum de confort.",
   },
 ];
 
@@ -64,25 +99,32 @@ function Counter({ to, suffix = "", duration = 1.6 }: { to: number; suffix?: str
   const ref = useRef<HTMLSpanElement>(null);
   const inView = useInView(ref, { once: true, margin: "-50px" });
   const mv = useMotionValue(0);
-  const [val, setVal] = useState(0);
+  const [val, setVal] = useState(to); // SSR: show final value so Google sees real content
+  const [hydrated, setHydrated] = useState(false);
 
   useEffect(() => {
-    if (!inView) return;
+    setHydrated(true);
+    setVal(0); // Reset to 0 on client to animate
+  }, []);
+
+  useEffect(() => {
+    if (!hydrated || !inView) return;
     const controls = animate(mv, to, { duration, ease: "easeOut", onUpdate: (v) => setVal(Math.round(v)) });
     return controls.stop;
-  }, [inView, to, duration, mv]);
+  }, [hydrated, inView, to, duration, mv]);
 
   return <span ref={ref}>{val}{suffix}</span>;
 }
 
 function QuickBooking() {
+  const { t } = useTranslation();
   const [type, setType] = useState("Studio");
   const [arrivee, setArrivee] = useState("");
   const [depart, setDepart] = useState("");
   const [personnes, setPersonnes] = useState("2");
 
   const send = () => {
-    const msg = `Bonjour TOGOLIVING,\nJe souhaite reserver:\nType: ${type}\nArrivee: ${arrivee || "a definir"}\nDepart: ${depart || "a definir"}\nPersonnes: ${personnes}\nMerci de confirmer la disponibilite.`;
+    const msg = `${t("home.booking_msg.greeting", { type, arrivee: arrivee || t("home.booking_msg.tbd"), depart: depart || t("home.booking_msg.tbd"), personnes })}`;
     window.open(whatsappUrl(msg), "_blank");
   };
 
@@ -90,21 +132,21 @@ function QuickBooking() {
     <div className="glass shadow-xl shadow-ocean/20 p-4 md:p-6">
       <div className="grid md:grid-cols-5 gap-3">
         <label className="block">
-          <span className="text-xs text-ocean/70 font-medium flex items-center gap-1"><Calendar size={12} /> Arrivee</span>
+          <span className="text-xs text-ocean/70 font-medium flex items-center gap-1"><Calendar size={12} /> {t("home.booking.arrival")}</span>
           <input type="date" value={arrivee} onChange={(e) => setArrivee(e.target.value)} className="mt-1 w-full bg-white/80 rounded-lg px-3 py-2.5 text-sm text-ocean border border-turquoise/30 focus:outline-none focus:border-turquoise" />
         </label>
         <label className="block">
-          <span className="text-xs text-ocean/70 font-medium flex items-center gap-1"><Calendar size={12} /> Depart</span>
+          <span className="text-xs text-ocean/70 font-medium flex items-center gap-1"><Calendar size={12} /> {t("home.booking.departure")}</span>
           <input type="date" value={depart} onChange={(e) => setDepart(e.target.value)} className="mt-1 w-full bg-white/80 rounded-lg px-3 py-2.5 text-sm text-ocean border border-turquoise/30 focus:outline-none focus:border-turquoise" />
         </label>
         <label className="block">
-          <span className="text-xs text-ocean/70 font-medium flex items-center gap-1"><Users size={12} /> Personnes</span>
+          <span className="text-xs text-ocean/70 font-medium flex items-center gap-1"><Users size={12} /> {t("home.booking.guests")}</span>
           <select value={personnes} onChange={(e) => setPersonnes(e.target.value)} className="mt-1 w-full bg-white/80 rounded-lg px-3 py-2.5 text-sm text-ocean border border-turquoise/30 focus:outline-none focus:border-turquoise">
             {[1, 2, 3, 4, 5, 6].map(n => <option key={n}>{n}</option>)}
           </select>
         </label>
         <label className="block">
-          <span className="text-xs text-ocean/70 font-medium flex items-center gap-1"><BedDouble size={12} /> Type</span>
+          <span className="text-xs text-ocean/70 font-medium flex items-center gap-1"><BedDouble size={12} /> {t("home.booking.type")}</span>
           <select value={type} onChange={(e) => setType(e.target.value)} className="mt-1 w-full bg-white/80 rounded-lg px-3 py-2.5 text-sm text-ocean border border-turquoise/30 focus:outline-none focus:border-turquoise">
             <option>Studios</option>
             <option>Chambre Salon</option>
@@ -121,8 +163,9 @@ function QuickBooking() {
 }
 
 function HomePage() {
+  const { t } = useTranslation();
   const { items: dbRooms } = useAccommodations();
-  const displayedRooms = dbRooms.length > 0 ? dbRooms : rooms;
+  const displayedRooms = dbRooms;
 
   return (
     <>
@@ -132,46 +175,54 @@ function HomePage() {
           initial={{ scale: 1.1 }}
           animate={{ scale: 1 }}
           transition={{ duration: 8, ease: "easeOut" }}
-          className="absolute inset-0 bg-cover bg-center"
-          style={{ backgroundImage: `url(${ASSETS.heroImg})` }}
-        />
+          className="absolute inset-0"
+        >
+          <OptimizedImage
+            src={ASSETS.heroImg}
+            alt="Hôtel 4 étoiles TOGOLIVING à Lomé - Piscine et vue sur mer"
+            width="1920"
+            height="1080"
+            priority={true}
+            className="w-full h-full object-cover object-center"
+          />
+        </motion.div>
         <div className="absolute inset-0 bg-gradient-to-b from-ocean/70 via-ocean/40 to-ocean/80" />
 
-        <div className="relative z-10 max-w-6xl mx-auto px-6 pt-24 pb-32 text-center">
+        <div className="relative z-10 max-w-6xl mx-auto px-6 pt-20 pb-16 text-center">
           <motion.p
             initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}
             className="font-accent text-turquoise text-xl md:text-2xl mb-3"
           >
-            Villa Balnéaire Tropicale · Hôtel ★★★★
+            {t("home.hero.subtitle")}
           </motion.p>
           <motion.h1
             initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}
-            className="font-display text-white text-5xl md:text-7xl lg:text-8xl font-bold leading-tight"
+            className="font-display text-white text-[2.5rem] md:text-6xl lg:text-7xl font-bold leading-tight"
           >
-            Bienvenue a <span className="text-turquoise">TOGOLIVING</span>
+            {t("home.hero.title_pt1")} <span className="text-turquoise">{t("home.hero.title_highlight")}</span> {t("home.hero.title_pt2")}
           </motion.h1>
           <motion.p
             initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }}
-            className="font-accent text-2xl md:text-3xl text-turquoise mt-6"
+            className="font-accent text-xl md:text-2xl text-turquoise mt-4"
           >
-            L'Ocean a votre Porte
+            {t("home.hero.tagline")}
           </motion.p>
           <motion.p
             initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.6 }}
             className="text-white/80 mt-2 text-base md:text-lg"
           >
-            Kpogan Agbetsiko · Lome, Togo
+            {t("home.hero.location")}
           </motion.p>
 
           <motion.div
             initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.8 }}
-            className="mt-10 flex flex-wrap gap-4 justify-center"
+            className="mt-6 flex flex-wrap gap-4 justify-center"
           >
             <Link to="/reserver" className="inline-flex items-center gap-2 px-7 py-3.5 rounded-full bg-gold text-ocean font-medium shimmer-gold hover:scale-[1.03] transition">
-              Reserver un Sejour <ArrowRight size={18} />
+              {t("home.hero.book_btn")} <ArrowRight size={18} />
             </Link>
             <Link to="/hebergements" className="inline-flex items-center gap-2 px-7 py-3.5 rounded-full border-2 border-turquoise text-turquoise hover:bg-turquoise hover:text-ocean transition">
-              Voir les Hebergements
+              {t("home.hero.rooms_btn")}
             </Link>
           </motion.div>
         </div>
@@ -190,10 +241,10 @@ function HomePage() {
       <section className="bg-sand py-20">
         <div className="max-w-7xl mx-auto px-6 grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
           {[
-            { icon: Waves, title: "Acces Plage Direct", sub: "100m de la plage naturelle", count: 100, suf: "m" },
-            { icon: BedDouble, title: "Appartements Meubles", sub: "4 types d'hebergement", count: 4, suf: " types" },
-            { icon: Droplets, title: "Piscine Vue Mer", sub: "Vue panoramique sur l'ocean", count: 1, suf: " piscine" },
-            { icon: UtensilsCrossed, title: "Restaurant & Bar", sub: "Saveurs africaines & monde", count: 6, suf: " cuisines" },
+            { icon: Waves, title: t("home.highlights.beach_title"), sub: t("home.highlights.beach_sub"), count: 100, suf: "m" },
+            { icon: BedDouble, title: t("home.highlights.apartments_title"), sub: t("home.highlights.apartments_sub"), count: 4, suf: "" },
+            { icon: Droplets, title: t("home.highlights.pool_title"), sub: t("home.highlights.pool_sub"), count: 1, suf: "" },
+            { icon: UtensilsCrossed, title: t("home.highlights.restaurant_title"), sub: t("home.highlights.restaurant_sub"), count: 6, suf: "" },
           ].map((h, i) => (
             <motion.div
               key={h.title}
@@ -219,8 +270,8 @@ function HomePage() {
       <section className="bg-ocean text-white py-20">
         <div className="max-w-7xl mx-auto px-6">
           <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="text-center mb-12">
-            <p className="font-accent text-turquoise text-xl">Nos Espaces</p>
-            <h2 className="font-display text-4xl md:text-5xl">Hebergements d'Exception</h2>
+            <p className="font-accent text-turquoise text-xl">{t("home.rooms.subtitle")}</p>
+            <h2 className="font-display text-4xl md:text-5xl">{t("home.rooms.title")}</h2>
           </motion.div>
 
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -241,7 +292,7 @@ function HomePage() {
                   className="glass-dark overflow-hidden hover-lift group border-turquoise/20 hover:border-gold"
                 >
                   <div className="relative h-56 overflow-hidden">
-                    <img src={img} alt={title} loading="lazy" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
+                    <OptimizedImage src={img} alt={title} width="600" height="400" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
                     <div className="absolute inset-0 bg-gradient-to-t from-ocean/80 to-transparent" />
                     {badge && (
                       <span className={`absolute top-3 right-3 px-3 py-1 rounded-full text-xs font-semibold ${premium ? "bg-gold text-ocean" : "bg-turquoise text-ocean"}`}>
@@ -254,12 +305,12 @@ function HomePage() {
                     <p className="text-white/70 text-sm mt-2 line-clamp-2">{desc}</p>
                     <div className="flex flex-wrap gap-2 mt-4">
                       {features.map((f: string) => (
-                        <span key={f} className="text-xs px-2.5 py-1 rounded-full bg-turquoise/15 text-turquoise border border-turquoise/30">{f}</span>
+                        <span key={t(`home.rooms.features.${f}`)} className="text-xs px-2.5 py-1 rounded-full bg-turquoise/15 text-turquoise border border-turquoise/30">{f}</span>
                       ))}
                     </div>
                     <div className="flex gap-2 mt-5">
-                      <Link to="/hebergements" className="flex-1 text-center px-3 py-2 rounded-lg bg-turquoise text-ocean text-sm font-medium hover:bg-gold transition">Détails</Link>
-                      <Link to="/reserver" className="flex-1 text-center px-3 py-2 rounded-lg border border-turquoise text-turquoise text-sm font-medium hover:bg-turquoise hover:text-ocean transition">Réserver</Link>
+                      <Link to="/hebergements/$category" params={{ category: encodeURIComponent(title.toLowerCase().replace(/ /g, "-")) }} className="flex-1 text-center px-3 py-2 rounded-lg bg-turquoise text-ocean text-sm font-medium hover:bg-gold transition">{t("home.rooms.btn_details")}</Link>
+                      <Link to="/reserver" className="flex-1 text-center px-3 py-2 rounded-lg border border-turquoise text-turquoise text-sm font-medium hover:bg-turquoise hover:text-ocean transition">{t("home.rooms.btn_book")}</Link>
                     </div>
                   </div>
                 </motion.div>
@@ -275,17 +326,17 @@ function HomePage() {
       <section className="bg-sand py-20">
         <div className="max-w-7xl mx-auto px-6 grid md:grid-cols-2 gap-10 items-center">
           <motion.div initial={{ opacity: 0, x: -30 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} className="relative">
-            <img src={ASSETS.poolImg} alt="Piscine vue mer" className="rounded-2xl shadow-2xl shadow-ocean/30 w-full h-[420px] object-cover" loading="lazy" />
+            <OptimizedImage src={ASSETS.poolImg} alt="Piscine panoramique vue Océan Atlantique à TOGOLIVING, Lomé Togo" width="800" height="420" className="rounded-2xl shadow-2xl shadow-ocean/30 w-full h-[420px] object-cover" />
             <div className="absolute -bottom-6 -right-6 hidden md:block w-24 h-24 rounded-full bg-turquoise/30 pool-ripple" />
           </motion.div>
           <motion.div initial={{ opacity: 0, x: 30 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }}>
-            <p className="font-accent text-turquoise text-xl">Detente & Saveurs</p>
-            <h2 className="font-display text-4xl text-ocean mb-6">Piscine, Plage & Cocktail Bar</h2>
+            <p className="font-accent text-turquoise text-xl">{t("home.leisure.subtitle")}</p>
+            <h2 className="font-display text-4xl text-ocean mb-6">{t("home.leisure.title")}</h2>
 
             {[
-              { icon: Droplets, title: "Piscine Panoramique", desc: "Vue directe sur l'ocean, detente garantie au coucher du soleil." },
-              { icon: Waves, title: "Plage Naturelle", desc: "100 metres de la villa, plage quasi naturelle preservee." },
-              { icon: UtensilsCrossed, title: "Cocktail Bar", desc: "Bientot disponible, ambiance tropicale en bord de mer." },
+              { icon: Droplets, title: t("home.leisure.pool_title"), desc: t("home.leisure.pool_desc") },
+              { icon: Waves, title: t("home.leisure.beach_title"), desc: t("home.leisure.beach_desc") },
+              { icon: UtensilsCrossed, title: t("home.leisure.bar_title"), desc: t("home.leisure.bar_desc") },
             ].map((f) => (
               <div key={f.title} className="flex gap-4 mb-5">
                 <div className="shrink-0 w-12 h-12 rounded-xl bg-turquoise/15 text-turquoise flex items-center justify-center">
@@ -302,13 +353,15 @@ function HomePage() {
       </section>
 
       {/* RESTAURANT PREVIEW */}
-      <section className="relative py-24 text-white">
-        <div className="absolute inset-0 bg-cover bg-center" style={{ backgroundImage: `url(${ASSETS.piscine1})` }} />
+      <section className="relative py-24 text-white overflow-hidden">
+        <div className="absolute inset-0">
+          <OptimizedImage src={ASSETS.piscine1} alt="Restaurant vue mer à Lomé, cuisine internationale chez TOGOLIVING" width="1920" height="600" className="w-full h-full object-cover object-center" />
+        </div>
         <div className="absolute inset-0 bg-ocean/80" />
         <div className="relative max-w-6xl mx-auto px-6 text-center">
-          <p className="font-accent text-turquoise text-xl">Au Restaurant</p>
-          <h2 className="font-display text-4xl md:text-5xl">Saveurs du Monde</h2>
-          <p className="text-white/80 max-w-2xl mx-auto mt-4">Cuisine africaine, francaise et americaine — vue sur l'ocean.</p>
+          <p className="font-accent text-turquoise text-xl">{t("home.restaurant.subtitle")}</p>
+          <h2 className="font-display text-4xl md:text-5xl">{t("home.restaurant.title")}</h2>
+          <p className="text-white/80 max-w-2xl mx-auto mt-4">{t("home.restaurant.desc")}</p>
 
           <div className="grid md:grid-cols-4 gap-5 mt-10">
             {[
@@ -336,7 +389,7 @@ function HomePage() {
         <div className="max-w-7xl mx-auto px-6">
           <div className="text-center mb-4">
             <p className="font-accent text-turquoise text-xl">Ils nous ont visités</p>
-            <h2 className="font-display text-4xl text-ocean">Avis Voyageurs</h2>
+            <h2 className="font-display text-4xl text-ocean">{t("home.reviews.title")}</h2>
           </div>
 
           {/* Platform ratings summary */}

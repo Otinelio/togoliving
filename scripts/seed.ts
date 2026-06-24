@@ -202,7 +202,7 @@ const DEFAULT_SETTINGS = {
   id: "default",
   hotelName: "TOGOLIVING",
   whatsappNumber: "22893872088",
-  domainUrl: "https://togoliving.net",
+  domainUrl: "https://residencetogoliving.com",
   pinAdmin: "9999",
   pinReception: "9999",
   pinKitchen: "9999",

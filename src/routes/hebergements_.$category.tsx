@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { createFileRoute, Link, useParams } from "@tanstack/react-router";
+import { useTranslation } from "react-i18next";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Wifi, Wind, Tv, Coffee, Car, Plane, Waves, Droplets, GlassWater,
@@ -11,6 +12,7 @@ import { useAccommodations } from "@/hooks/useAccommodations";
 import { useRooms } from "@/hooks/useRooms";
 import { type Room } from "@/data/defaultRooms";
 import { WaveDivider } from "@/components/WaveDivider";
+import { OptimizedImage } from "@/components/OptimizedImage";
 
 // Icon map for features
 const ICON_MAP: Record<string, any> = {
@@ -61,6 +63,7 @@ export const Route = createFileRoute("/hebergements_/$category")({
 });
 
 function CategoryDetailsPage() {
+  const { t } = useTranslation();
   const { category } = Route.useParams();
   const { items: categories, isLoading: isLoadingCats } = useAccommodations();
   const { rooms, isLoading: isLoadingRooms } = useRooms();
@@ -81,8 +84,8 @@ function CategoryDetailsPage() {
   if (!matchedCategory) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center bg-sand text-ocean text-center px-4">
-        <h1 className="font-display text-4xl mb-4">Catégorie Introuvable</h1>
-        <Link to="/hebergements" className="text-turquoise underline">Retour aux hébergements</Link>
+        <h1 className="font-display text-4xl mb-4">{t("accommodations.category.not_found")}</h1>
+        <Link to="/hebergements" className="text-turquoise underline">{t("accommodations.category.back_link")}</Link>
       </div>
     );
   }
@@ -96,9 +99,10 @@ function CategoryDetailsPage() {
       <section className="relative pt-32 pb-20 bg-ocean text-white overflow-hidden">
         {matchedCategory.imageUrl && (
           <div 
-            className="absolute inset-0 bg-cover bg-center opacity-30" 
-            style={{ backgroundImage: `url(${matchedCategory.imageUrl})` }} 
-          />
+            className="absolute inset-0 opacity-30" 
+          >
+            <OptimizedImage src={matchedCategory.imageUrl} alt={matchedCategory.title} width="1920" height="600" className="w-full h-full object-cover object-center" />
+          </div>
         )}
         <div className="absolute inset-0 bg-gradient-to-b from-ocean/80 to-ocean" />
         <div className="relative max-w-6xl mx-auto px-6 text-center">
@@ -130,11 +134,30 @@ function CategoryDetailsPage() {
           )}
         </div>
       </section>
+
+      {/* SEO Content Block */}
+      <div className="bg-sand py-16">
+        <div className="max-w-4xl mx-auto px-6 text-ocean">
+          <div className="glass p-8 md:p-12 rounded-3xl shadow-xl shadow-ocean/5 border border-turquoise/20">
+            <h2 className="font-display text-3xl mb-6 text-ocean" dangerouslySetInnerHTML={{ __html: t("accommodations.category.why_title", { category: matchedCategory.title.toLowerCase() }) }} />
+            <div className="space-y-4 text-ocean/80 leading-relaxed">
+              <p dangerouslySetInnerHTML={{ __html: t("accommodations.category.why_p1", { category: matchedCategory.title.toLowerCase() }) }} />
+              <p dangerouslySetInnerHTML={{ __html: t("accommodations.category.why_p2") }} />
+              <p dangerouslySetInnerHTML={{ __html: t("accommodations.category.why_p3") }} />
+              <div className="bg-turquoise/10 p-6 rounded-2xl mt-6 border border-turquoise/20">
+                <p className="italic text-ocean" dangerouslySetInnerHTML={{ __html: t("accommodations.category.review", { category: matchedCategory.title.toLowerCase() }) }} />
+                <p className="font-bold mt-2 text-ocean">{t("accommodations.category.review_author")}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </>
   );
 }
 
 function RoomCard({ room, matchedCategory }: { room: Room; matchedCategory: any }) {
+  const { t } = useTranslation();
   const [isExpanded, setIsExpanded] = useState(false);
   const [currentMediaIndex, setCurrentMediaIndex] = useState(0);
 
@@ -195,9 +218,11 @@ function RoomCard({ room, matchedCategory }: { room: Room; matchedCategory: any 
               className="w-full h-full"
             >
               {currentMedia.type === "image" ? (
-                <img 
+                <OptimizedImage 
                   src={currentMedia.url} 
                   alt={`Chambre N° ${room.id} - Média ${currentMediaIndex + 1}`} 
+                  width="800"
+                  height="450"
                   className="w-full h-full object-cover"
                 />
               ) : (
@@ -210,11 +235,11 @@ function RoomCard({ room, matchedCategory }: { room: Room; matchedCategory: any 
                     muted
                     loop
                     playsInline
-                    preload="auto"
+                    preload="metadata"
                     className="w-full h-full object-cover"
                   />
                   <div className="absolute top-4 right-4 bg-black/60 text-white px-3 py-1 rounded-full text-xs font-semibold flex items-center gap-1 z-10">
-                    ▶ Vidéo
+                    {t("accommodations.category.video_badge")}
                   </div>
                 </div>
               )}
@@ -274,7 +299,7 @@ function RoomCard({ room, matchedCategory }: { room: Room; matchedCategory: any 
             </h2>
             {room.capacity && (
               <p className="text-turquoise font-medium font-accent text-lg flex items-center gap-2">
-                <MapPin size={18} /> Capacité & Espace : {room.capacity}
+                <MapPin size={18} /> {t("accommodations.category.capacity", { capacity: room.capacity })}
               </p>
             )}
           </div>
@@ -283,14 +308,14 @@ function RoomCard({ room, matchedCategory }: { room: Room; matchedCategory: any 
           <div className="bg-sand/50 px-6 py-4 rounded-2xl border border-turquoise/10 text-right shrink-0">
             {room.price_per_night ? (
               <div className="text-xl font-display text-ocean font-bold">
-                {room.price_per_night} <span className="text-sm font-body text-muted-foreground font-normal">/ nuit</span>
+                {room.price_per_night} <span className="text-sm font-body text-muted-foreground font-normal">{t("accommodations.category.per_night")}</span>
               </div>
             ) : (
-              <div className="text-muted-foreground text-sm">Prix sur demande</div>
+              <div className="text-muted-foreground text-sm">{t("accommodations.category.price_request")}</div>
             )}
             {room.price_per_month && (
               <div className="text-md text-ocean/80 mt-1">
-                {room.price_per_month} <span className="text-xs text-muted-foreground">/ mois</span>
+                {room.price_per_month} <span className="text-xs text-muted-foreground">{t("accommodations.category.per_month")}</span>
               </div>
             )}
           </div>
@@ -307,10 +332,10 @@ function RoomCard({ room, matchedCategory }: { room: Room; matchedCategory: any 
 
         <div className="mb-10">
           <h3 className="text-sm font-bold text-ocean uppercase tracking-wider mb-4 border-b border-ocean/10 pb-2 flex justify-between items-center">
-            <span>Équipements</span>
+            <span>{t("accommodations.category.amenities_title")}</span>
             {!isExpanded && parsedAmenities.length > 6 && (
               <span className="text-xs font-normal text-muted-foreground">
-                + {parsedAmenities.length - 6} autres
+                {t("accommodations.category.amenities_more", { count: parsedAmenities.length - 6 })}
               </span>
             )}
           </h3>
@@ -335,9 +360,9 @@ function RoomCard({ room, matchedCategory }: { room: Room; matchedCategory: any 
             className="flex items-center gap-2 text-ocean font-semibold hover:text-turquoise transition-colors"
           >
             {isExpanded ? (
-              <><ChevronUp size={20} /> Voir moins de détails</>
+              <><ChevronUp size={20} /> {t("accommodations.category.show_less")}</>
             ) : (
-              <><ChevronDown size={20} /> Voir tous les détails</>
+              <><ChevronDown size={20} /> {t("accommodations.category.show_more")}</>
             )}
           </button>
 
@@ -348,11 +373,11 @@ function RoomCard({ room, matchedCategory }: { room: Room; matchedCategory: any 
               className="inline-flex items-center gap-2 px-8 py-4 rounded-full bg-ocean text-white font-medium hover:bg-gold hover:text-ocean transition shimmer-gold shadow-lg w-full sm:w-auto justify-center"
             >
               <Calendar size={18} />
-              Réserver cette chambre
+              {t("accommodations.category.book_room")}
             </Link>
           ) : (
             <button disabled className="inline-flex items-center gap-2 px-8 py-4 rounded-full bg-sand text-ocean/50 font-medium border border-ocean/10 cursor-not-allowed w-full sm:w-auto justify-center">
-              Non disponible actuellement
+              {t("accommodations.category.unavailable")}
             </button>
           )}
         </div>

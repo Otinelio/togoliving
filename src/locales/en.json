@@ -1,0 +1,530 @@
+{
+  "nav": {
+    "home": "Home",
+    "accommodations": "Accommodations",
+    "restaurant": "Restaurant & Bar",
+    "discover": "Discover",
+    "gallery": "Gallery",
+    "about": "About Us",
+    "leisure": "Leisure & Relaxation",
+    "events": "Events",
+    "careers": "Careers",
+    "contact": "Contact",
+    "book": "Book Now"
+  },
+  "footer": {
+    "subtitle": "The Ocean at your Doorstep",
+    "desc": "Tropical seaside villa in Kpogan Agbetsiko, between Lomé and Aného. Direct beach access, sea view pool, and world flavor restaurant.",
+    "navigation": "Navigation",
+    "contact": "Contact",
+    "rights": "All rights reserved"
+  },
+  "home": {
+    "booking": {
+      "arrival": "Check-in",
+      "departure": "Check-out",
+      "guests": "Guests",
+      "type": "Type",
+      "checkAvailability": "Check Availability"
+    },
+    "hero": {
+      "subtitle": "Tropical Seaside Villa · ★★★★ Hotel",
+      "title_pt1": "4★ Hotel in Lomé —",
+      "title_highlight": "Seaside Residence",
+      "title_pt2": "with Ocean View",
+      "tagline": "The Ocean at your Doorstep",
+      "location": "Kpogan Agbetsiko · Lomé, Togo",
+      "book_btn": "Book a Stay",
+      "rooms_btn": "View Accommodations"
+    },
+    "highlights": {
+      "beach_title": "Direct Beach Access",
+      "beach_sub": "of natural beach",
+      "apartments_title": "Furnished Apartments",
+      "apartments_sub": "accommodation types",
+      "pool_title": "Sea View Pool",
+      "pool_sub": "Panoramic view of the ocean",
+      "restaurant_title": "Restaurant & Bar",
+      "restaurant_sub": "African & world flavors"
+    },
+    "rooms": {
+      "subtitle": "Our Spaces",
+      "title": "Exceptional Accommodations",
+      "types": {
+        "studio": {
+          "title": "Studios",
+          "badge": "1 Room",
+          "desc": "Comfortable space, ideal for a solo stay or couple."
+        },
+        "chambre_salon": {
+          "title": "Bedroom & Living Room",
+          "badge": "2 Rooms",
+          "desc": "Large living room, ideal for extended stays."
+        },
+        "2_chambres": {
+          "title": "2 Bedrooms & Living Room",
+          "badge": "3 Rooms",
+          "desc": "Spacious apartment with two separate bedrooms. Perfect for families."
+        },
+        "3_chambres": {
+          "title": "3 Bedrooms & Living Room",
+          "badge": "VIP · 4 Rooms",
+          "desc": "Huge living space with three bedrooms for maximum comfort."
+        }
+      },
+      "features": {
+        "WiFi": "WiFi",
+        "AC": "AC",
+        "TV Satellite": "Satellite TV",
+        "Refrigerateur": "Refrigerator",
+        "Patio": "Patio",
+        "Table a manger": "Dining table",
+        "Canapes": "Sofas",
+        "Vue mer": "Sea view",
+        "Terrasse": "Terrace",
+        "Literie premium": "Premium bedding",
+        "Grande Terrasse": "Large Terrace",
+        "Lits King Size": "King Size Beds"
+      },
+      "btn_details": "Details",
+      "btn_book": "Book"
+    },
+    "leisure": {
+      "subtitle": "Relaxation & Flavors",
+      "title": "Pool, Beach & Cocktail Bar",
+      "pool_title": "Panoramic Pool",
+      "pool_desc": "Direct view of the ocean, guaranteed relaxation at sunset.",
+      "beach_title": "Natural Beach",
+      "beach_desc": "100 meters from the villa, preserved near-natural beach.",
+      "bar_title": "Cocktail Bar",
+      "bar_desc": "Coming soon, tropical atmosphere by the sea."
+    },
+    "restaurant": {
+      "subtitle": "At the Restaurant",
+      "title": "Flavors of the World",
+      "desc": "African, French, and American cuisine — overlooking the ocean.",
+      "breakfast": "Breakfast",
+      "international": "International Menu",
+      "pizzas": "Pizzas & Snacks",
+      "cocktails": "Cocktails & Wine",
+      "btn": "Discover the Menu"
+    },
+    "reviews": {
+      "subtitle": "What our guests say",
+      "title": "Traveler Reviews",
+      "exceptional": "Exceptional",
+      "average_note": "Average rating on our partner platforms."
+    },
+    "booking_msg": {
+      "greeting": "Hello TOGOLIVING,\nI would like to book:\nType: {{type}}\nCheck-in: {{arrivee}}\nCheck-out: {{depart}}\nGuests: {{personnes}}\nPlease confirm availability.",
+      "tbd": "to be determined"
+    }
+  },
+  "accommodations": {
+    "hero": {
+      "subtitle": "Our Spaces",
+      "title": "Sea View Apartments & Studios in Lomé, Togo",
+      "desc": "4 types of furnished, air-conditioned apartments with free WiFi and direct beach access."
+    },
+    "amenities": {
+      "subtitle": "All inclusive",
+      "title": "Amenities & Services",
+      "items": {
+        "wifi": "Free WiFi",
+        "ac": "Air Conditioning",
+        "tv": "Satellite TV + Canal+",
+        "breakfast": "Breakfast available",
+        "parking": "Free Private Parking",
+        "shuttle": "Airport Shuttle (on request)",
+        "beach": "Beach Access",
+        "pool": "Swimming Pool",
+        "bar": "Cocktail Bar",
+        "restaurant": "On-site Restaurant"
+      }
+    },
+    "category": {
+      "back": "Back to categories",
+      "desc": "Discover in detail all our {{category}} rooms.",
+      "not_found": "Category Not Found",
+      "back_link": "Back to accommodations",
+      "empty": "No rooms currently configured for this category.",
+      "why_title": "Why stay in our {{category}} in Lomé?",
+      "why_p1": "TOGOLIVING Residence offers you a unique experience in Lomé. By booking one of our <strong>{{category}}</strong>, you not only enjoy optimal comfort with modern amenities (air conditioning, high-speed WiFi, smart TV), but also a privileged location in the peaceful neighborhood of Kpogan Agbetsiko.",
+      "why_p2": "<strong>An exceptional environment:</strong> Located just 100 meters from the natural beach, our seaside residence offers quick access to the Atlantic Ocean. Our guests particularly appreciate morning walks on the beach and spectacular sunsets from our panoramic pool.",
+      "why_p3": "<strong>Services and Amenities:</strong> Staying with us means enjoying quality hotel services (regular cleaning, 24/7 security) while keeping the independence of an apartment. You will have access to our restaurant offering world flavors, as well as our leisure areas including a children's play area and billiards.",
+      "review": "An unforgettable stay! The {{category}} was impeccably clean, spacious, and ideally located facing the sea. The staff is very caring and the restaurant offers excellent dishes. We will definitely come back.",
+      "review_author": "— Customer Review, Verified Traveler",
+      "media_preview": "Preview",
+      "loading": "Loading...",
+      "no_media": "No media",
+      "video_badge": "▶ Video",
+      "capacity": "Capacity & Space: {{capacity}}",
+      "price_request": "Price on request",
+      "per_night": "/ night",
+      "per_month": "/ month",
+      "description_title": "Description",
+      "amenities_title": "Amenities",
+      "amenities_more": "+ {{count}} more",
+      "show_more": "Show all details",
+      "show_less": "Show fewer details",
+      "book_room": "Book this room",
+      "unavailable": "Currently unavailable"
+    }
+  },
+  "booking": {
+    "hero": {
+      "subtitle": "Booking",
+      "title": "Confirm Your Stay",
+      "desc": "Fast confirmation via WhatsApp · No online payment"
+    },
+    "steps": {
+      "s1": "Accommodation",
+      "s2": "Stay & Guests",
+      "s3": "Contact Info",
+      "s4": "Summary"
+    },
+    "step1": {
+      "title": "Choose accommodation",
+      "app_type": "Apartment type",
+      "room_cat": "Room category",
+      "full": "Full",
+      "available": "Available: N° {{rooms}}",
+      "per_night": "/night",
+      "per_month": "/month",
+      "desired_room": "Desired room",
+      "optional": "(optional)",
+      "no_pref": "No preference",
+      "room_n": "Room N° {{n}}"
+    },
+    "step2": {
+      "title": "Dates & Guests",
+      "stay_type": "Type of stay",
+      "by_night": "By night",
+      "by_month": "By month",
+      "arrival": "Check-in",
+      "departure": "Check-out",
+      "duration_est": "Estimated duration",
+      "nights": "{{count}} night",
+      "nights_plural": "{{count}} nights",
+      "adults": "Adults",
+      "children": "Children",
+      "special_req": "Special requests",
+      "req_placeholder": "Sea view desired, baby cot, airport transfer...",
+      "price_est": "Estimated price"
+    },
+    "step3": {
+      "title": "Your details",
+      "name": "Full name *",
+      "name_placeholder": "First and Last Name",
+      "phone": "Phone / WhatsApp *",
+      "email": "Email",
+      "time": "Expected arrival time"
+    },
+    "step4": {
+      "title": "Summary",
+      "chosen_room": "Chosen accommodation",
+      "type": "Type",
+      "category": "Category",
+      "room": "Room",
+      "stay": "Stay",
+      "occupants": "Guests",
+      "adult": "adult",
+      "adult_plural": "adults",
+      "child": "child",
+      "child_plural": "children",
+      "contact": "Contact Details",
+      "disclaimer": "By clicking confirm, you will be redirected to WhatsApp to finalize your booking with the TOGOLIVING team.",
+      "back": "Back",
+      "next": "Next",
+      "confirm": "Confirm via WhatsApp"
+    },
+    "faq": {
+      "title": "Frequently Asked Questions",
+      "subtitle": "Everything you need to know before booking.",
+      "q1": "What is the cancellation policy?",
+      "a1": "Cancellations are free up to 48 hours before the scheduled arrival date. After this time, the first night will be charged.",
+      "q2": "Is there an airport shuttle?",
+      "a2": "Yes, we offer a VIP airport shuttle service on request. Please indicate this in the \"Special requests\" section when booking.",
+      "q3": "Are pets allowed?",
+      "a3": "To ensure the comfort of all our guests, pets are unfortunately not allowed in the residence."
+    },
+    "msg": {
+      "greeting": "Hello TOGOLIVING,\n═══ NEW BOOKING REQUEST ═══\n",
+      "room": "Accommodation : {{category}} — {{variant}}",
+      "room_num": "Room N° {{n}}",
+      "room_any": "An available room of category {{variant}}",
+      "price": "Estimated price : {{price}}",
+      "arrival": "Check-in : {{date}} at {{time}}",
+      "tbd": "To be determined",
+      "departure": "Check-out  : {{date}}",
+      "duration": "Duration   : {{n}} night(s)",
+      "adults": "Adults : {{n}}",
+      "children": "Children : {{n}}",
+      "name": "Name      : {{name}}",
+      "phone": "Phone      : {{phone}}",
+      "email": "Email    : {{email}}",
+      "empty_field": "—",
+      "reqs": "\nSpecial requests : {{reqs}}",
+      "footer": "\nPlease confirm availability."
+    }
+  },
+  "about": {
+    "hero": {
+      "subtitle": "About Us",
+      "title": "TOGOLIVING",
+      "desc": "Your Seaside Residence in Togo",
+      "badge": "4-Star Rated Hotel"
+    },
+    "intro": {
+      "p1": "Offering a view of the city, the <strong>Togoliving Residence</strong> — rated <strong>4-Star Hotel</strong> — is located in Toudji, perfectly situated along the National N2 road and only 100m from the natural beach. Kpogan is a quiet neighborhood, located on the national road leading from Benin to Ghana, near the Agbavi market.",
+      "p2": "It offers a <strong>restaurant</strong>, <strong>room service</strong>, a <strong>bar</strong>, a <strong>garden</strong>, and a <strong>terrace</strong>. It provides free fast Wi-Fi (516 Mbps) and private parking. The property serves a continental or American breakfast every morning.",
+      "p3": "Each accommodation includes a private bathroom with a shower, air conditioning, a flat-screen TV, and a refrigerator. The property is located 17 km from Lomé-Tokoin International Airport and offers an airport shuttle service (for a fee).",
+      "p4": "Postal Code: <strong>36BP50</strong> — Kpogan Agbetsiko, Lomé, Togo"
+    },
+    "stats": {
+      "city": "from downtown",
+      "beach": "from the beach",
+      "types": "accommodation types",
+      "airport": "from the airport"
+    },
+    "essentials": {
+      "subtitle": "The essentials",
+      "title": "Property Highlights",
+      "p1": "Outdoor pool with view",
+      "p2": "Restaurant (Varied cuisine)",
+      "p3": "Free Wi-Fi connection (516 Mbps)",
+      "p4": "Free private parking on site",
+      "p5": "Family and non-smoking rooms",
+      "p6": "Airport shuttle",
+      "p7": "Room service & Bar",
+      "p8": "Breakfast included"
+    },
+    "facilities": {
+      "title": "Facilities and Services",
+      "general": "General",
+      "g1": "• Air conditioning in all accommodations",
+      "g2": "• Entirely non-smoking property",
+      "g3": "• 24/7 Security & Surveillance cameras",
+      "g4": "• Fire extinguishers & Smoke detectors",
+      "g5": "• Daily housekeeping service (extra charge)",
+      "g6": "• Tour desk & Express check-in",
+      "outdoor": "Outdoors & Activities",
+      "o1": "• Natural beach 100m away",
+      "o2": "• Garden, Sun terrace & Patio",
+      "o3": "• BBQ facilities (extra charge)",
+      "o4": "• Pool with a view and pool bar",
+      "o5": "• Sun loungers and umbrellas",
+      "o6": "• Walking tours (extra charge)",
+      "food": "Food & Drink",
+      "f1": "• Living’s Restaurant (African, French, etc.)",
+      "f2": "• On-site coffee house & Snack bar",
+      "f3": "• Kids' meals (extra charge)",
+      "f4": "• Wine/champagne (extra charge)",
+      "f5": "• Breakfast in the room",
+      "f6": "• On-site mini-market"
+    },
+    "license": {
+      "title": "Official Classification",
+      "desc": "Togoliving Residence — 4-Star Rated Hotel"
+    },
+    "values": {
+      "subtitle": "Our Values",
+      "title": "Why choose us",
+      "v1_title": "Warm Welcome",
+      "v1_desc": "A team available 24/7 for your comfort and personalized service.",
+      "v2_title": "Unique Setting",
+      "v2_desc": "Sea view, pool, and natural beach all in one place.",
+      "v3_title": "Comfort & Security",
+      "v3_desc": "Furnished apartments, secure private parking 24/7, ultra-fast WiFi."
+    }
+  },
+  "careers": {
+    "hero": {
+      "subtitle": "Careers",
+      "title": "Join the Adventure",
+      "desc": "Build a career within a team passionate about excellence and hospitality. Discover our opportunities and grow with us."
+    },
+    "philosophy": {
+      "subtitle": "Why TOGOLIVING?",
+      "title": "Our Employer Philosophy",
+      "v1_title": "Family Spirit",
+      "v1_desc": "We cultivate a caring work environment where mutual respect and support are paramount.",
+      "v2_title": "Fast Evolution",
+      "v2_desc": "We favor internal promotion and supporting our talents towards management positions.",
+      "v3_title": "Excellence & Training",
+      "v3_desc": "We offer continuous training to maintain our high standards in luxury hospitality."
+    },
+    "jobs": {
+      "subtitle": "Current Opportunities",
+      "title": "Open Positions",
+      "spontaneous": "Spontaneous Application",
+      "empty": "No positions are currently open. Feel free to send a spontaneous application!",
+      "apply": "Apply"
+    },
+    "process": {
+      "title": "Recruitment Process",
+      "s1": "Send CV & Letter",
+      "s2": "Phone Interview",
+      "s3": "Physical Interview",
+      "s4": "Integration"
+    },
+    "form": {
+      "title": "Apply",
+      "subtitle": "Spontaneous Application",
+      "success_title": "Application Sent!",
+      "success_desc": "We have received your application. Our human resources team will get back to you very soon.",
+      "personal": "Personal Information",
+      "name": "Full Name",
+      "name_placeholder": "e.g. John Doe",
+      "email": "Email Address",
+      "email_placeholder": "john.doe@email.com",
+      "phone": "Phone Number",
+      "phone_placeholder": "+228 XX XX XX XX",
+      "message_title": "Message / Motivation",
+      "message_label": "Introduce yourself briefly",
+      "message_placeholder": "What are your motivations for joining the TOGOLIVING team?",
+      "cv_title": "Curriculum Vitae (CV)",
+      "cv_change": "Click to change file",
+      "cv_upload": "Click or drag your CV here",
+      "cv_format": "Accepted format: PDF (Max 5MB)",
+      "back": "Back",
+      "next": "Next",
+      "confirm": "Confirm submission"
+    }
+  },
+  "contact": {
+    "hero": {
+      "subtitle": "Contact",
+      "title": "Let's Talk About Your Stay"
+    },
+    "info": {
+      "title": "Our Contact Info",
+      "open": "Open 24/7"
+    },
+    "form": {
+      "title": "Send a Message",
+      "name": "Full Name",
+      "email": "Email",
+      "subject": "Subject",
+      "message": "Message",
+      "send": "Send via WhatsApp",
+      "s1": "Reservation",
+      "s2": "Information",
+      "s3": "Event",
+      "s4": "Other"
+    },
+    "msg": {
+      "greeting": "Hello TOGOLIVING,",
+      "name": "Name:",
+      "email": "Email:",
+      "subject": "Subject:",
+      "message": "Message:"
+    }
+  },
+  "restaurant": {
+    "hero": {
+      "subtitle": "At the Restaurant",
+      "title": "Ocean View Restaurant in Lomé — World Flavors",
+      "desc": "Ocean View"
+    },
+    "search": "Search for a dish, drink...",
+    "article": "item",
+    "articles": "items",
+    "empty_menu": "The menu is currently empty.",
+    "empty_category": "No items in this category.",
+    "categories": {
+      "Tout": "All",
+      "Petit-Déjeuner": "Breakfast",
+      "Entrées": "Starters",
+      "Plats": "Main Courses",
+      "Fast Food & Pizzas": "Fast Food & Pizzas",
+      "Desserts": "Desserts",
+      "Cocktails": "Cocktails",
+      "Vins & Spiritueux": "Wines & Spirits",
+      "Boissons": "Drinks"
+    },
+    "cart": {
+      "title": "Cart",
+      "order": "Your order",
+      "selected": "Selected items",
+      "reception": "Reception",
+      "pickup": "Pickup at restaurant",
+      "delivery": "Delivery",
+      "address": "Delivery address",
+      "address_placeholder": "Neighborhood, street, landmark, number...",
+      "per_unit": "/ unit",
+      "total": "Total",
+      "send_whatsapp": "Send on WhatsApp",
+      "tap_to_view": "Tap to view cart",
+      "order_btn": "Order"
+    },
+    "popup": {
+      "unit_price": "Unit price",
+      "add": "Add to cart",
+      "unavailable": "Currently unavailable"
+    },
+    "card": {
+      "unavailable": "Unavailable",
+      "see_more": "See more"
+    },
+    "msg": {
+      "greeting": "Hello TOGOLIVING,",
+      "intent": "I would like to order from the restaurant :",
+      "reception": "Reception method: {{method}}",
+      "address": "Delivery address: {{address}}",
+      "total": "Total: {{total}}",
+      "footer": "Please confirm availability."
+    }
+  },
+  "loisirs": {
+    "hero": {
+      "subtitle": "Leisure & Relaxation",
+      "title": "Relax at TOGOLIVING",
+      "desc": "Between the ocean and a panoramic pool, enjoy a setting designed for rest, entertainment, and family moments."
+    },
+    "pool": {
+      "subtitle": "Breathtaking view",
+      "title": "Panoramic Pool & Pool Bar",
+      "desc": "Dive into our large outdoor pool with an unobstructed view of the Atlantic Ocean. Whether for a refreshing morning swim or to relax at sunset with a cocktail in hand.",
+      "b1": "Adult pool and small children's pool",
+      "b2": "Pool bar with refreshment service directly in the water",
+      "b3": "Comfortable sun loungers and umbrellas to enjoy the sun"
+    },
+    "activities": {
+      "subtitle": "For all ages",
+      "title": "Play & Activity Areas",
+      "games_title": "Games & Entertainment",
+      "games_desc": "Enjoy our leisure area equipped with billiards, table football, and various board games for your evenings with friends or family.",
+      "kids_title": "Secure Children's Area",
+      "kids_desc": "A specially designed playground for the little ones, under parental supervision, to have fun safely.",
+      "garden_title": "Garden & Green Spaces",
+      "garden_desc": "Stroll through our tropical garden, enjoy the shaded patio or relax on the terrace overlooking nature."
+    },
+    "beach": {
+      "subtitle": "The Ocean at your doorstep",
+      "title": "Natural Beach 100m away",
+      "desc": "Cross the road and you're there. The wild and unspoiled beach of Kpogan offers kilometers of fine sand for your morning walks, your jogging, or simply to listen to the sound of the waves.",
+      "book": "Book your stay",
+      "restaurant": "Discover the Restaurant"
+    },
+    "gallery": {
+      "title": "Facilities Gallery",
+      "desc": "Discover our play and relaxation areas in pictures."
+    }
+  },
+  "galerie": {
+    "hero": {
+      "subtitle": "Our Setting",
+      "title": "Kpogan Agbetsiko"
+    },
+    "categories": {
+      "Tout": "All",
+      "Piscine": "Pool",
+      "Plage": "Beach",
+      "Appartements": "Apartments",
+      "Intérieur": "Interior",
+      "Bar": "Bar"
+    },
+    "empty": "No photos available in this category at the moment."
+  }
+}

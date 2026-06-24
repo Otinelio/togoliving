@@ -1,0 +1,9 @@
+User-agent: *
+Allow: /
+
+# Protéger le backoffice admin
+Disallow: /admin
+Disallow: /reception
+Disallow: /kitchen
+
+Sitemap: https://residencetogoliving.com/sitemap.xml

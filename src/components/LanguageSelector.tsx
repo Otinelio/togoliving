@@ -1,5 +1,6 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { ChevronDown } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 const languages = [
   { code: "fr", name: "Français", flag: "🇫🇷" },
@@ -8,31 +9,14 @@ const languages = [
 ];
 
 export function LanguageSelector({ scrolled }: { scrolled: boolean }) {
-  const [currentLang, setCurrentLang] = useState("fr");
+  const { i18n } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
 
-  useEffect(() => {
-    const match = document.cookie.match(/(?:^|;)\s*googtrans=([^;]*)/);
-    if (match) {
-      const val = decodeURIComponent(match[1]);
-      const lang = val.split("/")[2];
-      if (lang && ["fr", "en", "de"].includes(lang)) {
-        setCurrentLang(lang);
-      }
-    }
-  }, []);
+  const currentLang = i18n.language || "fr";
 
   const changeLanguage = (code: string) => {
-    setCurrentLang(code);
+    i18n.changeLanguage(code);
     setIsOpen(false);
-    
-    // Set cookie for Google Translate
-    const domain = window.location.hostname;
-    document.cookie = `googtrans=/fr/${code}; path=/; domain=${domain}`;
-    document.cookie = `googtrans=/fr/${code}; path=/;`;
-    
-    // Reload page to apply translation instantly
-    window.location.reload();
   };
 
   const activeLang = languages.find(l => l.code === currentLang) || languages[0];

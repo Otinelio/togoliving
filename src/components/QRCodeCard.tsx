@@ -49,7 +49,7 @@ export function QRCodeCard({ value, label, sublabel, filename = "QR-TOGOLIVING.p
       <div class="label">${label}</div>
       <div class="frame"><img src="${dataUrl}" width="320" height="320" /></div>
       <div class="sub">${sublabel ?? "Scannez avec votre telephone"}</div>
-      <div class="footer">togoliving.net &nbsp;|&nbsp; +228 93 87 20 88</div>
+      <div class="footer">residencetogoliving.com &nbsp;|&nbsp; +228 93 87 20 88</div>
       <script>window.onload = () => { setTimeout(() => window.print(), 200); };</script>
     </body></html>`);
     w.document.close();

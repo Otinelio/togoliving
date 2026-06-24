@@ -6,6 +6,7 @@ import { useOrders, setOrderStatus, type OrderStatus } from "@/hooks/useOrders";
 import { formatFCFA } from "@/lib/whatsapp";
 
 export const Route = createFileRoute("/reception")({
+  head: () => ({ meta: [{ name: "robots", content: "noindex, nofollow" }] }),
   component: Page,
 });
 

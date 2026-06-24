@@ -5,24 +5,37 @@ import { useEffect, useState, useRef } from "react";
 import { Logo } from "./Logo";
 import { LanguageSelector } from "./LanguageSelector";
 
-const navItems = [
-  { to: "/", label: "Accueil" },
-  { to: "/hebergements", label: "Hebergements" },
-  { to: "/restaurant", label: "Restaurant & Bar" },
-  { to: "/a-propos", label: "À Propos" },
-  {
-    label: "Découvrir",
-    subLinks: [
-      { to: "/galerie", label: "Galerie" },
-      { to: "/loisirs", label: "Loisirs & Détente" },
-      { to: "/evenements", label: "Événements" },
-      { to: "/carrieres", label: "Carrières" },
-    ]
-  },
-  { to: "/contact", label: "Contact" },
-];
+import { useTranslation } from "react-i18next";
 
 export function Navbar() {
+  const { t } = useTranslation();
+  
+  const navItems = [
+    { to: "/", label: t('nav.home') },
+    {
+      label: t('nav.accommodations'),
+      subLinks: [
+        { to: "/hebergements", label: "Vue d'ensemble" },
+        { to: "/hebergements/studios", label: "Studios" },
+        { to: "/hebergements/chambre-salon", label: "Chambre Salon" },
+        { to: "/hebergements/2-chambres-salon", label: "2 Chambres Salon" },
+        { to: "/hebergements/3-chambres-salon", label: "3 Chambres Salon" },
+      ]
+    },
+    { to: "/restaurant", label: t('nav.restaurant') },
+    { to: "/a-propos", label: t('nav.about') },
+    {
+      label: t('nav.discover'),
+      subLinks: [
+        { to: "/galerie", label: t('nav.gallery') },
+        { to: "/loisirs", label: t('nav.leisure') },
+        { to: "/evenements", label: t('nav.events') },
+        { to: "/carrieres", label: t('nav.careers') },
+      ]
+    },
+    { to: "/contact", label: t('nav.contact') },
+  ];
+
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
   const { location } = useRouterState();
@@ -80,7 +93,7 @@ export function Navbar() {
             to="/reserver"
             className="hidden md:inline-flex items-center px-5 py-2.5 rounded-full bg-turquoise text-ocean font-medium text-sm shimmer-gold hover:bg-gold transition-colors"
           >
-            Reserver Maintenant
+            {t('nav.book')}
           </Link>
           <button
             onClick={() => setOpen((s) => !s)}
@@ -133,7 +146,7 @@ export function Navbar() {
                 to="/reserver"
                 className="mt-3 inline-flex items-center justify-center px-5 py-3 rounded-full bg-turquoise text-ocean font-medium"
               >
-                Reserver Maintenant
+                {t('nav.book')}
               </Link>
             </div>
           </motion.div>

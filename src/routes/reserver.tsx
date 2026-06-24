@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { useTranslation } from "react-i18next";
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import {
@@ -15,9 +16,9 @@ export const Route = createFileRoute("/reserver")({
     meta: [
       { title: "Réserver votre Séjour | TOGOLIVING Lomé, Togo" },
       { name: "description", content: "Réservez votre studio ou appartement vue mer à TOGOLIVING. Confirmation rapide via WhatsApp." },
-      { property: "og:url", content: "/reserver" },
+      { property: "og:url", content: "https://residencetogoliving.com/reserver" },
     ],
-    links: [{ rel: "canonical", href: "/reserver" }],
+    links: [{ rel: "canonical", href: "https://residencetogoliving.com/reserver" }],
   }),
   component: Page,
 });
@@ -66,7 +67,7 @@ const ROOM_DATA = [
   },
 ];
 
-const STEPS = ["Hébergement", "Séjour & Occupants", "Coordonnées", "Récapitulatif"];
+const STEPS = ["booking.steps.s1", "booking.steps.s2", "booking.steps.s3", "booking.steps.s4"];
 
 function formatF(n: number) {
   return n.toLocaleString("fr-FR") + " F";
@@ -79,10 +80,11 @@ function nights(from: string, to: string) {
 }
 
 function StepIndicator({ step }: { step: number }) {
+  const { t } = useTranslation();
   return (
     <div className="flex items-center mb-10">
       {STEPS.map((s, i) => (
-        <div key={s} className="flex items-center flex-1 last:flex-none">
+        <div key={t(s as any)} className="flex items-center flex-1 last:flex-none">
           <div className="flex flex-col items-center">
             <div className={`w-9 h-9 rounded-full flex items-center justify-center text-sm font-semibold transition-all ${
               i < step  ? "bg-turquoise text-ocean shadow-md shadow-turquoise/30" :
@@ -105,6 +107,7 @@ function StepIndicator({ step }: { step: number }) {
 }
 
 function Page() {
+  const { t } = useTranslation();
   // Lire les paramètres URL passés depuis /hebergements
   const params = new URLSearchParams(
     typeof window !== "undefined" ? window.location.search : ""
@@ -156,26 +159,23 @@ function Page() {
   const send = () => {
     const roomInfo = d.roomNum ? `Chambre N° ${d.roomNum}` : `Une chambre disponible de la catégorie ${variant.name}`;
     const msg = [
-      "Bonjour TOGOLIVING,",
-      "═══ NOUVELLE DEMANDE DE RÉSERVATION ═══",
+      t("booking.msg.greeting"),
+      t("booking.msg.room", { category: cat.category, variant: variant.name }),
+      d.roomNum ? t("booking.msg.room_num", { n: d.roomNum }) : t("booking.msg.room_any", { variant: variant.name }),
+      t("booking.msg.price", { price: priceLabel }),
       "",
-      `Hébergement : ${cat.category} — ${variant.name}`,
-      `${roomInfo}`,
-      `Tarif estimé : ${priceLabel}`,
+      t("booking.msg.arrival", { date: d.arrivee || t("booking.msg.tbd"), time: d.heure }),
+      t("booking.msg.departure", { date: d.depart || t("booking.msg.tbd") }),
+      nbNuits > 0 ? t("booking.msg.duration", { n: nbNuits }) : "",
       "",
-      `Arrivée : ${d.arrivee || "À définir"} à ${d.heure}`,
-      `Départ  : ${d.depart || "À définir"}`,
-      nbNuits > 0 ? `Durée   : ${nbNuits} nuit${nbNuits > 1 ? "s" : ""}` : "",
+      t("booking.msg.adults", { n: d.adultes }),
+      t("booking.msg.children", { n: d.enfants }),
       "",
-      `Adultes : ${d.adultes}`,
-      `Enfants : ${d.enfants}`,
-      "",
-      `Nom      : ${d.nom}`,
-      `Tél      : ${d.tel}`,
-      `Email    : ${d.email || "—"}`,
-      d.demandes ? `\nDemandes spéciales : ${d.demandes}` : "",
-      "",
-      "Merci de confirmer la disponibilité.",
+      t("booking.msg.name", { name: d.nom }),
+      t("booking.msg.phone", { phone: d.tel }),
+      t("booking.msg.email", { email: d.email || t("booking.msg.empty_field") }),
+      d.demandes ? t("booking.msg.reqs", { reqs: d.demandes }) : "",
+      t("booking.msg.footer")
     ].filter(Boolean).join("\n");
     window.open(whatsappUrl(msg), "_blank");
   };
@@ -185,9 +185,9 @@ function Page() {
       <section className="relative pt-32 pb-16 bg-ocean text-white overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-b from-ocean/85 to-ocean" />
         <div className="relative max-w-3xl mx-auto px-6 text-center">
-          <p className="font-accent text-turquoise text-xl">Réservation</p>
-          <h1 className="font-display text-4xl md:text-5xl">Confirmez votre Séjour</h1>
-          <p className="text-white/70 mt-3 text-sm">Confirmation rapide via WhatsApp · Pas de paiement en ligne</p>
+          <p className="font-accent text-turquoise text-xl">{t("booking.hero.subtitle")}</p>
+          <h1 className="font-display text-4xl md:text-5xl">{t("booking.hero.title")}</h1>
+          <p className="text-white/70 mt-3 text-sm">{t("booking.hero.desc")}</p>
         </div>
         <div className="absolute -bottom-1 inset-x-0"><WaveDivider color="#F8F5F0" /></div>
       </section>
@@ -204,17 +204,17 @@ function Page() {
             className="glass p-6 sm:p-8 shadow-xl shadow-ocean/10"
           >
             <h2 className="font-display text-2xl text-ocean mb-6 flex items-center gap-2">
-              {step === 0 && <><BedDouble size={22} className="text-turquoise" /> Choisir l'hébergement</>}
-              {step === 1 && <><Calendar size={22} className="text-turquoise" /> Dates & Occupants</>}
-              {step === 2 && <><User size={22} className="text-turquoise" /> Vos coordonnées</>}
-              {step === 3 && <><FileText size={22} className="text-turquoise" /> Récapitulatif</>}
+              {step === 0 && <><BedDouble size={22} className="text-turquoise" /> {t("booking.step1.title")}</>}
+              {step === 1 && <><Calendar size={22} className="text-turquoise" /> {t("booking.step2.title")}</>}
+              {step === 2 && <><User size={22} className="text-turquoise" /> {t("booking.step3.title")}</>}
+              {step === 3 && <><FileText size={22} className="text-turquoise" /> {t("booking.step4.title")}</>}
             </h2>
 
             {/* ── STEP 0 : Hébergement ── */}
             {step === 0 && (
               <div className="space-y-5">
                 <div>
-                  <span className="text-sm font-semibold text-ocean mb-2 block">Type d'appartement</span>
+                  <span className="text-sm font-semibold text-ocean mb-2 block">{t("booking.step1.app_type")}</span>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     {ROOM_DATA.map((r, i) => (
                       <button
@@ -240,7 +240,7 @@ function Page() {
                 </div>
 
                 <div>
-                  <span className="text-sm font-semibold text-ocean mb-2 block">Catégorie de chambre</span>
+                  <span className="text-sm font-semibold text-ocean mb-2 block">{t("booking.step1.room_cat")}</span>
                   <div className="space-y-2">
                     {cat.variants.map((v, i) => {
                       const available = getAvailableRooms(v.rooms);
@@ -261,14 +261,14 @@ function Page() {
                           <div className={`font-medium text-sm ${d.variantIdx === i ? "text-ocean" : "text-ocean/80"}`}>{v.name}</div>
                           <div className="text-xs mt-0.5 font-medium">
                             {isFull ? (
-                              <span className="text-red-500">Complet</span>
+                              <span className="text-red-500">{t("booking.step1.full")}</span>
                             ) : (
-                              <span className="text-muted-foreground">Disponibles : N° {available.join(", ")}</span>
+                              <span className="text-muted-foreground">{t("booking.step1.available", { rooms: available.join(", ") })}</span>
                             )}
                           </div>
                         </div>
                         <div className="text-right shrink-0 ml-3">
-                          <div className={`font-bold text-sm ${isFull ? 'text-ocean/50' : 'text-ocean'}`}>{formatF(v.day)}<span className="text-xs font-normal opacity-70">/nuit</span></div>
+                          <div className={`font-bold text-sm ${isFull ? 'text-ocean/50' : 'text-ocean'}`}>{formatF(v.day)}<span className="text-xs font-normal opacity-70">{t("booking.step1.per_night")}</span></div>
                           <div className={`text-xs ${isFull ? 'text-muted-foreground/50' : 'text-muted-foreground'}`}>{formatF(v.month)}/mois</div>
                         </div>
                       </button>
@@ -277,15 +277,15 @@ function Page() {
                 </div>
 
                 <div>
-                  <span className="text-sm font-semibold text-ocean mb-2 block">Chambre souhaitée <span className="font-normal text-muted-foreground">(optionnel)</span></span>
+                  <span className="text-sm font-semibold text-ocean mb-2 block">{t("booking.step1.desired_room")} <span className="font-normal text-muted-foreground">{t("booking.step1.optional")}</span></span>
                   <select
                     value={d.roomNum}
                     onChange={(e) => setD({ ...d, roomNum: e.target.value })}
                     className="w-full bg-white rounded-xl px-3 py-2.5 border-2 border-turquoise/20 text-ocean focus:outline-none focus:border-turquoise text-sm"
                   >
-                    <option value="">Pas de préférence</option>
+                    <option value="">{t("booking.step1.no_pref")}</option>
                     {getAvailableRooms(variant.rooms).map((r) => (
-                      <option key={r} value={r}>Chambre N° {r}</option>
+                      <option key={r} value={r}>{t("booking.step1.room_n", { n: r })}</option>
                     ))}
                   </select>
                 </div>
@@ -296,17 +296,17 @@ function Page() {
             {step === 1 && (
               <div className="space-y-5">
                 <div>
-                  <span className="text-sm font-semibold text-ocean mb-2 block">Type de séjour</span>
+                  <span className="text-sm font-semibold text-ocean mb-2 block">{t("booking.step2.stay_type")}</span>
                   <div className="grid grid-cols-2 gap-3">
-                    {(["nuit", "mois"] as const).map((t) => (
+                    {(["nuit", "mois"] as const).map((stayType) => (
                       <button
-                        key={t}
-                        onClick={() => setD({ ...d, dureeType: t })}
+                        key={stayType}
+                        onClick={() => setD({ ...d, dureeType: stayType })}
                         className={`py-3 rounded-xl text-sm font-medium border-2 transition flex items-center justify-center gap-2 ${
-                          d.dureeType === t ? "border-ocean bg-ocean text-white" : "border-turquoise/20 bg-white text-ocean hover:border-turquoise"
+                          d.dureeType === stayType ? "border-ocean bg-ocean text-white" : "border-turquoise/20 bg-white text-ocean hover:border-turquoise"
                         }`}
                       >
-                        {t === "nuit" ? <><Moon size={16} /> À la nuit</> : <><Calendar size={16} /> Au mois</>}
+                        {stayType === "nuit" ? <><Moon size={16} /> {t("booking.step2.by_night")}</> : <><Calendar size={16} /> {t("booking.step2.by_month")}</>}
                       </button>
                     ))}
                   </div>
@@ -314,12 +314,12 @@ function Page() {
 
                 <div className="grid grid-cols-2 gap-4">
                   <label className="block">
-                    <span className="text-sm text-ocean font-medium flex items-center gap-1"><Calendar size={13} /> Arrivée</span>
+                    <span className="text-sm text-ocean font-medium flex items-center gap-1"><Calendar size={13} /> {t("booking.step2.arrival")}</span>
                     <input type="date" value={d.arrivee} onChange={(e) => setD({ ...d, arrivee: e.target.value })}
                       className="mt-1 w-full bg-white rounded-xl px-3 py-2.5 border-2 border-turquoise/20 text-ocean focus:outline-none focus:border-turquoise text-sm" />
                   </label>
                   <label className="block">
-                    <span className="text-sm text-ocean font-medium flex items-center gap-1"><Calendar size={13} /> Départ</span>
+                    <span className="text-sm text-ocean font-medium flex items-center gap-1"><Calendar size={13} /> {t("booking.step2.departure")}</span>
                     <input type="date" value={d.depart} onChange={(e) => setD({ ...d, depart: e.target.value })}
                       className="mt-1 w-full bg-white rounded-xl px-3 py-2.5 border-2 border-turquoise/20 text-ocean focus:outline-none focus:border-turquoise text-sm" />
                   </label>
@@ -327,21 +327,21 @@ function Page() {
 
                 {nbNuits > 0 && (
                   <div className="flex items-center justify-between rounded-xl bg-turquoise/10 border border-turquoise/25 px-4 py-3">
-                    <span className="text-sm text-ocean font-medium">Durée estimée</span>
-                    <span className="font-bold text-ocean">{nbNuits} nuit{nbNuits > 1 ? "s" : ""}</span>
+                    <span className="text-sm text-ocean font-medium">{t("booking.step2.duration_est")}</span>
+                    <span className="font-bold text-ocean">{nbNuits > 1 ? t("booking.step2.nights_plural", { count: nbNuits }) : t("booking.step2.nights", { count: nbNuits })}</span>
                   </div>
                 )}
 
                 <div className="grid grid-cols-2 gap-4">
                   <label className="block">
-                    <span className="text-sm text-ocean font-medium flex items-center gap-1"><Users size={13} /> Adultes</span>
+                    <span className="text-sm text-ocean font-medium flex items-center gap-1"><Users size={13} /> {t("booking.step2.adults")}</span>
                     <select value={d.adultes} onChange={(e) => setD({ ...d, adultes: +e.target.value })}
                       className="mt-1 w-full bg-white rounded-xl px-3 py-2.5 border-2 border-turquoise/20 text-ocean focus:outline-none focus:border-turquoise text-sm">
                       {[1,2,3,4,5,6].map((n) => <option key={n}>{n}</option>)}
                     </select>
                   </label>
                   <label className="block">
-                    <span className="text-sm text-ocean font-medium flex items-center gap-1"><Users size={13} /> Enfants</span>
+                    <span className="text-sm text-ocean font-medium flex items-center gap-1"><Users size={13} /> {t("booking.step2.children")}</span>
                     <select value={d.enfants} onChange={(e) => setD({ ...d, enfants: +e.target.value })}
                       className="mt-1 w-full bg-white rounded-xl px-3 py-2.5 border-2 border-turquoise/20 text-ocean focus:outline-none focus:border-turquoise text-sm">
                       {[0,1,2,3,4].map((n) => <option key={n}>{n}</option>)}
@@ -350,15 +350,15 @@ function Page() {
                 </div>
 
                 <label className="block">
-                  <span className="text-sm text-ocean font-medium flex items-center gap-1"><FileText size={13} /> Demandes spéciales</span>
+                  <span className="text-sm text-ocean font-medium flex items-center gap-1"><FileText size={13} /> {t("booking.step2.special_req")}</span>
                   <textarea rows={3} value={d.demandes} onChange={(e) => setD({ ...d, demandes: e.target.value })}
-                    placeholder="Vue mer souhaitée, lit bébé, transfert aéroport..."
+                    placeholder={t("booking.step2.req_placeholder")}
                     className="mt-1 w-full bg-white rounded-xl px-3 py-2.5 border-2 border-turquoise/20 text-ocean placeholder:text-ocean/30 focus:outline-none focus:border-turquoise text-sm" />
                 </label>
 
                 {/* Prix estimé */}
                 <div className="rounded-xl bg-gold/10 border border-gold/30 px-4 py-3 flex items-center justify-between">
-                  <span className="text-sm font-semibold text-ocean">Tarif estimé</span>
+                  <span className="text-sm font-semibold text-ocean">{t("booking.step2.price_est")}</span>
                   <span className="font-bold text-ocean">{priceLabel}</span>
                 </div>
               </div>
@@ -368,25 +368,25 @@ function Page() {
             {step === 2 && (
               <div className="space-y-4">
                 <label className="block">
-                  <span className="text-sm text-ocean font-medium flex items-center gap-1"><User size={13} /> Nom complet *</span>
+                  <span className="text-sm text-ocean font-medium flex items-center gap-1"><User size={13} /> {t("booking.step3.name")}</span>
                   <input value={d.nom} onChange={(e) => setD({ ...d, nom: e.target.value })}
-                    placeholder="Prénom et Nom"
+                    placeholder={t("booking.step3.name_placeholder")}
                     className="mt-1 w-full bg-white rounded-xl px-3 py-2.5 border-2 border-turquoise/20 text-ocean placeholder:text-ocean/30 focus:outline-none focus:border-turquoise text-sm" />
                 </label>
                 <label className="block">
-                  <span className="text-sm text-ocean font-medium flex items-center gap-1"><Phone size={13} /> Téléphone / WhatsApp *</span>
+                  <span className="text-sm text-ocean font-medium flex items-center gap-1"><Phone size={13} /> {t("booking.step3.phone")}</span>
                   <input type="tel" value={d.tel} onChange={(e) => setD({ ...d, tel: e.target.value })}
                     placeholder="+228 XX XX XX XX"
                     className="mt-1 w-full bg-white rounded-xl px-3 py-2.5 border-2 border-turquoise/20 text-ocean placeholder:text-ocean/30 focus:outline-none focus:border-turquoise text-sm" />
                 </label>
                 <label className="block">
-                  <span className="text-sm text-ocean font-medium flex items-center gap-1"><Mail size={13} /> Email <span className="text-muted-foreground font-normal">(optionnel)</span></span>
+                  <span className="text-sm text-ocean font-medium flex items-center gap-1"><Mail size={13} /> {t("booking.step3.email")} <span className="text-muted-foreground font-normal">(optionnel)</span></span>
                   <input type="email" value={d.email} onChange={(e) => setD({ ...d, email: e.target.value })}
                     placeholder="votre@email.com"
                     className="mt-1 w-full bg-white rounded-xl px-3 py-2.5 border-2 border-turquoise/20 text-ocean placeholder:text-ocean/30 focus:outline-none focus:border-turquoise text-sm" />
                 </label>
                 <label className="block">
-                  <span className="text-sm text-ocean font-medium flex items-center gap-1"><Clock size={13} /> Heure d'arrivée prévue</span>
+                  <span className="text-sm text-ocean font-medium flex items-center gap-1"><Clock size={13} /> {t("booking.step3.time")}</span>
                   <input type="time" value={d.heure} onChange={(e) => setD({ ...d, heure: e.target.value })}
                     className="mt-1 w-full bg-white rounded-xl px-3 py-2.5 border-2 border-turquoise/20 text-ocean focus:outline-none focus:border-turquoise text-sm" />
                 </label>
@@ -400,37 +400,37 @@ function Page() {
                 <div className="rounded-2xl bg-ocean text-white p-5">
                   <div className="flex items-center gap-2 mb-3">
                     <Home size={18} className="text-turquoise" />
-                    <span className="font-display text-lg">Hébergement choisi</span>
+                    <span className="font-display text-lg">{t("booking.step4.chosen_room")}</span>
                   </div>
                   <div className="space-y-1.5 text-sm">
-                    <div className="flex justify-between"><span className="text-white/70">Type</span><span className="font-medium">{cat.category} — {cat.badge}</span></div>
-                    <div className="flex justify-between"><span className="text-white/70">Catégorie</span><span className="font-medium">{variant.name}</span></div>
-                    <div className="flex justify-between"><span className="text-white/70">Chambre</span><span className="font-medium">{d.roomNum ? `N° ${d.roomNum}` : "Pas de préférence"}</span></div>
+                    <div className="flex justify-between"><span className="text-white/70">{t("booking.step4.type")}</span><span className="font-medium">{cat.category} — {cat.badge}</span></div>
+                    <div className="flex justify-between"><span className="text-white/70">{t("booking.step4.category")}</span><span className="font-medium">{variant.name}</span></div>
+                    <div className="flex justify-between"><span className="text-white/70">{t("booking.step4.room")}</span><span className="font-medium">{d.roomNum ? `N° ${d.roomNum}` : "Pas de préférence"}</span></div>
                   </div>
                 </div>
 
                 {/* Séjour */}
                 <div className="rounded-2xl border-2 border-turquoise/20 p-5 space-y-1.5 text-sm">
-                  <div className="font-display text-base text-ocean mb-3 flex items-center gap-2"><Calendar size={16} className="text-turquoise" /> Séjour</div>
-                  <div className="flex justify-between"><span className="text-muted-foreground">Arrivée</span><span className="font-medium">{d.arrivee || "—"} à {d.heure}</span></div>
-                  <div className="flex justify-between"><span className="text-muted-foreground">Départ</span><span className="font-medium">{d.depart || "—"}</span></div>
-                  {nbNuits > 0 && <div className="flex justify-between"><span className="text-muted-foreground">Durée</span><span className="font-medium">{nbNuits} nuit{nbNuits > 1 ? "s" : ""}</span></div>}
-                  <div className="flex justify-between"><span className="text-muted-foreground">Occupants</span><span className="font-medium">{d.adultes} adulte{d.adultes > 1 ? "s" : ""}{d.enfants > 0 ? ` + ${d.enfants} enfant${d.enfants > 1 ? "s" : ""}` : ""}</span></div>
+                  <div className="font-display text-base text-ocean mb-3 flex items-center gap-2"><Calendar size={16} className="text-turquoise" /> {t("booking.step4.stay")}</div>
+                  <div className="flex justify-between"><span className="text-muted-foreground">{t("booking.step2.arrival")}</span><span className="font-medium">{d.arrivee || "—"} à {d.heure}</span></div>
+                  <div className="flex justify-between"><span className="text-muted-foreground">{t("booking.step2.departure")}</span><span className="font-medium">{d.depart || "—"}</span></div>
+                  {nbNuits > 0 && <div className="flex justify-between"><span className="text-muted-foreground">{t("booking.step2.duration_est")}</span><span className="font-medium">{nbNuits} nuit{nbNuits > 1 ? "s" : ""}</span></div>}
+                  <div className="flex justify-between"><span className="text-muted-foreground">{t("booking.step4.occupants")}</span><span className="font-medium">{d.adultes} {d.adultes > 1 ? t("booking.step4.adult_plural") : t("booking.step4.adult")} {d.enfants > 0 ? `+ ${d.enfants} ${d.enfants > 1 ? t("booking.step4.child_plural") : t("booking.step4.child")}` : ""}</span></div>
                 </div>
 
                 {/* Coordonnées */}
                 <div className="rounded-2xl border-2 border-turquoise/20 p-5 space-y-1.5 text-sm">
-                  <div className="font-display text-base text-ocean mb-3 flex items-center gap-2"><User size={16} className="text-turquoise" /> Coordonnées</div>
-                  <div className="flex justify-between"><span className="text-muted-foreground">Nom</span><span className="font-medium">{d.nom || "—"}</span></div>
-                  <div className="flex justify-between"><span className="text-muted-foreground">Tél.</span><span className="font-medium">{d.tel || "—"}</span></div>
-                  {d.email && <div className="flex justify-between"><span className="text-muted-foreground">Email</span><span className="font-medium">{d.email}</span></div>}
-                  {d.demandes && <div className="flex flex-col gap-1"><span className="text-muted-foreground">Demandes</span><span className="font-medium text-xs bg-turquoise/10 rounded-lg px-3 py-2">{d.demandes}</span></div>}
+                  <div className="font-display text-base text-ocean mb-3 flex items-center gap-2"><User size={16} className="text-turquoise" /> {t("booking.step4.contact")}</div>
+                  <div className="flex justify-between"><span className="text-muted-foreground">{t("booking.step3.name").replace(" *", "")}</span><span className="font-medium">{d.nom || "—"}</span></div>
+                  <div className="flex justify-between"><span className="text-muted-foreground">{t("booking.step3.phone").replace(" *", "")}</span><span className="font-medium">{d.tel || "—"}</span></div>
+                  {d.email && <div className="flex justify-between"><span className="text-muted-foreground">{t("booking.step3.email")}</span><span className="font-medium">{d.email}</span></div>}
+                  {d.demandes && <div className="flex flex-col gap-1"><span className="text-muted-foreground">{t("booking.step2.special_req")}</span><span className="font-medium text-xs bg-turquoise/10 rounded-lg px-3 py-2">{d.demandes}</span></div>}
                 </div>
 
                 {/* Tarif */}
                 <div className="rounded-2xl bg-gold/10 border-2 border-gold/30 px-5 py-4 flex items-center justify-between">
                   <div>
-                    <div className="text-xs text-muted-foreground uppercase tracking-wider">Tarif estimé</div>
+                    <div className="text-xs text-muted-foreground uppercase tracking-wider">{t("booking.step2.price_est")}</div>
                     <div className="font-display text-xl text-ocean mt-0.5">{priceLabel}</div>
                   </div>
                   <Wallet size={26} className="text-gold" />
@@ -452,7 +452,7 @@ function Page() {
 
               {step < STEPS.length - 1 ? (
                 <button onClick={next} className="inline-flex items-center gap-1.5 px-6 py-2.5 rounded-xl bg-ocean text-white hover:bg-gold hover:text-ocean transition text-sm font-medium shadow-md shadow-ocean/20">
-                  Suivant <ChevronRight size={16} />
+                  {t("booking.step4.next")} <ChevronRight size={16} />
                 </button>
               ) : (
                 <button
@@ -465,6 +465,36 @@ function Page() {
               )}
             </div>
           </motion.div>
+        </div>
+      </section>
+
+      {/* FAQ Section */}
+      <section className="bg-ocean py-20 text-white">
+        <div className="max-w-4xl mx-auto px-6">
+          <div className="text-center mb-12">
+            <h2 className="font-display text-4xl">{t("booking.faq.title")}</h2>
+            <p className="text-white/70 mt-3">{t("booking.faq.subtitle")}</p>
+          </div>
+          <div className="space-y-4">
+            <div className="glass p-6 rounded-2xl">
+              <h3 className="font-display text-xl text-turquoise">{t("booking.faq.q1")}</h3>
+              <p className="text-white/80 mt-2 text-sm leading-relaxed">
+                Les annulations sont gratuites jusqu'à 48 heures avant la date d'arrivée prévue. Passé ce délai, la première nuit sera facturée.
+              </p>
+            </div>
+            <div className="glass p-6 rounded-2xl">
+              <h3 className="font-display text-xl text-turquoise">{t("booking.faq.q2")}</h3>
+              <p className="text-white/80 mt-2 text-sm leading-relaxed">
+                Oui, nous proposons un service de navette aéroport VIP sur demande. Veuillez l'indiquer dans la section "Demandes spéciales" lors de votre réservation.
+              </p>
+            </div>
+            <div className="glass p-6 rounded-2xl">
+              <h3 className="font-display text-xl text-turquoise">{t("booking.faq.q3")}</h3>
+              <p className="text-white/80 mt-2 text-sm leading-relaxed">
+                Pour garantir le confort de tous nos clients, les animaux de compagnie ne sont malheureusement pas admis au sein de la résidence.
+              </p>
+            </div>
+          </div>
         </div>
       </section>
     </>

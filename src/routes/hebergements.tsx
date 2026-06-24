@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useTranslation } from "react-i18next";
 import { motion } from "framer-motion";
 import {
   Wifi, Wind, Tv, Coffee, Car, Plane, Waves, Droplets, GlassWater,
@@ -10,6 +11,7 @@ import { useAccommodations } from "@/hooks/useAccommodations";
 import { useRooms } from "@/hooks/useRooms";
 
 import { ASSETS } from "@/lib/assets";
+import { OptimizedImage } from "@/components/OptimizedImage";
 
 // Fallback images from Supabase Storage
 const hebergementsHero = ASSETS.piscine;
@@ -50,9 +52,11 @@ function VideoWithPoster({ src, poster, className }: { src: string; poster: stri
 
   return (
     <div className={`relative overflow-hidden ${className ?? ""}`}>
-      <img
+      <OptimizedImage
         src={poster}
         alt="Aperçu"
+        width="800"
+        height="420"
         className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-700 ${
           loaded ? "opacity-0 pointer-events-none" : "opacity-100"
         }`}
@@ -82,33 +86,35 @@ function VideoWithPoster({ src, poster, className }: { src: string; poster: stri
 }
 
 
-const amenities = [
-  { icon: Wifi, label: "WiFi Gratuit" },
-  { icon: Wind, label: "Climatisation" },
-  { icon: Tv, label: "TV Satellite + Canal+" },
-  { icon: Coffee, label: "Petit-dejeuner disponible" },
-  { icon: Car, label: "Parking Prive Gratuit" },
-  { icon: Plane, label: "Navette Aeroport (sur demande)" },
-  { icon: Waves, label: "Acces Plage" },
-  { icon: Droplets, label: "Piscine" },
-  { icon: GlassWater, label: "Cocktail Bar" },
-  { icon: UtensilsCrossed, label: "Restaurant sur place" },
-];
+
 
 export const Route = createFileRoute("/hebergements")({
   head: () => ({
     meta: [
-      { title: "Appartements Vue Mer a Lome | TOGOLIVING Residence" },
-      { name: "description", content: "Studio, Chambre Salon Standard 40m2 et Superieur 50m2 vue mer a Kpogan Agbetsiko, Lome." },
-      { property: "og:title", content: "Hebergements TOGOLIVING" },
-      { property: "og:url", content: "/hebergements" },
+      { title: "Appartements Vue Mer à Lomé | TOGOLIVING Résidence" },
+      { name: "description", content: "Studio, Chambre Salon Standard 40m2 et Supérieur 50m2 vue mer à Kpogan Agbetsiko, Lomé." },
+      { property: "og:title", content: "Hébergements TOGOLIVING" },
+      { property: "og:url", content: "https://residencetogoliving.com/hebergements" },
     ],
-    links: [{ rel: "canonical", href: "/hebergements" }],
+    links: [{ rel: "canonical", href: "https://residencetogoliving.com/hebergements" }],
   }),
   component: Page,
 });
 
 function Page() {
+  const { t } = useTranslation();
+  const amenities = [
+    { icon: Wifi, label: t("accommodations.amenities.items.wifi") },
+    { icon: Wind, label: t("accommodations.amenities.items.ac") },
+    { icon: Tv, label: t("accommodations.amenities.items.tv") },
+    { icon: Coffee, label: t("accommodations.amenities.items.breakfast") },
+    { icon: Car, label: t("accommodations.amenities.items.parking") },
+    { icon: Plane, label: t("accommodations.amenities.items.shuttle") },
+    { icon: Waves, label: t("accommodations.amenities.items.beach") },
+    { icon: Droplets, label: t("accommodations.amenities.items.pool") },
+    { icon: GlassWater, label: t("accommodations.amenities.items.bar") },
+    { icon: UtensilsCrossed, label: t("accommodations.amenities.items.restaurant") },
+  ];
   const { items: dbRooms, isLoading } = useAccommodations();
   const { rooms: dbRoomStatuses } = useRooms();
   // Use DB data exclusively
@@ -120,12 +126,14 @@ function Page() {
   return (
     <>
       <section className="relative pt-32 pb-20 bg-ocean text-white overflow-hidden">
-        <div className="absolute inset-0 bg-cover bg-center opacity-40" style={{ backgroundImage: `url(${hebergementsHero})` }} />
+        <div className="absolute inset-0 opacity-40">
+          <OptimizedImage src={hebergementsHero} alt="Hébergements Hero" width="1920" height="600" className="w-full h-full object-cover object-center" />
+        </div>
         <div className="absolute inset-0 bg-gradient-to-b from-ocean/80 to-ocean" />
         <div className="relative max-w-6xl mx-auto px-6 text-center">
-          <p className="font-accent text-turquoise text-xl">Nos Espaces</p>
-          <h1 className="font-display text-5xl md:text-6xl">Nos Hebergements</h1>
-          <p className="mt-4 text-white/80 max-w-2xl mx-auto">4 types d'appartements meubles, climatises, avec WiFi gratuit et acces direct a la plage.</p>
+          <p className="font-accent text-turquoise text-xl">{t("accommodations.hero.subtitle")}</p>
+          <h1 className="font-display text-5xl md:text-6xl">{t("accommodations.hero.title")}</h1>
+          <p className="mt-4 text-white/80 max-w-2xl mx-auto">{t("accommodations.hero.desc")}</p>
         </div>
         <div className="absolute -bottom-1 inset-x-0"><WaveDivider color="#F8F5F0" /></div>
       </section>
@@ -152,7 +160,7 @@ function Page() {
                         className="w-full h-[420px] rounded-2xl shadow-xl shadow-ocean/20"
                       />
                     ) : (
-                      <img src={r.imageUrl ?? ""} alt={r.title} loading="lazy" className="w-full h-[420px] object-cover rounded-2xl shadow-xl shadow-ocean/20" />
+                      <OptimizedImage src={r.imageUrl ?? ""} alt={r.title} width="800" height="420" className="w-full h-[420px] object-cover rounded-2xl shadow-xl shadow-ocean/20" />
                     )}
                     {r.badge && (
                       <span className={`absolute top-4 left-4 px-4 py-1.5 rounded-full text-xs font-semibold tracking-wider ${r.isPremium ? "bg-gold text-ocean" : "bg-turquoise text-ocean"}`}>
@@ -196,8 +204,8 @@ function Page() {
       <section className="bg-ocean text-white py-20">
         <div className="max-w-6xl mx-auto px-6">
           <div className="text-center mb-10">
-            <p className="font-accent text-turquoise text-xl">Tout inclus</p>
-            <h2 className="font-display text-4xl">Equipements & Services</h2>
+            <p className="font-accent text-turquoise text-xl">{t("accommodations.amenities.subtitle")}</p>
+            <h2 className="font-display text-4xl">{t("accommodations.amenities.title")}</h2>
           </div>
           <div className="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
             {amenities.map((a, i) => (

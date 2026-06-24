@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { useTranslation } from "react-i18next";
 import { motion, AnimatePresence } from "framer-motion";
 import { useMemo, useRef, useState } from "react";
 import {
@@ -11,6 +12,7 @@ import { MENU_CATEGORIES, type MenuCategory } from "@/data/defaultMenu";
 import { WaveDivider } from "@/components/WaveDivider";
 import { formatFCFA, whatsappUrl } from "@/lib/whatsapp";
 import { ASSETS } from "@/lib/assets";
+import { OptimizedImage } from "@/components/OptimizedImage";
 
 type CartItem = {
   id: string;
@@ -28,9 +30,35 @@ export const Route = createFileRoute("/restaurant")({
       { title: "Restaurant & Cocktail Bar Vue Océan | TOGOLIVING" },
       { name: "description", content: "Saveurs du monde : petit-déjeuner, plats africains & internationaux, pizzas, cocktails, vins et boissons. Restaurant vue mer à Lomé." },
       { property: "og:title", content: "Restaurant TOGOLIVING — Saveurs du Monde" },
-      { property: "og:url", content: "/restaurant" },
+      { property: "og:url", content: "https://residencetogoliving.com/restaurant" },
     ],
-    links: [{ rel: "canonical", href: "/restaurant" }],
+    links: [{ rel: "canonical", href: "https://residencetogoliving.com/restaurant" }],
+    scripts: [
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "Restaurant",
+          name: "Restaurant TOGOLIVING",
+          address: {
+            "@type": "PostalAddress",
+            streetAddress: "Kpogan Agbetsiko, Route N2",
+            postalCode: "36BP50",
+            addressLocality: "Lomé",
+            addressCountry: "TG"
+          },
+          telephone: "+22893872088",
+          url: "https://residencetogoliving.com/restaurant",
+          priceRange: "$$",
+          aggregateRating: {
+            "@type": "AggregateRating",
+            ratingValue: "4.3",
+            reviewCount: "14"
+          },
+          servesCuisine: ["Africaine", "Française", "Américaine"]
+        })
+      }
+    ],
   }),
   component: Page,
 });
@@ -56,6 +84,7 @@ function PriceTag({ price, priceMax }: { price: number; priceMax?: number }) {
 }
 
 function Page() {
+  const { t } = useTranslation();
   const { items } = useMenu();
   const [tab, setTab] = useState<MenuCategory>("Tout");
   const [cart, setCart] = useState<Record<string, CartItem>>({});
@@ -120,13 +149,13 @@ function Page() {
       return `- ${item.qty} x ${item.name} : ${formatFCFA(item.qty * item.price)}${description}`;
     });
     const message = [
-      "Bonjour TOGOLIVING,",
-      "Je souhaite commander au restaurant :",
-      `Mode de reception: ${fulfillment}`,
-      fulfillment === "Livraison" && deliveryAddress ? `Adresse de livraison: ${deliveryAddress}` : null,
+      t("restaurant.msg.greeting"),
+      t("restaurant.msg.intent"),
+      t("restaurant.msg.reception", { method: fulfillment === "Retrait au restaurant" ? t("restaurant.cart.pickup") : t("restaurant.cart.delivery") }),
+      fulfillment === "Livraison" && deliveryAddress ? t("restaurant.msg.address", { address: deliveryAddress }) : null,
       ...lines,
-      `Total: ${formatFCFA(totals.total)}`,
-      "Merci de confirmer la disponibilite.",
+      t("restaurant.msg.total", { total: formatFCFA(totals.total) }),
+      t("restaurant.msg.footer"),
     ].filter((line): line is string => Boolean(line)).join("\n");
     window.open(whatsappUrl(message), "_blank", "noreferrer");
   };
@@ -137,12 +166,14 @@ function Page() {
     <>
       {/* HERO */}
       <section className="relative pt-32 pb-20 bg-ocean text-white overflow-hidden">
-        <div className="absolute inset-0 bg-cover bg-center opacity-35" style={{ backgroundImage: `url(${ASSETS.piscine})` }} />
+        <div className="absolute inset-0 opacity-35">
+          <OptimizedImage src={ASSETS.piscine} alt="Restaurant Hero" width="1920" height="600" className="w-full h-full object-cover object-center" />
+        </div>
         <div className="absolute inset-0 bg-gradient-to-b from-ocean/85 to-ocean" />
         <div className="relative max-w-5xl mx-auto px-6 text-center">
-          <p className="font-accent text-turquoise text-xl">Au Restaurant</p>
-          <h1 className="font-display text-5xl md:text-6xl">Saveurs du Monde</h1>
-          <p className="font-accent text-turquoise text-xl mt-2">Vue sur l'Océan</p>
+          <p className="font-accent text-turquoise text-xl">{t("restaurant.hero.subtitle")}</p>
+          <h1 className="font-display text-5xl md:text-6xl">{t("restaurant.hero.title")}</h1>
+          <p className="font-accent text-turquoise text-xl mt-2">{t("restaurant.hero.desc")}</p>
         </div>
         <div className="absolute -bottom-1 inset-x-0"><WaveDivider color="#F8F5F0" /></div>
       </section>
@@ -166,7 +197,7 @@ function Page() {
                     autoFocus
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    placeholder="Rechercher un plat, boisson..."
+                    placeholder={t("restaurant.search")}
                     className="w-full pl-10 pr-10 py-3 rounded-2xl bg-white border border-turquoise/30 text-ocean placeholder:text-ocean/40 focus:outline-none focus:border-turquoise shadow-sm text-sm"
                   />
                   {searchQuery && (
@@ -200,7 +231,7 @@ function Page() {
                 const active = tab === c;
                 return (
                   <button
-                    key={c}
+                    key={t(`restaurant.categories.${c}`)}
                     onClick={() => { setTab(c); setSearchQuery(""); }}
                     className={`snap-start shrink-0 inline-flex items-center gap-2 px-4 py-2.5 rounded-full text-sm font-medium transition ${
                       active
@@ -253,10 +284,10 @@ function Page() {
                         <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-ocean text-white shadow-md shadow-ocean/20">
                           <Icon size={18} />
                         </div>
-                        <h2 className="font-display text-xl sm:text-2xl text-ocean">{category}</h2>
+                        <h2 className="font-display text-xl sm:text-2xl text-ocean">{t(`restaurant.categories.${category}`)}</h2>
                       </div>
                       <div className="h-px flex-1 bg-turquoise/25" />
-                      <span className="text-xs text-ocean/40 font-medium shrink-0">{catItems.length} article{catItems.length > 1 ? "s" : ""}</span>
+                      <span className="text-xs text-ocean/40 font-medium shrink-0">{catItems.length} {catItems.length > 1 ? t("restaurant.articles") : t("restaurant.article")}</span>
                     </div>
                     {/* Grid */}
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-5">
@@ -268,7 +299,7 @@ function Page() {
                 );
               })}
               {items.length === 0 && (
-                <p className="text-center text-muted-foreground py-10">Le menu est actuellement vide.</p>
+                <p className="text-center text-muted-foreground py-10">{t("restaurant.empty_menu")}</p>
               )}
             </div>
           ) : (
@@ -300,12 +331,12 @@ function Page() {
                 <span className="block font-medium truncate">
                   {totals.count} article{totals.count > 1 ? "s" : ""}
                 </span>
-                <span className="block text-xs text-white/60 truncate">Tap pour voir le panier</span>
+                <span className="block text-xs text-white/60 truncate">{t("restaurant.cart.tap_to_view")}</span>
               </span>
             </span>
             <span className="font-display text-lg text-gold whitespace-nowrap">{formatFCFA(totals.total)}</span>
             <span className="hidden sm:inline-flex items-center gap-1 bg-gold text-ocean px-3 py-1 rounded-full text-sm font-medium whitespace-nowrap">
-              Commander <ArrowRight size={15} />
+              {t("restaurant.cart.order_btn")} <ArrowRight size={15} />
             </span>
           </button>
         </div>
@@ -319,8 +350,8 @@ function Page() {
           >
             <div className="flex items-center justify-between gap-3 mb-5">
               <div>
-                <div className="text-xs uppercase tracking-[0.3em] text-turquoise/70">Panier</div>
-                <h2 className="font-display text-2xl text-white">Votre commande</h2>
+                <div className="text-xs uppercase tracking-[0.3em] text-turquoise/70">{t("restaurant.cart.title")}</div>
+                <h2 className="font-display text-2xl text-white">{t("restaurant.cart.order")}</h2>
               </div>
               <button
                 onClick={() => setDrawerOpen(false)}
@@ -331,17 +362,17 @@ function Page() {
             </div>
 
             <div className="flex items-center justify-between gap-3 rounded-2xl bg-white/5 border border-white/10 px-4 py-3 mb-5">
-              <div className="text-sm text-white/70">Articles sélectionnés</div>
+              <div className="text-sm text-white/70">{t("restaurant.cart.selected")}</div>
               <div className="font-display text-xl text-gold">{totals.count}</div>
             </div>
 
             <div className="rounded-2xl bg-white/5 border border-white/10 p-4 mb-5 space-y-4">
               <div>
-                <div className="text-xs uppercase tracking-[0.25em] text-turquoise/70 mb-2">Réception</div>
+                <div className="text-xs uppercase tracking-[0.25em] text-turquoise/70 mb-2">{t("restaurant.cart.reception")}</div>
                 <div className="grid sm:grid-cols-2 gap-2">
                   {(["Retrait au restaurant", "Livraison"] as FulfillmentMethod[]).map((method) => (
                     <button
-                      key={method}
+                      key={method === "Retrait au restaurant" ? t("restaurant.cart.pickup") : t("restaurant.cart.delivery")}
                       onClick={() => setFulfillment(method)}
                       className={`rounded-xl px-4 py-3 text-sm font-medium transition border ${
                         fulfillment === method
@@ -357,11 +388,11 @@ function Page() {
 
               {fulfillment === "Livraison" && (
                 <label className="block">
-                  <span className="text-xs uppercase tracking-[0.25em] text-turquoise/70 mb-2 block">Adresse de livraison</span>
+                  <span className="text-xs uppercase tracking-[0.25em] text-turquoise/70 mb-2 block">{t("restaurant.cart.address")}</span>
                   <input
                     value={deliveryAddress}
                     onChange={(e) => setDeliveryAddress(e.target.value)}
-                    placeholder="Quartier, rue, repère, numéro..."
+                    placeholder={t("restaurant.cart.address_placeholder")}
                     className="w-full rounded-xl bg-white/8 border border-white/10 px-4 py-3 text-white placeholder:text-white/35 focus:outline-none focus:border-gold/50"
                   />
                 </label>
@@ -376,7 +407,7 @@ function Page() {
                     {item.description && (
                       <div className="text-xs text-white/45 mt-1 line-clamp-2">{item.description}</div>
                     )}
-                    <div className="text-xs text-white/55 mt-1">{formatFCFA(item.price)} / unité</div>
+                    <div className="text-xs text-white/55 mt-1">{formatFCFA(item.price)} {t("restaurant.cart.per_unit")}</div>
                   </div>
                   <div className="flex items-center gap-2 rounded-full bg-white/5 p-1 border border-white/10">
                     <button onClick={() => dec(item.id)} className="w-8 h-8 rounded-full bg-white/10 text-white inline-flex items-center justify-center hover:bg-white/15">
@@ -395,7 +426,7 @@ function Page() {
             </div>
 
             <div className="flex items-center justify-between rounded-2xl bg-gold/10 border border-gold/20 px-4 py-4 text-gold mt-2">
-              <span className="font-display text-xl">Total</span>
+              <span className="font-display text-xl">{t("restaurant.cart.total")}</span>
               <span className="font-display text-2xl">{formatFCFA(totals.total)}</span>
             </div>
 
@@ -404,7 +435,7 @@ function Page() {
               className="w-full mt-5 py-4 rounded-2xl bg-turquoise text-ocean font-medium shimmer-gold inline-flex items-center justify-center gap-2 shadow-lg shadow-turquoise/20"
             >
               <ShoppingBag size={18} />
-              Envoyer sur WhatsApp
+              {t("restaurant.cart.send_whatsapp")}
             </button>
           </div>
         </div>
@@ -431,13 +462,13 @@ function Page() {
               {/* Image */}
               {selectedItem.image && (
                 <div className="w-full h-52 sm:h-64 overflow-hidden">
-                  <img src={selectedItem.image} alt={selectedItem.name} className="w-full h-full object-cover" />
+                  <OptimizedImage src={selectedItem.image} alt={selectedItem.name} width="800" height="400" className="w-full h-full object-cover" />
                 </div>
               )}
 
               {/* Header */}
               <div className="p-6 pb-4">
-                <div className="text-xs uppercase tracking-widest font-bold text-turquoise mb-2">{selectedItem.category}</div>
+                <div className="text-xs uppercase tracking-widest font-bold text-turquoise mb-2">{t(`restaurant.categories.${selectedItem.category}`)}</div>
                 <h2 className="font-display text-2xl sm:text-3xl text-ocean leading-tight pr-10">{selectedItem.name}</h2>
               </div>
 
@@ -452,7 +483,7 @@ function Page() {
               <div className="px-6 pb-6 pt-2">
                 <div className="flex items-center justify-between gap-4 rounded-2xl bg-white border border-turquoise/20 px-4 py-3 mb-5">
                   <div>
-                    <div className="text-xs text-ocean/50 uppercase tracking-wider mb-0.5">Prix unitaire</div>
+                    <div className="text-xs text-ocean/50 uppercase tracking-wider mb-0.5">{t("popup.unit_price")}</div>
                     <div className="font-bold text-xl text-ocean">{formatFCFA(selectedItem.price)}</div>
                   </div>
                   <div className="flex items-center gap-3">
@@ -486,7 +517,7 @@ function Page() {
                 >
                   <span className="flex items-center gap-2">
                     <ShoppingBag size={20} />
-                    {selectedItem.soldOut ? "Indisponible actuellement" : "Ajouter au panier"}
+                    {selectedItem.soldOut ? t("restaurant.popup.unavailable") : t("restaurant.popup.add")}
                   </span>
                   {!selectedItem.soldOut && (
                     <span className="font-display text-lg">{formatFCFA(selectedItem.price * popupQty)}</span>
@@ -502,6 +533,7 @@ function Page() {
 }
 
 function MenuCard({ it, onAdd, onOpenPopup }: { it: ReturnType<typeof useMenu>["items"][0]; onAdd: () => void; onOpenPopup: () => void }) {
+  const { t } = useTranslation();
   const hasImage = !!it.image;
 
   return (
@@ -520,7 +552,7 @@ function MenuCard({ it, onAdd, onOpenPopup }: { it: ReturnType<typeof useMenu>["
       {/* Image section (only if image exists) */}
       {hasImage && (
         <div className="relative h-36 sm:h-40 overflow-hidden">
-          <img src={it.image!} alt={it.name} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
+          <OptimizedImage src={it.image!} alt={it.name} width="600" height="400" className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
           <div className="absolute inset-0 bg-gradient-to-t from-ocean/40 via-transparent to-transparent" />
           {/* Price badge on image */}
           <div className="absolute top-3 right-3">
@@ -553,9 +585,9 @@ function MenuCard({ it, onAdd, onOpenPopup }: { it: ReturnType<typeof useMenu>["
             )}
             <div className="mt-2">
               {it.soldOut ? (
-                <span className="inline-block text-xs px-2 py-0.5 rounded bg-muted text-muted-foreground w-max">Indisponible</span>
+                <span className="inline-block text-xs px-2 py-0.5 rounded bg-muted text-muted-foreground w-max">{t("restaurant.card.unavailable")}</span>
               ) : (
-                <span className="text-xs text-turquoise font-medium inline-block underline decoration-turquoise/40 underline-offset-2">Voir plus</span>
+                <span className="text-xs text-turquoise font-medium inline-block underline decoration-turquoise/40 underline-offset-2">{t("restaurant.card.see_more")}</span>
               )}
             </div>
           </div>
@@ -569,9 +601,9 @@ function MenuCard({ it, onAdd, onOpenPopup }: { it: ReturnType<typeof useMenu>["
               )}
               <div className="mt-auto pt-1">
                 {it.soldOut ? (
-                  <span className="inline-block text-xs px-2 py-0.5 rounded bg-muted text-muted-foreground w-max">Indisponible</span>
+                  <span className="inline-block text-xs px-2 py-0.5 rounded bg-muted text-muted-foreground w-max">{t("restaurant.card.unavailable")}</span>
                 ) : (
-                  <span className="text-xs text-turquoise font-medium inline-block underline decoration-turquoise/40 underline-offset-2">Voir plus</span>
+                  <span className="text-xs text-turquoise font-medium inline-block underline decoration-turquoise/40 underline-offset-2">{t("restaurant.card.see_more")}</span>
                 )}
               </div>
             </div>

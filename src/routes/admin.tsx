@@ -21,7 +21,10 @@ import type { Room, RoomStatus, RoomType } from "@/data/defaultRooms";
 import { formatFCFA } from "@/lib/whatsapp";
 import { supabase } from "@/lib/supabase";
 import { compressImage } from "@/lib/media";
-export const Route = createFileRoute("/admin")({ component: Page });
+export const Route = createFileRoute("/admin")({ 
+  head: () => ({ meta: [{ name: "robots", content: "noindex, nofollow" }] }),
+  component: Page 
+});
 
 type Section = "overview" | "menu" | "gallery" | "accommodations" | "rooms" | "qr" | "reviews" | "settings" | "events" | "jobs" | "applications";
 

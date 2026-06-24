@@ -15,7 +15,7 @@ export const DEFAULT_SETTINGS: Settings = {
   hotelName: "TOGOLIVING",
   whatsapp: "22893872088",
   additionalNumbers: "",
-  domain: "https://togoliving.net",
+  domain: "https://residencetogoliving.com",
   pinAdmin: "9999",
 };
 

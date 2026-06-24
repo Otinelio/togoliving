@@ -1,0 +1,14 @@
+src/components/__tests__/PinScreen.test.tsx(14,45): error TS2339: Property 'toBeInTheDocument' does not exist on type 'Assertion<HTMLElement>'.
+src/components/__tests__/PinScreen.test.tsx(15,55): error TS2339: Property 'toBeInTheDocument' does not exist on type 'Assertion<HTMLElement>'.
+src/components/admin/__tests__/AccommodationsAdmin.test.tsx(50,60): error TS2339: Property 'toBeInTheDocument' does not exist on type 'Assertion<HTMLElement>'.
+src/components/admin/__tests__/AccommodationsAdmin.test.tsx(51,45): error TS2339: Property 'toBeInTheDocument' does not exist on type 'Assertion<HTMLElement>'.
+src/components/admin/__tests__/AccommodationsAdmin.test.tsx(52,41): error TS2339: Property 'toBeInTheDocument' does not exist on type 'Assertion<HTMLElement>'.
+src/components/admin/__tests__/AccommodationsAdmin.test.tsx(63,54): error TS2339: Property 'toBeInTheDocument' does not exist on type 'Assertion<HTMLElement>'.
+src/routes/__root.tsx(84,12): error TS2339: Property 'location' does not exist on type 'AssetFnContextOptions<"__root__", "", any, {}, undefined, undefined, { queryClient: QueryClient; }, AnyContext, AnyContext, {}>'.
+src/routes/index.tsx(168,57): error TS2552: Cannot find name 'rooms'. Did you mean 'dbRooms'?
+src/routes/index.tsx(278,34): error TS7006: Parameter 'r' implicitly has an 'any' type.
+src/routes/index.tsx(278,37): error TS7006: Parameter 'i' implicitly has an 'any' type.
+src/routes/reserver.tsx(309,63): error TS2349: This expression is not callable.
+  Type 'String' has no call signatures.
+src/routes/reserver.tsx(309,123): error TS2349: This expression is not callable.
+  Type 'String' has no call signatures.

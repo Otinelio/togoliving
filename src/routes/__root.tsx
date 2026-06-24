@@ -12,6 +12,7 @@ import { AnimatePresence } from "framer-motion";
 import { useEffect, useState, type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
+import "../lib/i18n";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { Navbar } from "../components/Navbar";
 import { Footer } from "../components/Footer";
@@ -85,11 +86,15 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
       { name: "theme-color", content: "#1E3A5F" },
-      { title: "TOGOLIVING — Villa Balneaire Tropicale a Lome, Togo" },
-      { name: "description", content: "Residence balneaire de luxe a Kpogan Agbetsiko, Lome. Appartements vue mer, piscine panoramique, restaurant et cocktail bar." },
+      { title: "TOGOLIVING — Villa Balnéaire Tropicale à Lomé, Togo" },
+      { name: "description", content: "Résidence balnéaire de luxe à Kpogan Agbetsiko, Lomé. Appartements vue mer, piscine panoramique, restaurant et cocktail bar." },
       { property: "og:site_name", content: "TOGOLIVING" },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
+      { property: "og:image", content: "https://residencetogoliving.com/og-image.jpg" },
+      { property: "og:image:width", content: "1200" },
+      { property: "og:image:height", content: "630" },
+      { property: "og:url", content: "https://residencetogoliving.com" },
     ],
     links: [
       { rel: "icon", type: "image/png", href: "/favicon.png" },
@@ -101,17 +106,12 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       },
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
+      { rel: "alternate", hreflang: "fr", href: `https://residencetogoliving.com` },
+      { rel: "alternate", hreflang: "en", href: `https://residencetogoliving.com?lng=en` },
+      { rel: "alternate", hreflang: "de", href: `https://residencetogoliving.com?lng=de` },
+      { rel: "alternate", hreflang: "x-default", href: `https://residencetogoliving.com` },
     ],
-    scripts: [
-      {
-        children: `function googleTranslateElementInit() { new google.translate.TranslateElement({pageLanguage: 'fr', includedLanguages: 'fr,en,de', autoDisplay: false}, 'google_translate_element'); }`,
-        type: "text/javascript",
-      },
-      {
-        src: "https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit",
-        type: "text/javascript",
-      }
-    ],
+    scripts: [],
   }),
   shellComponent: RootShell,
   component: RootComponent,

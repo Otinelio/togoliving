@@ -4,16 +4,17 @@ import { CalendarHeart, Users, PartyPopper, Briefcase, Camera, MessageCircle, Mu
 import { useState, useRef } from "react";
 import { WaveDivider } from "@/components/WaveDivider";
 import { ASSETS } from "@/lib/assets";
+import { OptimizedImage } from "@/components/OptimizedImage";
 import { useEvents } from "@/hooks/useEvents";
 
 export const Route = createFileRoute("/evenements")({
   head: () => ({
     meta: [
-      { title: "Événements & Réceptions — TOGOLIVING Residence Balneaire | Lome, Togo" },
+      { title: "Événements & Réceptions — TOGOLIVING Résidence Balnéaire | Lomé, Togo" },
       { name: "description", content: "Organisez vos mariages, séminaires, anniversaires et réceptions privées à TOGOLIVING. Cadre prestigieux avec vue mer et service traiteur." },
-      { property: "og:url", content: "/evenements" },
+      { property: "og:url", content: "https://residencetogoliving.com/evenements" },
     ],
-    links: [{ rel: "canonical", href: "/evenements" }],
+    links: [{ rel: "canonical", href: "https://residencetogoliving.com/evenements" }],
   }),
   component: EvenementsPage,
 });
@@ -26,7 +27,9 @@ function EvenementsPage() {
     <>
       <section className="relative pt-32 pb-20 bg-ocean text-white overflow-hidden">
         {/* Placeholder image for events, using pool as fallback or hero */}
-        <div className="absolute inset-0 bg-cover bg-center opacity-40" style={{ backgroundImage: `url(${ASSETS.piscine1})` }} />
+        <div className="absolute inset-0 opacity-40">
+          <OptimizedImage src={ASSETS.piscine1} alt="Événements" width="1920" height="600" className="w-full h-full object-cover object-center" />
+        </div>
         <div className="absolute inset-0 bg-gradient-to-b from-ocean/90 via-ocean/80 to-ocean" />
         <div className="relative max-w-4xl mx-auto px-6 text-center">
           <p className="font-accent text-turquoise text-xl">Réceptions & Célébrations</p>
@@ -109,8 +112,8 @@ function EvenementsPage() {
             </Link>
           </motion.div>
           <motion.div initial={{ opacity: 0, x: 30 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} className="grid grid-cols-2 gap-4">
-            <img src={ASSETS.bar60DBC} alt="Bar et Cocktails" className="rounded-xl w-full h-48 object-cover" />
-            <img src={ASSETS.barIMG2449} alt="Service Traiteur" className="rounded-xl w-full h-48 object-cover mt-8" />
+            <OptimizedImage src={ASSETS.bar60DBC} alt="Bar et Cocktails" width="600" height="384" className="rounded-xl w-full h-48 object-cover" />
+            <OptimizedImage src={ASSETS.barIMG2449} alt="Service Traiteur" width="600" height="384" className="rounded-xl w-full h-48 object-cover mt-8" />
           </motion.div>
         </div>
       </section>
@@ -170,7 +173,7 @@ function EventCard({ evt, index }: { evt: any, index: number }) {
           {/* Videos */}
           {videosList.map((vid: string, idx: number) => (
             <div key={`vid-${idx}`} className="w-full h-full flex-shrink-0 snap-center relative bg-black flex items-center justify-center">
-              <video src={vid} controls playsInline className="w-full h-full object-cover" />
+              <video src={vid} controls playsInline preload="metadata" className="w-full h-full object-cover" />
             </div>
           ))}
 

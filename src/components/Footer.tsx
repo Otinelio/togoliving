@@ -1,4 +1,5 @@
 import { Link } from "@tanstack/react-router";
+import { useTranslation } from "react-i18next";
 import { Globe, Mail, MapPin, Phone } from "lucide-react";
 import { WaveDivider } from "./WaveDivider";
 
@@ -16,6 +17,8 @@ const Facebook = (p: React.SVGProps<SVGSVGElement>) => (
 );
 
 export function Footer() {
+  const { t } = useTranslation();
+
   return (
     <footer className="relative bg-ocean text-white mt-24">
       <div className="absolute -top-1 inset-x-0">
@@ -29,27 +32,30 @@ export function Footer() {
               <span className="text-white">TOGO</span>
               <span className="text-turquoise">LIVING</span>
             </div>
-            <p className="font-accent text-turquoise mt-3 text-lg">L'Ocean a votre Porte</p>
+            <p className="font-accent text-turquoise mt-3 text-lg">{t('footer.subtitle')}</p>
             <p className="text-white/70 text-sm mt-4 max-w-xs">
-              Villa balneaire tropicale a Kpogan Agbetsiko, entre Lome et Aneho.
-              Acces direct a la plage, piscine vue mer et restaurant aux saveurs du monde.
+              {t('footer.desc')}
             </p>
           </div>
 
           <div>
-            <h4 className="font-display text-lg mb-4 text-turquoise">Navigation</h4>
+            <h4 className="font-display text-lg mb-4 text-turquoise">{t('footer.navigation')}</h4>
             <ul className="space-y-2 text-sm">
               {[
-                ["/", "Accueil"],
-                ["/hebergements", "Hébergements"],
-                ["/restaurant", "Restaurant & Bar"],
-                ["/galerie", "Galerie"],
-                ["/a-propos", "À Propos"],
-                ["/loisirs", "Loisirs & Détente"],
-                ["/evenements", "Événements"],
-                ["/carrieres", "Carrières"],
-                ["/contact", "Contact"],
-                ["/reserver", "Réserver"],
+                ["/", t('nav.home')],
+                ["/hebergements", t('nav.accommodations')],
+                ["/hebergements/studios", "— Studios"],
+                ["/hebergements/chambre-salon", "— Chambre Salon"],
+                ["/hebergements/2-chambres-salon", "— 2 Chambres Salon"],
+                ["/hebergements/3-chambres-salon", "— 3 Chambres Salon"],
+                ["/restaurant", t('nav.restaurant')],
+                ["/galerie", t('nav.gallery')],
+                ["/a-propos", t('nav.about')],
+                ["/loisirs", t('nav.leisure')],
+                ["/evenements", t('nav.events')],
+                ["/carrieres", t('nav.careers')],
+                ["/contact", t('nav.contact')],
+                ["/reserver", t('nav.book')],
               ].map(([to, label]) => (
                 <li key={to}>
                   <Link to={to} className="text-white/80 hover:text-turquoise transition">{label}</Link>
@@ -59,11 +65,11 @@ export function Footer() {
           </div>
 
           <div>
-            <h4 className="font-display text-lg mb-4 text-turquoise">Contact</h4>
+            <h4 className="font-display text-lg mb-4 text-turquoise">{t('footer.contact')}</h4>
             <ul className="space-y-3 text-sm text-white/80">
               <li className="flex items-start gap-3"><Phone size={16} className="mt-0.5 text-turquoise shrink-0" /><a href="tel:+22893872088" className="hover:text-turquoise">+228 93 87 20 88</a></li>
-              <li className="flex items-start gap-3"><Mail size={16} className="mt-0.5 text-turquoise shrink-0" /><a href="mailto:contact@togoliving.net" className="hover:text-turquoise">contact@togoliving.net</a></li>
-              <li className="flex items-start gap-3"><Globe size={16} className="mt-0.5 text-turquoise shrink-0" /><span>togoliving.net</span></li>
+              <li className="flex items-start gap-3"><Mail size={16} className="mt-0.5 text-turquoise shrink-0" /><a href="mailto:togolivinginfo@gmail.com" className="hover:text-turquoise">togolivinginfo@gmail.com</a></li>
+              <li className="flex items-start gap-3"><Globe size={16} className="mt-0.5 text-turquoise shrink-0" /><span>residencetogoliving.com</span></li>
               <li className="flex items-start gap-3"><MapPin size={16} className="mt-0.5 text-turquoise shrink-0" /><span>Kpogan Agbetsiko, Route N2, 36BP50 Lomé, Togo</span></li>
             </ul>
 
@@ -80,7 +86,7 @@ export function Footer() {
 
         <div className="h-px bg-gold/40 my-8" />
         <p className="text-center text-white/60 text-xs">
-          © 2025 TOGOLIVING — Tous droits reserves
+          © 2025 TOGOLIVING — {t('footer.rights')}
         </p>
       </div>
     </footer>

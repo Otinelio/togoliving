@@ -1,18 +1,20 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { useTranslation } from "react-i18next";
 import { motion, useInView, useMotionValue, animate } from "framer-motion";
 import { Heart, Star, Shield, Award } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { WaveDivider } from "@/components/WaveDivider";
 import { ASSETS } from "@/lib/assets";
+import { OptimizedImage } from "@/components/OptimizedImage";
 
 export const Route = createFileRoute("/a-propos")({
   head: () => ({
     meta: [
-      { title: "A Propos — TOGOLIVING Residence Balneaire | Lome, Togo" },
-      { name: "description", content: "TOGOLIVING — votre residence balneaire entre Lome et Aneho. Plage naturelle, piscine vue mer, cuisine internationale." },
-      { property: "og:url", content: "/a-propos" },
+      { title: "À Propos — TOGOLIVING Résidence Balnéaire | Lomé, Togo" },
+      { name: "description", content: "TOGOLIVING — votre résidence balnéaire entre Lomé et Aného. Plage naturelle, piscine vue mer, cuisine internationale." },
+      { property: "og:url", content: "https://residencetogoliving.com/a-propos" },
     ],
-    links: [{ rel: "canonical", href: "/a-propos" }],
+    links: [{ rel: "canonical", href: "https://residencetogoliving.com/a-propos" }],
   }),
   component: Page,
 });
@@ -21,27 +23,37 @@ function Counter({ to, suffix = "" }: { to: number; suffix?: string }) {
   const ref = useRef<HTMLDivElement>(null);
   const inView = useInView(ref, { once: true });
   const mv = useMotionValue(0);
-  const [v, setV] = useState(0);
+  const [v, setV] = useState(to); // SSR: show final value
+  const [hydrated, setHydrated] = useState(false);
+
   useEffect(() => {
-    if (!inView) return;
+    setHydrated(true);
+    setV(0);
+  }, []);
+
+  useEffect(() => {
+    if (!hydrated || !inView) return;
     return animate(mv, to, { duration: 1.8, onUpdate: (n) => setV(Math.round(n)) }).stop;
-  }, [inView, to, mv]);
+  }, [hydrated, inView, to, mv]);
   return <div ref={ref} className="font-display text-5xl text-turquoise">{v}{suffix}</div>;
 }
 
 function Page() {
+  const { t } = useTranslation();
   return (
     <>
       <section className="relative pt-32 pb-20 bg-ocean text-white overflow-hidden">
-        <div className="absolute inset-0 bg-cover bg-center opacity-35" style={{ backgroundImage: `url(${ASSETS.poolImg})` }} />
+        <div className="absolute inset-0 opacity-35">
+          <OptimizedImage src={ASSETS.poolImg} alt="À Propos Hero" width="1920" height="600" className="w-full h-full object-cover object-center" />
+        </div>
         <div className="absolute inset-0 bg-gradient-to-b from-ocean/85 to-ocean" />
         <div className="relative max-w-4xl mx-auto px-6 text-center">
-          <p className="font-accent text-turquoise text-xl">A Propos</p>
-          <h1 className="font-display text-5xl md:text-6xl">TOGOLIVING</h1>
-          <p className="font-accent text-turquoise text-xl mt-2">Votre Résidence Balnéaire au Togo</p>
+          <p className="font-accent text-turquoise text-xl">{t("about.hero.subtitle")}</p>
+          <h1 className="font-display text-5xl md:text-6xl">{t("about.hero.title")}</h1>
+          <p className="font-accent text-turquoise text-xl mt-2">{t("about.hero.desc")}</p>
           <div className="inline-flex items-center gap-2 mt-4 px-5 py-2 rounded-full bg-gold/20 border border-gold/40">
             <Award size={20} className="text-gold" />
-            <span className="text-gold font-semibold text-sm">Hôtel Classé 4 Étoiles</span>
+            <span className="text-gold font-semibold text-sm">{t("about.hero.badge")}</span>
             <span className="flex gap-0.5">{[0,1,2,3].map(i => <Star key={i} size={14} className="text-gold fill-current" />)}</span>
           </div>
         </div>
@@ -51,32 +63,21 @@ function Page() {
       <section className="bg-sand pt-20 pb-10">
         <div className="max-w-4xl mx-auto px-6 text-center space-y-6">
           <motion.p initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
-            className="text-lg text-ocean leading-relaxed">
-            Offrant une vue sur la ville, l'établissement <strong>Résidence Togoliving</strong> — classé <strong>Hôtel 4 Étoiles</strong> — se trouve à Toudji, très bien situé au bord du goudron National N2 et à seulement 100 m de la plage naturelle. 
-            Kpogan est un quartier calme, situé sur la route nationale menant du Bénin au Ghana, près du marché d'Agbavi.
-          </motion.p>
+            className="text-lg text-ocean leading-relaxed" dangerouslySetInnerHTML={{ __html: t("about.intro.p1") }} />
           <motion.p initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.1 }}
-            className="text-lg text-ocean leading-relaxed">
-            Il propose un <strong>restaurant</strong>, un <strong>service d'étage</strong>, un <strong>bar</strong>, un <strong>jardin</strong> et une <strong>terrasse</strong>. 
-            Il propose gratuitement une connexion Wi-Fi rapide (516 Mb/s) et un parking privé. L'établissement sert un petit-déjeuner continental ou américain tous les matins.
-          </motion.p>
+            className="text-lg text-ocean leading-relaxed" dangerouslySetInnerHTML={{ __html: t("about.intro.p2") }} />
           <motion.p initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.2 }}
-            className="text-lg text-ocean leading-relaxed">
-            Chaque hébergement comprend une salle de bains privative avec une douche, la climatisation, une télévision à écran plat et un réfrigérateur. 
-            L'établissement se situe à 17 km de l'Aéroport international de Lomé-Tokoin et propose un service de navette aéroport (en supplément).
-          </motion.p>
+            className="text-lg text-ocean leading-relaxed" dangerouslySetInnerHTML={{ __html: t("about.intro.p3") }} />
           <motion.p initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.25 }}
-            className="text-sm text-ocean/70">
-            Code Postal : <strong>36BP50</strong> — Kpogan Agbetsiko, Lomé, Togo
-          </motion.p>
+            className="text-sm text-ocean/70" dangerouslySetInnerHTML={{ __html: t("about.intro.p4") }} />
         </div>
 
         <div className="max-w-6xl mx-auto px-6 grid grid-cols-2 md:grid-cols-4 gap-6 mt-16">
           {[
-            { n: 20, s: " min", l: "du centre-ville" },
-            { n: 100, s: " m", l: "de la plage" },
-            { n: 4,  s: "",     l: "types d'hebergement" },
-            { n: 25, s: " min", l: "de l'aeroport" },
+            { n: 20, s: " min", l: t("about.stats.city") },
+            { n: 100, s: " m", l: t("about.stats.beach") },
+            { n: 4,  s: "",     l: t("about.stats.types") },
+            { n: 25, s: " min", l: t("about.stats.airport") },
           ].map((s) => (
             <motion.div key={s.l} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
               className="glass p-6 text-center border border-ocean/5">
@@ -90,19 +91,19 @@ function Page() {
       <section className="bg-sand pb-20">
         <div className="max-w-6xl mx-auto px-6 mt-16">
           <div className="text-center mb-12">
-            <p className="font-accent text-turquoise text-xl">Les essentiels</p>
-            <h2 className="font-display text-4xl text-ocean">Points Forts de l'Établissement</h2>
+            <p className="font-accent text-turquoise text-xl">{t("about.essentials.subtitle")}</p>
+            <h2 className="font-display text-4xl text-ocean">{t("about.essentials.title")}</h2>
           </div>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-ocean">
             {[
-              "Piscine extérieure avec vue",
-              "Restaurant (Cuisine variée)",
-              "Connexion Wi-Fi gratuite (516 Mb/s)",
-              "Parking privé gratuit sur place",
-              "Chambres familiales et non-fumeurs",
-              "Navette aéroport",
-              "Service d'étage & Bar",
-              "Petit-déjeuner inclus"
+              t("about.essentials.p1"),
+              t("about.essentials.p2"),
+              t("about.essentials.p3"),
+              t("about.essentials.p4"),
+              t("about.essentials.p5"),
+              t("about.essentials.p6"),
+              t("about.essentials.p7"),
+              t("about.essentials.p8")
             ].map((point, idx) => (
               <motion.div key={idx} initial={{ opacity: 0, scale: 0.95 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true }} transition={{ delay: idx * 0.05 }}
                 className="bg-white p-4 rounded-xl shadow-sm border border-ocean/5 flex items-center text-center justify-center font-medium">
@@ -114,40 +115,40 @@ function Page() {
         
         <div className="max-w-6xl mx-auto px-6 mt-20">
           <div className="text-center mb-12">
-            <h2 className="font-display text-4xl text-ocean">Équipements et Services</h2>
+            <h2 className="font-display text-4xl text-ocean">{t("about.facilities.title")}</h2>
           </div>
           <div className="grid md:grid-cols-3 gap-8">
             <div className="bg-white p-6 rounded-2xl shadow-sm border border-ocean/5">
-              <h3 className="font-display text-2xl text-ocean mb-4 border-b border-ocean/10 pb-2">Général</h3>
+              <h3 className="font-display text-2xl text-ocean mb-4 border-b border-ocean/10 pb-2">{t("about.facilities.general")}</h3>
               <ul className="space-y-2 text-muted-foreground">
-                <li>• Climatisation dans tous les hébergements</li>
-                <li>• Établissement entièrement non-fumeurs</li>
-                <li>• Sécurité 24h/24 & Caméras de surveillance</li>
-                <li>• Extincteurs & Détecteurs de fumée</li>
-                <li>• Service de ménage quotidien (en supplément)</li>
-                <li>• Bureau d'excursions & Enregistrement rapide</li>
+                <li>{t("about.facilities.g1")}</li>
+                <li>{t("about.facilities.g2")}</li>
+                <li>{t("about.facilities.g3")}</li>
+                <li>{t("about.facilities.g4")}</li>
+                <li>{t("about.facilities.g5")}</li>
+                <li>{t("about.facilities.g6")}</li>
               </ul>
             </div>
             <div className="bg-white p-6 rounded-2xl shadow-sm border border-ocean/5">
-              <h3 className="font-display text-2xl text-ocean mb-4 border-b border-ocean/10 pb-2">Extérieur & Activités</h3>
+              <h3 className="font-display text-2xl text-ocean mb-4 border-b border-ocean/10 pb-2">{t("about.facilities.outdoor")}</h3>
               <ul className="space-y-2 text-muted-foreground">
-                <li>• Plage naturelle à 100m</li>
-                <li>• Jardin, Terrasse bien exposée & Patio</li>
-                <li>• Installations pour barbecue (en supplément)</li>
-                <li>• Piscine avec vue et bar dans la piscine</li>
-                <li>• Chaises longues et parasols</li>
-                <li>• Balades à pied (en supplément)</li>
+                <li>{t("about.facilities.o1")}</li>
+                <li>{t("about.facilities.o2")}</li>
+                <li>{t("about.facilities.o3")}</li>
+                <li>{t("about.facilities.o4")}</li>
+                <li>{t("about.facilities.o5")}</li>
+                <li>{t("about.facilities.o6")}</li>
               </ul>
             </div>
             <div className="bg-white p-6 rounded-2xl shadow-sm border border-ocean/5">
-              <h3 className="font-display text-2xl text-ocean mb-4 border-b border-ocean/10 pb-2">Restauration & Boissons</h3>
+              <h3 className="font-display text-2xl text-ocean mb-4 border-b border-ocean/10 pb-2">{t("about.facilities.food")}</h3>
               <ul className="space-y-2 text-muted-foreground">
-                <li>• Restaurant Living’s (africaine, française, etc.)</li>
-                <li>• Café sur place & Snack-bar</li>
-                <li>• Menus enfants (en supplément)</li>
-                <li>• Vin/champagne (en supplément)</li>
-                <li>• Petit-déjeuner en chambre</li>
-                <li>• Supérette sur place</li>
+                <li>{t("about.facilities.f1")}</li>
+                <li>{t("about.facilities.f2")}</li>
+                <li>{t("about.facilities.f3")}</li>
+                <li>{t("about.facilities.f4")}</li>
+                <li>{t("about.facilities.f5")}</li>
+                <li>{t("about.facilities.f6")}</li>
               </ul>
             </div>
           </div>
@@ -155,8 +156,8 @@ function Page() {
         {/* License / Classification */}
         <div className="max-w-6xl mx-auto px-6 mt-20">
           <div className="text-center mb-8">
-            <h2 className="font-display text-4xl text-ocean">Classement Officiel</h2>
-            <p className="text-muted-foreground mt-2">Résidence Togoliving — Hôtel classé 4 Étoiles</p>
+            <h2 className="font-display text-4xl text-ocean">{t("about.license.title")}</h2>
+            <p className="text-muted-foreground mt-2">{t("about.license.desc")}</p>
           </div>
           <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
             className="max-w-md mx-auto">
@@ -175,14 +176,14 @@ function Page() {
       <section className="bg-ocean text-white py-20">
         <div className="max-w-6xl mx-auto px-6">
           <div className="text-center mb-12">
-            <p className="font-accent text-turquoise text-xl">Nos Valeurs</p>
-            <h2 className="font-display text-4xl">Pourquoi nous choisir</h2>
+            <p className="font-accent text-turquoise text-xl">{t("about.values.subtitle")}</p>
+            <h2 className="font-display text-4xl">{t("about.values.title")}</h2>
           </div>
           <div className="grid md:grid-cols-3 gap-6">
             {[
-              { icon: Heart,  t: "Accueil Chaleureux", d: "Une equipe disponible 24h/24 pour votre confort et un service personnalisé." },
-              { icon: Star,   t: "Cadre Unique",       d: "Vue mer, piscine et plage naturelle en un seul lieu." },
-              { icon: Shield, t: "Confort & Securite", d: "Appartements meubles, parking prive sécurisé 24h/24, WiFi ultra-rapide." },
+              { icon: Heart,  t: t("about.values.v1_title"), d: t("about.values.v1_desc") },
+              { icon: Star,   t: t("about.values.v2_title"),       d: t("about.values.v2_desc") },
+              { icon: Shield, t: t("about.values.v3_title"), d: t("about.values.v3_desc") },
             ].map((v, i) => (
               <motion.div key={v.t} initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.1 }}
                 className="glass-dark p-8 text-center hover-lift">
