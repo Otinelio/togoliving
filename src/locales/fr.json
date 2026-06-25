@@ -28,11 +28,8 @@
       "checkAvailability": "Vérifier la disponibilité"
     },
     "hero": {
-      "subtitle": "Villa Balnéaire Tropicale · Hôtel ★★★★",
-      "title_pt1": "Hôtel 4★ à Lomé —",
-      "title_highlight": "Résidence Balnéaire",
-      "title_pt2": "Vue Mer",
-      "tagline": "L'Océan à votre Porte",
+      "subtitle": "Hôtel 4★ · Villa Balnéaire Tropicale",
+      "title": "Bienvenue à Togoliving",
       "location": "Kpogan Agbetsiko · Lomé, Togo",
       "book_btn": "Réserver un Séjour",
       "rooms_btn": "Voir les Hébergements"

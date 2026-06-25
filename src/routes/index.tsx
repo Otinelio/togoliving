@@ -129,7 +129,7 @@ function QuickBooking() {
   };
 
   return (
-    <div className="glass shadow-xl shadow-ocean/20 p-4 md:p-6">
+    <div className="glass shadow-md shadow-ocean/10 p-4 md:p-6">
       <div className="grid md:grid-cols-5 gap-3">
         <label className="block">
           <span className="text-xs text-ocean/70 font-medium flex items-center gap-1"><Calendar size={12} /> {t("home.booking.arrival")}</span>
@@ -186,33 +186,22 @@ function HomePage() {
             className="w-full h-full object-cover object-center"
           />
         </motion.div>
-        <div className="absolute inset-0 bg-gradient-to-b from-ocean/70 via-ocean/40 to-ocean/80" />
+        <div className="absolute inset-0 bg-gradient-to-b from-ocean/90 via-ocean/75 to-ocean/95" />
 
         <div className="relative z-10 max-w-6xl mx-auto px-6 pt-20 pb-16 text-center">
           <motion.p
             initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}
-            className="font-accent text-turquoise text-xl md:text-2xl mb-3"
+            className="font-accent text-gold text-xl md:text-2xl mb-3 text-shadow-sm"
           >
             {t("home.hero.subtitle")}
           </motion.p>
           <motion.h1
             initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}
-            className="font-display text-white text-[2.5rem] md:text-6xl lg:text-7xl font-bold leading-tight"
+            className="font-body text-white text-[2.5rem] md:text-6xl lg:text-7xl font-bold leading-tight"
+            style={{ WebkitTextStroke: '1px #15364f', textShadow: 'none' }}
           >
-            {t("home.hero.title_pt1")} <span className="text-turquoise">{t("home.hero.title_highlight")}</span> {t("home.hero.title_pt2")}
+            {t("home.hero.title")}
           </motion.h1>
-          <motion.p
-            initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }}
-            className="font-accent text-xl md:text-2xl text-turquoise mt-4"
-          >
-            {t("home.hero.tagline")}
-          </motion.p>
-          <motion.p
-            initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.6 }}
-            className="text-white/80 mt-2 text-base md:text-lg"
-          >
-            {t("home.hero.location")}
-          </motion.p>
 
           <motion.div
             initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.8 }}
@@ -269,9 +258,15 @@ function HomePage() {
       {/* ROOMS */}
       <section className="bg-ocean text-white py-20">
         <div className="max-w-7xl mx-auto px-6">
-          <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="text-center mb-12">
-            <p className="font-accent text-turquoise text-xl">{t("home.rooms.subtitle")}</p>
-            <h2 className="font-display text-4xl md:text-5xl">{t("home.rooms.title")}</h2>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="text-center mb-16"
+          >
+            <span className="font-accent text-gold text-lg md:text-xl tracking-wider uppercase">{t("home.rooms.subtitle")}</span>
+            <h2 className="font-display text-4xl md:text-5xl lg:text-6xl mt-2 mb-4 text-white">{t("home.rooms.title")}</h2>
+            <div className="w-20 h-1 bg-gold mx-auto rounded-full mt-4" />
           </motion.div>
 
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -280,40 +275,60 @@ function HomePage() {
               const img = 'imageUrl' in r ? r.imageUrl : ('img' in r ? (r as any).img : '');
               const badge = r.badge;
               const premium = 'isPremium' in r ? r.isPremium : ('premium' in r ? (r as any).premium : false);
-              const desc = 'description' in r ? r.description : ('desc' in r ? (r as any).desc : '');
               const title = r.title;
-              const rawFeatures = 'features' in r ? r.features : [];
-              const features = (rawFeatures ?? []).slice(0, 5).map((f: any) => typeof f === 'string' ? f : f.label);
 
               return (
-                <motion.div
+                <Link
+                  to="/hebergements/$category"
+                  params={{ category: encodeURIComponent(title.toLowerCase().replace(/ /g, "-")) }}
                   key={r.id || title}
-                  initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.1 }}
-                  className="glass-dark overflow-hidden hover-lift group border-turquoise/20 hover:border-gold"
+                  className="block group"
                 >
-                  <div className="relative h-56 overflow-hidden">
-                    <OptimizedImage src={img} alt={title} width="600" height="400" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
-                    <div className="absolute inset-0 bg-gradient-to-t from-ocean/80 to-transparent" />
-                    {badge && (
-                      <span className={`absolute top-3 right-3 px-3 py-1 rounded-full text-xs font-semibold ${premium ? "bg-gold text-ocean" : "bg-turquoise text-ocean"}`}>
-                        {badge}
-                      </span>
-                    )}
-                  </div>
-                  <div className="p-6">
-                    <h3 className="font-display text-2xl">{title}</h3>
-                    <p className="text-white/70 text-sm mt-2 line-clamp-2">{desc}</p>
-                    <div className="flex flex-wrap gap-2 mt-4">
-                      {features.map((f: string) => (
-                        <span key={t(`home.rooms.features.${f}`)} className="text-xs px-2.5 py-1 rounded-full bg-turquoise/15 text-turquoise border border-turquoise/30">{f}</span>
-                      ))}
+                  <motion.div
+                    initial={{ opacity: 0, y: 30 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: i * 0.1 }}
+                    className="relative w-full h-[380px] rounded-[32px] overflow-hidden border border-white/10 group-hover:border-gold/50 transition-all duration-500 shadow-lg flex flex-col justify-end"
+                  >
+                    {/* Full-bleed background image */}
+                    <div className="absolute inset-0 z-0">
+                      <OptimizedImage
+                        src={img}
+                        alt={title}
+                        width="600"
+                        height="800"
+                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-[#0b1a2e] via-ocean/45 to-transparent opacity-90 group-hover:opacity-95 transition-opacity duration-300" />
                     </div>
-                    <div className="flex gap-2 mt-5">
-                      <Link to="/hebergements/$category" params={{ category: encodeURIComponent(title.toLowerCase().replace(/ /g, "-")) }} className="flex-1 text-center px-3 py-2 rounded-lg bg-turquoise text-ocean text-sm font-medium hover:bg-gold transition">{t("home.rooms.btn_details")}</Link>
-                      <Link to="/reserver" className="flex-1 text-center px-3 py-2 rounded-lg border border-turquoise text-turquoise text-sm font-medium hover:bg-turquoise hover:text-ocean transition">{t("home.rooms.btn_book")}</Link>
+
+                    {/* Content overlay container */}
+                    <div className="relative z-10 p-6 w-full">
+                      {/* Floating Badge */}
+                      {badge && (
+                        <span className={`inline-block mb-3 px-3 py-1 rounded-full text-[10px] font-bold tracking-wider uppercase ${premium ? "bg-gold text-ocean" : "bg-turquoise text-ocean"}`}>
+                          {badge}
+                        </span>
+                      )}
+
+                      {/* Title */}
+                      <h3 className="font-display text-2xl md:text-3xl text-white group-hover:text-gold transition-colors duration-300 leading-tight">
+                        {title}
+                      </h3>
+
+                      {/* Interactive indicator revealed on hover */}
+                      <div className="mt-4 flex items-center justify-between border-t border-white/10 pt-4 opacity-80 group-hover:opacity-100 transition-opacity duration-300">
+                        <span className="text-turquoise text-xs font-semibold uppercase tracking-wider group-hover:text-gold transition-colors">
+                          {t("home.rooms.btn_details")}
+                        </span>
+                        <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-white group-hover:bg-gold group-hover:text-ocean transition-all duration-300 transform group-hover:translate-x-1 shrink-0">
+                          →
+                        </div>
+                      </div>
                     </div>
-                  </div>
-                </motion.div>
+                  </motion.div>
+                </Link>
               );
             })}
           </div>
@@ -326,7 +341,7 @@ function HomePage() {
       <section className="bg-sand py-20">
         <div className="max-w-7xl mx-auto px-6 grid md:grid-cols-2 gap-10 items-center">
           <motion.div initial={{ opacity: 0, x: -30 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} className="relative">
-            <OptimizedImage src={ASSETS.poolImg} alt="Piscine panoramique vue Océan Atlantique à TOGOLIVING, Lomé Togo" width="800" height="420" className="rounded-2xl shadow-2xl shadow-ocean/30 w-full h-[420px] object-cover" />
+            <OptimizedImage src={ASSETS.poolImg} alt="Piscine panoramique vue Océan Atlantique à TOGOLIVING, Lomé Togo" width="800" height="420" className="rounded-2xl shadow-md w-full h-[420px] object-cover" />
             <div className="absolute -bottom-6 -right-6 hidden md:block w-24 h-24 rounded-full bg-turquoise/30 pool-ripple" />
           </motion.div>
           <motion.div initial={{ opacity: 0, x: 30 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }}>

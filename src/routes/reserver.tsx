@@ -201,7 +201,7 @@ function Page() {
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.25 }}
-            className="glass p-6 sm:p-8 shadow-xl shadow-ocean/10"
+            className="glass p-6 sm:p-8 shadow-md"
           >
             <h2 className="font-display text-2xl text-ocean mb-6 flex items-center gap-2">
               {step === 0 && <><BedDouble size={22} className="text-turquoise" /> {t("booking.step1.title")}</>}

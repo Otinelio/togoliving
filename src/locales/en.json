@@ -28,11 +28,8 @@
       "checkAvailability": "Check Availability"
     },
     "hero": {
-      "subtitle": "Tropical Seaside Villa · ★★★★ Hotel",
-      "title_pt1": "4★ Hotel in Lomé —",
-      "title_highlight": "Seaside Residence",
-      "title_pt2": "with Ocean View",
-      "tagline": "The Ocean at your Doorstep",
+      "subtitle": "4★ Hotel · Tropical Seaside Villa",
+      "title": "Welcome to Togoliving",
       "location": "Kpogan Agbetsiko · Lomé, Togo",
       "book_btn": "Book a Stay",
       "rooms_btn": "View Accommodations"

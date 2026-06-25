@@ -139,62 +139,66 @@ function Page() {
       </section>
 
       <section className="bg-sand py-20">
-        <div className="max-w-6xl mx-auto px-6 space-y-20">
+        <div className="max-w-6xl mx-auto px-6">
           {isLoading ? (
             <div className="flex items-center justify-center py-20 text-ocean"><Loader2 size={32} className="animate-spin" /></div>
           ) : (
-            rooms.map((r, i) => {
-              const features = (r.features ?? []) as { label: string }[];
-              const prices = (r.prices ?? []) as { variant?: string; num: string; day: string; month: string }[];
-              return (
-                <motion.div
-                  key={r.title}
-                  initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
-                  className={`grid md:grid-cols-2 gap-10 items-center ${i % 2 ? "md:[&>div:first-child]:order-2" : ""}`}
-                >
-                  <div className="relative">
-                    {r.videoUrl ? (
-                      <VideoWithPoster
-                        src={r.videoUrl}
-                        poster={r.posterUrl ?? r.imageUrl ?? ""}
-                        className="w-full h-[420px] rounded-2xl shadow-xl shadow-ocean/20"
-                      />
-                    ) : (
-                      <OptimizedImage src={r.imageUrl ?? ""} alt={r.title} width="800" height="420" className="w-full h-[420px] object-cover rounded-2xl shadow-xl shadow-ocean/20" />
-                    )}
-                    {r.badge && (
-                      <span className={`absolute top-4 left-4 px-4 py-1.5 rounded-full text-xs font-semibold tracking-wider ${r.isPremium ? "bg-gold text-ocean" : "bg-turquoise text-ocean"}`}>
-                        {r.badge}
-                      </span>
-                    )}
-                  </div>
-                  <div>
-                    <h2 className="font-display text-3xl md:text-4xl text-ocean">{r.title}</h2>
-                    <p className="font-accent text-turquoise text-lg mt-1">{r.subtitle ?? r.badge}</p>
-                    <p className="text-muted-foreground mt-4">{r.description}</p>
-                    <div className="grid grid-cols-2 gap-3 mt-6">
-                      {features.map((f) => {
-                        const Icon = ICON_MAP[f.label] ?? Wifi;
-                        return (
-                          <div key={f.label} className="flex items-center gap-2 text-sm text-ocean">
-                            <Icon size={18} className="text-turquoise" /> {f.label}
-                          </div>
-                        );
-                      })}
-                    </div>
-                    <div className="mt-8">
-                      <Link
-                        // @ts-ignore
-                        to={`/hebergements/${encodeURIComponent(r.title.toLowerCase().replace(/ /g, "-"))}`}
-                        className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full bg-ocean text-white font-medium hover:bg-gold hover:text-ocean transition shimmer-gold"
-                      >
-                        Voir les {r.title} →
-                      </Link>
-                    </div>
-                  </div>
-                </motion.div>
-              );
-            })
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+              {rooms.map((r) => {
+                return (
+                  <Link
+                    key={r.title}
+                    // @ts-ignore
+                    to={`/hebergements/${encodeURIComponent(r.title.toLowerCase().replace(/ /g, "-"))}`}
+                    className="block group cursor-pointer"
+                  >
+                    <motion.div
+                      initial={{ opacity: 0, y: 30 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      viewport={{ once: true }}
+                      className="bg-white rounded-3xl overflow-hidden border border-ocean/10 hover:border-turquoise/40 transition-all duration-300 flex flex-col h-full hover:-translate-y-1.5 shadow-sm hover:shadow-md"
+                    >
+                      <div className="relative aspect-video w-full overflow-hidden">
+                        {r.videoUrl ? (
+                          <VideoWithPoster
+                            src={r.videoUrl}
+                            poster={r.posterUrl ?? r.imageUrl ?? ""}
+                            className="w-full h-full"
+                          />
+                        ) : (
+                          <OptimizedImage
+                            src={r.imageUrl ?? ""}
+                            alt={r.title}
+                            width="800"
+                            height="450"
+                            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                          />
+                        )}
+                        {r.badge && (
+                          <span className={`absolute top-4 left-4 px-4 py-1.5 rounded-full text-xs font-semibold tracking-wider ${r.isPremium ? "bg-gold text-ocean" : "bg-turquoise text-ocean"}`}>
+                            {r.badge}
+                          </span>
+                        )}
+                      </div>
+                      <div className="p-8 flex flex-col flex-grow">
+                        <h2 className="font-display text-2xl md:text-3xl text-ocean group-hover:text-gold transition-colors duration-300">
+                          {r.title}
+                        </h2>
+                        <p className="font-accent text-turquoise text-base mt-1">
+                          {r.subtitle ?? r.badge}
+                        </p>
+                        <p className="text-muted-foreground mt-4 text-sm leading-relaxed flex-grow">
+                          {r.description}
+                        </p>
+                        <div className="mt-6 flex items-center gap-1 text-sm font-semibold text-ocean group-hover:text-gold transition-colors duration-300 self-end">
+                          {t("accommodations.category.show_more")} <span className="group-hover:translate-x-1 transition-transform">→</span>
+                        </div>
+                      </div>
+                    </motion.div>
+                  </Link>
+                );
+              })}
+            </div>
           )}
         </div>
       </section>

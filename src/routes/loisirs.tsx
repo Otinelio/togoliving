@@ -80,7 +80,7 @@ function LoisirsPage() {
             </ul>
           </motion.div>
           <motion.div initial={{ opacity: 0, x: 30 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} className="relative">
-            <OptimizedImage src={ASSETS.piscineIMG4283} alt="Piscine de la Résidence Togoliving" width="800" height="500" className="rounded-2xl shadow-2xl shadow-ocean/20 w-full h-[500px] object-cover" />
+            <OptimizedImage src={ASSETS.piscineIMG4283} alt="Piscine de la Résidence Togoliving" width="800" height="500" className="rounded-2xl shadow-md w-full h-[500px] object-cover" />
             <div className="absolute -bottom-6 -left-6 hidden md:block w-32 h-32 rounded-full bg-gold/20 pool-ripple" />
           </motion.div>
         </div>
@@ -143,7 +143,7 @@ function LoisirsPage() {
       <section className="bg-sand py-20">
         <div className="max-w-7xl mx-auto px-6 grid md:grid-cols-2 gap-12 items-center">
           <motion.div initial={{ opacity: 0, x: -30 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} className="order-2 md:order-1 relative">
-            <OptimizedImage src={ASSETS.plageIMG4188} alt="Plage naturelle à proximité" width="800" height="400" className="rounded-2xl shadow-xl w-full h-[400px] object-cover" />
+            <OptimizedImage src={ASSETS.plageIMG4188} alt="Plage naturelle à proximité" width="800" height="400" className="rounded-2xl shadow-md w-full h-[400px] object-cover" />
           </motion.div>
           <motion.div initial={{ opacity: 0, x: 30 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} className="order-1 md:order-2">
             <p className="font-accent text-turquoise text-xl">{t("loisirs.beach.subtitle")}</p>

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { createFileRoute, Link, useParams } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
 import { motion, AnimatePresence } from "framer-motion";
@@ -105,20 +105,20 @@ function CategoryDetailsPage() {
           </div>
         )}
         <div className="absolute inset-0 bg-gradient-to-b from-ocean/80 to-ocean" />
-        <div className="relative max-w-6xl mx-auto px-6 text-center">
-          <Link to="/hebergements" className="inline-flex items-center gap-2 text-turquoise hover:text-white transition mb-6">
+        <div className="relative max-w-6xl mx-auto px-6 text-center py-4">
+          <Link to="/hebergements" className="inline-flex items-center gap-2 text-turquoise hover:text-white transition mb-8">
             <ChevronLeft size={18} /> Retour aux catégories
           </Link>
           <h1 className="font-display text-4xl md:text-6xl">{matchedCategory.title}</h1>
-          <p className="mt-4 text-white/80 max-w-2xl mx-auto">
+          <p className="mt-5 text-white/80 max-w-2xl mx-auto leading-relaxed">
             Découvrez en détail toutes nos chambres de type {matchedCategory.title.toLowerCase()}.
           </p>
         </div>
         <div className="absolute -bottom-1 inset-x-0"><WaveDivider color="#F8F5F0" /></div>
       </section>
 
-      <section className="bg-sand py-20">
-        <div className="max-w-4xl mx-auto px-6 space-y-24">
+      <section className="bg-sand py-24">
+        <div className="max-w-6xl mx-auto px-6 space-y-28">
           {categoryRooms.length === 0 ? (
             <div className="text-center text-muted-foreground py-10">
               Aucune chambre configurée pour cette catégorie actuellement.
@@ -136,9 +136,9 @@ function CategoryDetailsPage() {
       </section>
 
       {/* SEO Content Block */}
-      <div className="bg-sand py-16">
-        <div className="max-w-4xl mx-auto px-6 text-ocean">
-          <div className="glass p-8 md:p-12 rounded-3xl shadow-xl shadow-ocean/5 border border-turquoise/20">
+      <div className="bg-sand py-20">
+        <div className="max-w-6xl mx-auto px-6 text-ocean">
+          <div className="glass p-8 md:p-12 rounded-3xl border border-turquoise/20">
             <h2 className="font-display text-3xl mb-6 text-ocean" dangerouslySetInnerHTML={{ __html: t("accommodations.category.why_title", { category: matchedCategory.title.toLowerCase() }) }} />
             <div className="space-y-4 text-ocean/80 leading-relaxed">
               <p dangerouslySetInnerHTML={{ __html: t("accommodations.category.why_p1", { category: matchedCategory.title.toLowerCase() }) }} />
@@ -196,190 +196,218 @@ function RoomCard({ room, matchedCategory }: { room: Room; matchedCategory: any 
     setCurrentMediaIndex((prev) => (prev - 1 + medias.length) % medias.length);
   };
 
+  useEffect(() => {
+    if (medias.length <= 1) return;
+    const interval = setInterval(() => {
+      setCurrentMediaIndex((prev) => (prev + 1) % medias.length);
+    }, 4000);
+    return () => clearInterval(interval);
+  }, [medias.length]);
+
   const currentMedia = medias[currentMediaIndex];
 
   return (
-    <motion.div 
+    <motion.div
       initial={{ opacity: 0, y: 40 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-100px" }}
-      className="bg-white rounded-3xl overflow-hidden shadow-xl shadow-ocean/5 border border-ocean/10"
+      className="w-full overflow-hidden rounded-[40px] border border-ocean/10 bg-white shadow-sm hover:shadow-md transition-all duration-500 hover:-translate-y-1"
     >
-      {/* Photo Carousel or Single Image */}
-      <div className="relative h-[300px] md:h-[450px] bg-sand/50 group">
-        {medias.length > 0 ? (
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={`media-${currentMediaIndex}-${currentMedia.type}`}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.3 }}
-              className="w-full h-full"
-            >
-              {currentMedia.type === "image" ? (
-                <OptimizedImage 
-                  src={currentMedia.url} 
-                  alt={`Chambre N° ${room.id} - Média ${currentMediaIndex + 1}`} 
-                  width="800"
-                  height="450"
-                  className="w-full h-full object-cover"
-                />
-              ) : (
-                <div className="relative w-full h-full">
-                  <video 
-                    key={currentMedia.url}
+      <div className="grid w-full gap-0 lg:grid-cols-[1.12fr_0.88fr] items-stretch">
+        <div className="group relative w-full h-[260px] sm:h-[340px] lg:h-auto bg-sand/50 overflow-hidden">
+          {medias.length > 0 ? (
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={`media-${currentMediaIndex}-${currentMedia.type}`}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.3 }}
+                className="h-full w-full"
+              >
+                {currentMedia.type === "image" ? (
+                  <OptimizedImage
                     src={currentMedia.url}
-                    controls
-                    autoPlay
-                    muted
-                    loop
-                    playsInline
-                    preload="metadata"
-                    className="w-full h-full object-cover"
+                    alt={`Chambre N° ${room.id} - Média ${currentMediaIndex + 1}`}
+                    width="800"
+                    height="450"
+                    className="h-full w-full object-cover"
                   />
-                  <div className="absolute top-4 right-4 bg-black/60 text-white px-3 py-1 rounded-full text-xs font-semibold flex items-center gap-1 z-10">
-                    {t("accommodations.category.video_badge")}
+                ) : (
+                  <div className="relative h-full w-full">
+                    <video
+                      key={currentMedia.url}
+                      src={currentMedia.url}
+                      controls
+                      autoPlay
+                      muted
+                      loop
+                      playsInline
+                      preload="metadata"
+                      className="h-full w-full object-cover"
+                    />
+                    <div className="absolute right-4 top-4 z-10 flex items-center gap-1 rounded-full bg-black/60 px-3 py-1 text-xs font-semibold text-white">
+                      {t("accommodations.category.video_badge")}
+                    </div>
                   </div>
-                </div>
-              )}
-            </motion.div>
-          </AnimatePresence>
-        ) : (
-          <div className="w-full h-full flex items-center justify-center text-muted-foreground">
-            Aucun média
-          </div>
-        )}
-
-        {/* Carousel Controls */}
-        {medias.length > 1 && (
-          <>
-            <button 
-              onClick={handlePrevMedia}
-              className="absolute left-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white/90 text-ocean flex items-center justify-center opacity-80 hover:opacity-100 transition-all hover:bg-white hover:scale-110 z-10 shadow-lg"
-            >
-              <ChevronLeft size={24} />
-            </button>
-            <button 
-              onClick={handleNextMedia}
-              className="absolute right-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white/90 text-ocean flex items-center justify-center opacity-80 hover:opacity-100 transition-all hover:bg-white hover:scale-110 z-10 shadow-lg"
-            >
-              <ChevronRight size={24} />
-            </button>
-            
-            {/* Media Indicators */}
-            <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-1.5 z-10">
-              {medias.map((_, idx) => (
-                <div 
-                  key={idx} 
-                  className={`h-1.5 rounded-full transition-all duration-300 ${idx === currentMediaIndex ? "w-6 bg-white" : "w-1.5 bg-white/50"}`}
-                />
-              ))}
+                )}
+              </motion.div>
+            </AnimatePresence>
+          ) : (
+            <div className="flex h-full w-full items-center justify-center text-muted-foreground">
+              Aucun média
             </div>
-          </>
-        )}
-        
-        <div className="absolute top-4 left-4 flex gap-2 z-10">
-          <span className="px-4 py-1.5 rounded-full text-sm font-bold bg-ocean text-white shadow-lg">
-            N° {room.id}
-          </span>
-          <span className={`px-4 py-1.5 rounded-full text-sm font-semibold shadow-lg ${
-            isAvailable ? "bg-turquoise text-ocean" : "bg-red-500 text-white"
-          }`}>
-            {room.status}
-          </span>
-        </div>
-      </div>
+          )}
 
-      <div className="p-8 md:p-10">
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-8">
+          {medias.length > 1 && (
+            <>
+              <button
+                onClick={handlePrevMedia}
+                className="absolute left-4 top-1/2 z-10 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-white/90 text-ocean shadow-md transition-all hover:scale-110 hover:bg-white"
+              >
+                <ChevronLeft size={24} />
+              </button>
+              <button
+                onClick={handleNextMedia}
+                className="absolute right-4 top-1/2 z-10 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-white/90 text-ocean shadow-md transition-all hover:scale-110 hover:bg-white"
+              >
+                <ChevronRight size={24} />
+              </button>
+
+              <div className="absolute bottom-4 left-1/2 z-10 flex -translate-x-1/2 gap-1.5">
+                {medias.map((_, idx) => (
+                  <div
+                    key={idx}
+                    className={`h-1.5 rounded-full transition-all duration-300 ${idx === currentMediaIndex ? "w-6 bg-white" : "w-1.5 bg-white/50"}`}
+                  />
+                ))}
+              </div>
+            </>
+          )}
+
+          <div className="absolute left-4 top-4 z-10 flex gap-2">
+            <span className="rounded-full bg-ocean px-4 py-1.5 text-sm font-bold text-white shadow-sm">
+              N° {room.id}
+            </span>
+            <span className={`rounded-full px-4 py-1.5 text-sm font-semibold shadow-sm ${
+              isAvailable ? "bg-turquoise text-ocean" : "bg-red-500 text-white"
+            }`}>
+              {room.status}
+            </span>
+          </div>
+        </div>
+
+        <div className="flex flex-col justify-between p-8 md:p-10">
           <div>
-            <h2 className="font-display text-3xl text-ocean mb-2">
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="rounded-full bg-ocean/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.25em] text-ocean">
+                {matchedCategory.title}
+              </span>
+              {isAvailable ? (
+                <span className="rounded-full bg-emerald-500/10 px-3 py-1 text-xs font-semibold text-emerald-700">
+                  Disponible maintenant
+                </span>
+              ) : (
+                <span className="rounded-full bg-red-500/10 px-3 py-1 text-xs font-semibold text-red-700">
+                  Indisponible
+                </span>
+              )}
+            </div>
+
+            <h2 className="mt-4 font-display text-3xl md:text-4xl text-ocean tracking-tight leading-tight">
               {room.title ? `${room.title} N° ${room.id}` : `Chambre N° ${room.id}`}
             </h2>
+
             {room.capacity && (
-              <p className="text-turquoise font-medium font-accent text-lg flex items-center gap-2">
+              <p className="mt-3 flex items-center gap-2 font-accent text-lg text-turquoise">
                 <MapPin size={18} /> {t("accommodations.category.capacity", { capacity: room.capacity })}
               </p>
             )}
-          </div>
-          
-          {/* Pricing */}
-          <div className="bg-sand/50 px-6 py-4 rounded-2xl border border-turquoise/10 text-right shrink-0">
-            {room.price_per_night ? (
-              <div className="text-xl font-display text-ocean font-bold">
-                {room.price_per_night} <span className="text-sm font-body text-muted-foreground font-normal">{t("accommodations.category.per_night")}</span>
-              </div>
-            ) : (
-              <div className="text-muted-foreground text-sm">{t("accommodations.category.price_request")}</div>
-            )}
-            {room.price_per_month && (
-              <div className="text-md text-ocean/80 mt-1">
-                {room.price_per_month} <span className="text-xs text-muted-foreground">{t("accommodations.category.per_month")}</span>
-              </div>
-            )}
-          </div>
-        </div>
 
-        <div className="mb-8">
-          <h3 className="text-sm font-bold text-ocean uppercase tracking-wider mb-4 border-b border-ocean/10 pb-2">
-            Description
-          </h3>
-          <div className={`prose prose-ocean max-w-none text-muted-foreground transition-all duration-500 overflow-hidden ${isExpanded ? '' : 'line-clamp-3'}`}>
-            <p className="whitespace-pre-wrap">{fullDescription}</p>
-          </div>
-        </div>
-
-        <div className="mb-10">
-          <h3 className="text-sm font-bold text-ocean uppercase tracking-wider mb-4 border-b border-ocean/10 pb-2 flex justify-between items-center">
-            <span>{t("accommodations.category.amenities_title")}</span>
-            {!isExpanded && parsedAmenities.length > 6 && (
-              <span className="text-xs font-normal text-muted-foreground">
-                {t("accommodations.category.amenities_more", { count: parsedAmenities.length - 6 })}
-              </span>
-            )}
-          </h3>
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-            {displayedAmenities.map((am: string) => {
-              const Icon = ICON_MAP[am] || Wifi;
-              return (
-                <div key={am} className="flex items-center gap-3 text-sm text-ocean/80">
-                  <div className="p-2 rounded-lg bg-turquoise/10 text-turquoise">
-                    <Icon size={16} />
-                  </div>
-                  {am}
+            <div className="mt-6 rounded-[24px] border border-turquoise/15 bg-gradient-to-br from-sand/40 to-white/80 p-6">
+              <div className="flex flex-wrap items-center justify-between gap-6">
+                <div>
+                  <span className="text-xs font-semibold uppercase tracking-[0.2em] text-ocean/60 block mb-1">Tarif par Nuit</span>
+                  {room.price_per_night ? (
+                    <div className="text-3xl font-display font-bold text-ocean">
+                      {room.price_per_night} <span className="text-sm font-body font-normal text-muted-foreground">{t("accommodations.category.per_night")}</span>
+                    </div>
+                  ) : (
+                    <div className="text-sm text-muted-foreground">{t("accommodations.category.price_request")}</div>
+                  )}
                 </div>
-              );
-            })}
+                {room.price_per_month && (
+                  <div className="border-l border-ocean/10 pl-6 flex flex-col">
+                    <span className="text-xs font-semibold uppercase tracking-[0.2em] text-ocean/60 block mb-1">Tarif Mensuel</span>
+                    <div className="text-2xl font-display font-semibold text-turquoise">
+                      {room.price_per_month}
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            <div className="mt-6">
+              <h3 className="mb-3 border-b border-ocean/10 pb-2 text-sm font-bold uppercase tracking-wider text-ocean">
+                Description
+              </h3>
+              <div className={`overflow-hidden text-muted-foreground transition-all duration-500 ${isExpanded ? "" : "line-clamp-3 text-sm leading-relaxed"}`}>
+                <p className="whitespace-pre-wrap">{fullDescription}</p>
+              </div>
+            </div>
+
+            <div className="mt-6">
+              <h3 className="mb-4 flex items-center justify-between border-b border-ocean/10 pb-2 text-sm font-bold uppercase tracking-wider text-ocean">
+                <span>{t("accommodations.category.amenities_title")}</span>
+                {!isExpanded && parsedAmenities.length > 6 && (
+                  <span className="text-xs font-normal text-muted-foreground">
+                    {t("accommodations.category.amenities_more", { count: parsedAmenities.length - 6 })}
+                  </span>
+                )}
+              </h3>
+              <div className="flex flex-wrap gap-2">
+                {displayedAmenities.map((am: string) => {
+                  const Icon = ICON_MAP[am] || Wifi;
+                  return (
+                    <div key={am} className="flex items-center gap-2 rounded-full border border-ocean/10 bg-sand/40 px-3.5 py-2 text-sm text-ocean/85 hover:border-turquoise hover:bg-white transition duration-300">
+                      <div className="rounded-full bg-turquoise/10 p-1.5 text-turquoise">
+                        <Icon size={14} />
+                      </div>
+                      {am}
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
           </div>
-        </div>
 
-        <div className="flex flex-col sm:flex-row gap-4 items-center justify-between pt-6 border-t border-ocean/10">
-          <button 
-            onClick={() => setIsExpanded(!isExpanded)}
-            className="flex items-center gap-2 text-ocean font-semibold hover:text-turquoise transition-colors"
-          >
-            {isExpanded ? (
-              <><ChevronUp size={20} /> {t("accommodations.category.show_less")}</>
-            ) : (
-              <><ChevronDown size={20} /> {t("accommodations.category.show_more")}</>
-            )}
-          </button>
-
-          {isAvailable ? (
-            <Link
-              // @ts-ignore
-              to={`/reserver?room=${encodeURIComponent(room.id)}`}
-              className="inline-flex items-center gap-2 px-8 py-4 rounded-full bg-ocean text-white font-medium hover:bg-gold hover:text-ocean transition shimmer-gold shadow-lg w-full sm:w-auto justify-center"
+          <div className="mt-8 flex flex-col items-stretch gap-4 border-t border-ocean/10 pt-6 sm:flex-row sm:items-center sm:justify-between">
+            <button
+              onClick={() => setIsExpanded(!isExpanded)}
+              className="flex items-center justify-center gap-2 rounded-full border border-ocean/10 px-5 py-3.5 text-sm font-semibold text-ocean transition hover:border-turquoise hover:text-turquoise hover:bg-white"
             >
-              <Calendar size={18} />
-              {t("accommodations.category.book_room")}
-            </Link>
-          ) : (
-            <button disabled className="inline-flex items-center gap-2 px-8 py-4 rounded-full bg-sand text-ocean/50 font-medium border border-ocean/10 cursor-not-allowed w-full sm:w-auto justify-center">
-              {t("accommodations.category.unavailable")}
+              {isExpanded ? (
+                <><ChevronUp size={18} /> {t("accommodations.category.show_less")}</>
+              ) : (
+                <><ChevronDown size={18} /> {t("accommodations.category.show_more")}</>
+              )}
             </button>
-          )}
+
+            {isAvailable ? (
+              <Link
+                // @ts-ignore
+                to={`/reserver?room=${encodeURIComponent(room.id)}`}
+                className="inline-flex items-center justify-center gap-2 rounded-full bg-ocean px-8 py-4 font-medium text-white transition hover:bg-gold hover:text-ocean sm:w-auto shimmer-gold"
+              >
+                <Calendar size={18} />
+                {t("accommodations.category.book_room")}
+              </Link>
+            ) : (
+              <button disabled className="inline-flex items-center justify-center gap-2 rounded-full border border-ocean/10 bg-sand px-8 py-4 font-medium text-ocean/50 sm:w-auto">
+                {t("accommodations.category.unavailable")}
+              </button>
+            )}
+          </div>
         </div>
       </div>
     </motion.div>
