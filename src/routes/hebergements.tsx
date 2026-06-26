@@ -143,8 +143,8 @@ function Page() {
           {isLoading ? (
             <div className="flex items-center justify-center py-20 text-ocean"><Loader2 size={32} className="animate-spin" /></div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
-              {rooms.map((r) => {
+            <div className="flex flex-col gap-8">
+              {rooms.map((r, idx) => {
                 return (
                   <Link
                     key={r.title}
@@ -153,12 +153,14 @@ function Page() {
                     className="block group cursor-pointer"
                   >
                     <motion.div
-                      initial={{ opacity: 0, y: 30 }}
+                      initial={{ opacity: 0, y: 40 }}
                       whileInView={{ opacity: 1, y: 0 }}
                       viewport={{ once: true }}
-                      className="bg-white rounded-3xl overflow-hidden border border-ocean/10 hover:border-turquoise/40 transition-all duration-300 flex flex-col h-full hover:-translate-y-1.5 shadow-sm hover:shadow-md"
+                      transition={{ delay: idx * 0.08 }}
+                      className="relative flex flex-col md:flex-row rounded-[28px] overflow-hidden border border-ocean/8 hover:border-turquoise/30 transition-all duration-500 shadow-sm hover:shadow-lg hover:-translate-y-1 group"
                     >
-                      <div className="relative aspect-video w-full overflow-hidden">
+                      {/* === LEFT — Media === */}
+                      <div className="relative w-full md:w-[48%] h-[260px] md:h-[340px] shrink-0 overflow-hidden">
                         {r.videoUrl ? (
                           <VideoWithPoster
                             src={r.videoUrl}
@@ -170,28 +172,47 @@ function Page() {
                             src={r.imageUrl ?? ""}
                             alt={r.title}
                             width="800"
-                            height="450"
-                            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                            height="500"
+                            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                           />
                         )}
+                        {/* Decorative room index */}
+                        <div className="absolute bottom-5 left-5 font-display text-[64px] leading-none font-bold text-white/10 select-none pointer-events-none">
+                          0{idx + 1}
+                        </div>
+                        {/* Badge */}
                         {r.badge && (
-                          <span className={`absolute top-4 left-4 px-4 py-1.5 rounded-full text-xs font-semibold tracking-wider ${r.isPremium ? "bg-gold text-ocean" : "bg-turquoise text-ocean"}`}>
+                          <span className={`absolute top-4 left-4 px-4 py-1.5 rounded-full text-xs font-bold tracking-widest uppercase ${r.isPremium ? "bg-gold text-ocean" : "bg-turquoise text-ocean"}`}>
                             {r.badge}
                           </span>
                         )}
+                        {/* Side gradient for blending */}
+                        <div className="hidden md:block absolute inset-y-0 right-0 w-16 bg-gradient-to-l from-ocean to-transparent" />
                       </div>
-                      <div className="p-8 flex flex-col flex-grow">
-                        <h2 className="font-display text-2xl md:text-3xl text-ocean group-hover:text-gold transition-colors duration-300">
-                          {r.title}
-                        </h2>
-                        <p className="font-accent text-turquoise text-base mt-1">
-                          {r.subtitle ?? r.badge}
-                        </p>
-                        <p className="text-muted-foreground mt-4 text-sm leading-relaxed flex-grow">
-                          {r.description}
-                        </p>
-                        <div className="mt-6 flex items-center gap-1 text-sm font-semibold text-ocean group-hover:text-gold transition-colors duration-300 self-end">
-                          {t("accommodations.category.show_more")} <span className="group-hover:translate-x-1 transition-transform">→</span>
+
+                      {/* === RIGHT — Info panel === */}
+                      <div className="flex flex-col justify-between bg-ocean text-white flex-grow p-8 md:p-10">
+                        <div>
+                          <p className="font-accent text-turquoise text-sm tracking-widest uppercase mb-2">
+                            {r.subtitle ?? r.badge}
+                          </p>
+                          <h2 className="font-display text-3xl md:text-4xl lg:text-5xl text-white group-hover:text-gold transition-colors duration-300 leading-tight">
+                            {r.title}
+                          </h2>
+                          <p className="mt-5 text-white/65 text-sm md:text-base leading-relaxed max-w-md line-clamp-3">
+                            {r.description}
+                          </p>
+                        </div>
+
+                        {/* CTA row */}
+                        <div className="mt-8 flex items-center justify-between border-t border-white/10 pt-6">
+                          <span className="text-xs font-semibold text-white/40 uppercase tracking-widest">
+                            {t("accommodations.hero.subtitle")}
+                          </span>
+                          <div className="inline-flex items-center gap-2 bg-white/10 group-hover:bg-gold group-hover:text-ocean text-white text-sm font-semibold px-5 py-2.5 rounded-full transition-all duration-300">
+                            {t("accommodations.category.show_more")}
+                            <span className="group-hover:translate-x-1 transition-transform">→</span>
+                          </div>
                         </div>
                       </div>
                     </motion.div>
