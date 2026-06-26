@@ -203,9 +203,18 @@ function HomePage() {
             {t("home.hero.title")}
           </motion.h1>
 
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.55 }}
+            className="mt-6 text-white/80 text-base md:text-lg max-w-2xl mx-auto leading-relaxed"
+          >
+            {t("home.hero.desc")}
+          </motion.p>
+
           <motion.div
             initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.8 }}
-            className="mt-6 flex flex-wrap gap-4 justify-center"
+            className="mt-8 flex flex-wrap gap-4 justify-center"
           >
             <Link to="/reserver" className="inline-flex items-center gap-2 px-7 py-3.5 rounded-full bg-gold text-ocean font-medium shimmer-gold hover:scale-[1.03] transition">
               {t("home.hero.book_btn")} <ArrowRight size={18} />
